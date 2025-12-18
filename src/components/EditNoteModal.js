@@ -8,21 +8,34 @@ const EditNoteModal = ({ note, setnote, tags, tagColorMap, onSubmit, openRef, cl
 	return (
 		<>
 			{/* hidden trigger button (used by updateNote in Notes.jsx) */}
-			<button ref={openRef} type="button" className="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#exampleModal">
+			<button ref={openRef} type="button" className="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#editNoteModal">
 				Launch edit modal
 			</button>
 
-			<div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-				<div className="modal-dialog">
-					<div className="modal-content">
-						<div className="modal-header">
-							<h1 className="modal-title fs-5" id="exampleModalLabel">
+			<div className="modal fade" id="editNoteModal" tabIndex="-1" aria-labelledby="editNoteModalLabel" aria-hidden="true">
+				{/* 🔥 Full-screen dialog (feels like a separate page) */}
+				<div className="modal-dialog modal-dialog-centered modal-fullscreen">
+					<div
+						className="modal-content"
+						style={{ borderRadius: 0, backgroundColor: "#fffdf2" }} // light note-paper feel
+					>
+						{/* Top bar like mobile app */}
+						<div className="modal-header border-0 pb-2">
+							<button type="button" className="btn btn-link text-decoration-none" data-bs-dismiss="modal" ref={closeRef}>
+								<i className="fa-solid fa-arrow-left me-1"></i> Back
+							</button>
+
+							<h1 className="modal-title fs-5 mx-auto" id="editNoteModalLabel">
 								Edit Note
 							</h1>
-							<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+							<button type="button" className="btn btn-primary" onClick={onSubmit}>
+								Save
+							</button>
 						</div>
 
-						<div className="modal-body">
+						{/* Scrollable content area */}
+						<div className="modal-body pt-0" style={{ overflowY: "auto" }}>
 							<form>
 								{/* Title */}
 								<div className="mb-3">
@@ -57,35 +70,28 @@ const EditNoteModal = ({ note, setnote, tags, tagColorMap, onSubmit, openRef, cl
 								/>
 
 								{/* Tag selector */}
-								<TagSelector
-									tags={tags}
-									tagColorMap={tagColorMap}
-									typeValue={note.etagType}
-									customValue={note.etagCustom}
-									onTypeChange={(val) =>
-										setnote((prev) => ({
-											...prev,
-											etagType: val,
-										}))
-									}
-									onCustomChange={(val) =>
-										setnote((prev) => ({
-											...prev,
-											etagCustom: val,
-										}))
-									}
-									label="Tag Type (choose) & Custom Name (optional)"
-								/>
+								<div className="mt-3">
+									<TagSelector
+										tags={tags}
+										tagColorMap={tagColorMap}
+										typeValue={note.etagType}
+										customValue={note.etagCustom}
+										onTypeChange={(val) =>
+											setnote((prev) => ({
+												...prev,
+												etagType: val,
+											}))
+										}
+										onCustomChange={(val) =>
+											setnote((prev) => ({
+												...prev,
+												etagCustom: val,
+											}))
+										}
+										label="Tag Type (choose) & Custom Name (optional)"
+									/>
+								</div>
 							</form>
-						</div>
-
-						<div className="modal-footer">
-							<button ref={closeRef} type="button" className="btn btn-secondary" data-bs-dismiss="modal">
-								Close
-							</button>
-							<button type="button" className="btn btn-primary" onClick={onSubmit}>
-								Update Note
-							</button>
 						</div>
 					</div>
 				</div>

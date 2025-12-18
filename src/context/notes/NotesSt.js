@@ -14,68 +14,66 @@ const NotesState = (props) => {
 	const deriveTagTypeFromTag = (tag) => {
 		if (!tag || typeof tag !== "string") return "";
 		const trimmed = tag.trim();
-		const match = PREDEFINED_TYPES.find((t) => t.toLowerCase() === trimmed.toLowerCase());
+		const match = PREDEFINED_TYPES.find(
+			(t) => t.toLowerCase() === trimmed.toLowerCase()
+		);
 		return match || "";
 	};
 
-	// GET ALL notes
-const getNotes = async () => {
-	try {
-		// 1️⃣ Try to load cached notes first (instant UI, works offline)
+	// =========================
+	// GET ALL NOTES
+	// =========================
+	const getNotes = async () => {
 		try {
-			const cached = await getCachedNotes();
-			if (Array.isArray(cached) && cached.length > 0) {
-				setnotes(cached);
+			// 1️⃣ Load cached notes first (offline / instant UI)
+			try {
+				const cached = await getCachedNotes();
+				if (Array.isArray(cached) && cached.length > 0) {
+					setnotes(cached);
+				}
+			} catch (cacheErr) {
+				console.warn("Failed to load cached notes:", cacheErr);
 			}
-		} catch (cacheErr) {
-			console.warn("Failed to load cached notes:", cacheErr);
+
+			// 2️⃣ Fetch fresh notes from backend
+			const response = await fetch(`${host}/api/notes/fetchallnotes`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					"auth-token": localStorage.getItem("token"),
+				},
+			});
+
+			const json = await response.json();
+			const arr = Array.isArray(json) ? json : json.notes || [];
+
+			// annotate each note with frontend-only tagType
+			const annotated = arr.map((n) => ({
+				...n,
+				tagType: deriveTagTypeFromTag(n.tag),
+			}));
+
+			// ⭐ pinned first
+			const sorted = annotated
+				.slice()
+				.sort((a, b) => (b.isPinned === true) - (a.isPinned === true));
+
+			setnotes(sorted);
+
+			// 3️⃣ Cache notes
+			try {
+				await cacheNotes(sorted);
+			} catch (cacheErr) {
+				console.warn("Failed to cache notes:", cacheErr);
+			}
+		} catch (err) {
+			console.error("getNotes error:", err);
 		}
+	};
 
-		// 2️⃣ Then fetch fresh notes from backend
-		const response = await fetch(`${host}/api/notes/fetchallnotes`, {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				"auth-token": localStorage.getItem("token"),
-			},
-		});
-
-		const json = await response.json();
-		const arr = Array.isArray(json) ? json : json.notes || [];
-
-		// annotate each note with frontend-only tagType if applicable
-		const annotated = arr.map((n) => ({
-			...n,
-			tagType: deriveTagTypeFromTag(n.tag),
-		}));
-
-		// ⭐ Sort pinned first (pinned true first)
-		const sorted = annotated
-			.slice()
-			.sort((a, b) => (b.isPinned === true) - (a.isPinned === true));
-
-		setnotes(sorted);
-
-		// 3️⃣ Cache sorted notes for offline use next time
-		try {
-			await cacheNotes(sorted);
-		} catch (cacheErr) {
-			console.warn("Failed to cache notes:", cacheErr);
-		}
-	} catch (err) {
-		console.error("getNotes error:", err);
-		// if backend fails, user will still see whatever we loaded from cache above
-	}
-};
- 
-
-	/**
-	 * ADD note
-	 * - tagType is frontend-only. We DO NOT send it to backend.
-	 * - reminderAt (ISO string or null) IS sent to backend.
-	 * - If server returns created note object we annotate it with tagType before adding to local state.
-	 * - If server doesn't return created object, fallback to refresh via getNotes().
-	 */
+	// =========================
+	// ADD NOTE
+	// =========================
 	const addNote = async (
 		title,
 		description,
@@ -83,7 +81,7 @@ const getNotes = async () => {
 		imageFile,
 		attachmentFiles = [],
 		tagType = "",
-		reminderAt = null // 👈 NEW
+		reminderAt = null
 	) => {
 		try {
 			const formData = new FormData();
@@ -91,21 +89,21 @@ const getNotes = async () => {
 			formData.append("description", description);
 			formData.append("tag", tag || "");
 
-			// 🔔 send reminder if present
 			if (reminderAt) {
 				formData.append("reminderAt", reminderAt);
 			}
 
 			if (imageFile) formData.append("image", imageFile);
-			if (attachmentFiles && attachmentFiles.length) {
-				attachmentFiles.forEach((f) => formData.append("attachments", f));
+			if (attachmentFiles?.length) {
+				attachmentFiles.forEach((f) =>
+					formData.append("attachments", f)
+				);
 			}
 
 			const response = await fetch(`${host}/api/notes/addnotes`, {
 				method: "POST",
 				headers: {
 					"auth-token": localStorage.getItem("token"),
-					// NOTE: don't set Content-Type when sending FormData
 				},
 				body: formData,
 			});
@@ -113,8 +111,7 @@ const getNotes = async () => {
 			let created = null;
 			try {
 				created = await response.json();
-			} catch (parseErr) {
-				console.warn("Could not parse addnotes response as JSON", parseErr);
+			} catch {
 				created = null;
 			}
 
@@ -123,30 +120,28 @@ const getNotes = async () => {
 				return null;
 			}
 
-			// the server might return the created note directly, or wrap it (created.note / created.data)
-			const newNote = (created && (created._id ? created : created.note || created.data)) || null;
+			const newNote =
+				(created && (created._id ? created : created.note || created.data)) ||
+				null;
 
 			if (newNote && newNote._id) {
 				const annotated = {
 					...newNote,
-					// prefer explicit tagType passed from UI; otherwise derive from returned tag
-					tagType: tagType && tagType.toString().trim() ? tagType.toString().trim() : deriveTagTypeFromTag(newNote.tag),
+					tagType:
+						tagType?.trim() ||
+						deriveTagTypeFromTag(newNote.tag),
 				};
 
 				setnotes((prev) => {
-					// avoid duplicates
-					const exists = prev.some((n) => n._id === annotated._id);
-					if (exists) return prev;
-					const merged = [annotated, ...prev];
-					return merged.slice().sort((a, b) => (b.isPinned === true) - (a.isPinned === true));
+					if (prev.some((n) => n._id === annotated._id)) return prev;
+					return [annotated, ...prev].sort(
+						(a, b) => (b.isPinned === true) - (a.isPinned === true)
+					);
 				});
 
-				console.log("addNote: appended new note locally", annotated);
 				return annotated;
 			}
 
-			// fallback: server did not return created note object; refresh list
-			console.warn("addNote: server did not return created note — refreshing notes via getNotes()");
 			await getNotes();
 			return null;
 		} catch (err) {
@@ -155,7 +150,9 @@ const getNotes = async () => {
 		}
 	};
 
-	// DELETE note
+	// =========================
+	// DELETE NOTE
+	// =========================
 	const deleteNote = async (id) => {
 		try {
 			const response = await fetch(`${host}/api/notes/deletenote/${id}`, {
@@ -165,22 +162,18 @@ const getNotes = async () => {
 					"auth-token": localStorage.getItem("token"),
 				},
 			});
-			if (!response.ok) {
-				const errBody = await response.json().catch(() => ({}));
-				console.error("deleteNote failed", errBody);
-				return;
-			}
+
+			if (!response.ok) return;
+
 			setnotes((prev) => prev.filter((note) => note._id !== id));
 		} catch (err) {
 			console.error("deleteNote error:", err);
 		}
 	};
 
-	/**
-	 * EDIT note
-	 * - Accepts optional frontend-only tagType param to update local annotation.
-	 * - We still only send title/description/tag to backend (no tagType).
-	 */
+	// =========================
+	// EDIT NOTE
+	// =========================
 	const editNote = async (id, title, description, tag, tagType = "") => {
 		try {
 			const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
@@ -193,19 +186,22 @@ const getNotes = async () => {
 			});
 
 			const result = await response.json();
-			if (!response.ok) {
-				console.error("editNote failed", result);
-				return null;
-			}
+			if (!response.ok) return null;
 
 			setnotes((prev) =>
-				prev.map((n) => {
-					if (n._id === id) {
-						const localTagType = tagType && tagType.toString().trim() ? tagType.toString().trim() : deriveTagTypeFromTag(tag);
-						return { ...n, title, description, tag, tagType: localTagType };
-					}
-					return n;
-				})
+				prev.map((n) =>
+					n._id === id
+						? {
+								...n,
+								title,
+								description,
+								tag,
+								tagType:
+									tagType?.trim() ||
+									deriveTagTypeFromTag(tag),
+						  }
+						: n
+				)
 			);
 
 			return result;
@@ -215,7 +211,9 @@ const getNotes = async () => {
 		}
 	};
 
-	// PIN / UNPIN note
+	// =========================
+	// PIN / UNPIN NOTE
+	// =========================
 	const pinNote = async (id, isPinned) => {
 		try {
 			const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
@@ -228,12 +226,14 @@ const getNotes = async () => {
 			});
 
 			const updated = await response.json();
-			if (!response.ok) {
-				console.error("pinNote failed", updated);
-				return null;
-			}
+			if (!response.ok) return null;
 
-			setnotes((prev) => prev.map((n) => (n._id === id ? { ...n, isPinned: updated.isPinned } : n)));
+			setnotes((prev) =>
+				prev.map((n) =>
+					n._id === id ? { ...n, isPinned: updated.isPinned } : n
+				)
+			);
+
 			return updated;
 		} catch (err) {
 			console.error("pinNote error:", err);
@@ -241,14 +241,9 @@ const getNotes = async () => {
 		}
 	};
 
-	// ---------------------------
-	// Version history methods
-	// ---------------------------
-
-	/**
-	 * getVersions(noteId)
-	 * returns array of version objects (or [] on failure)
-	 */
+	// =========================
+	// VERSION HISTORY
+	// =========================
 	const getVersions = async (noteId) => {
 		try {
 			const res = await fetch(`${host}/api/notes/${noteId}/versions`, {
@@ -258,11 +253,8 @@ const getNotes = async () => {
 					"auth-token": localStorage.getItem("token"),
 				},
 			});
-			if (!res.ok) {
-				const body = await res.json().catch(() => ({}));
-				console.error("getVersions failed", body);
-				return [];
-			}
+
+			if (!res.ok) return [];
 			const data = await res.json();
 			return Array.isArray(data) ? data : data.versions || [];
 		} catch (err) {
@@ -271,29 +263,22 @@ const getNotes = async () => {
 		}
 	};
 
-	/**
-	 * restoreVersion(noteId, versionId)
-	 * - calls backend restore endpoint
-	 * - refreshes notes list after successful restore
-	 * - returns server response object or throws on failure
-	 */
 	const restoreVersion = async (noteId, versionId) => {
 		try {
-			const res = await fetch(`${host}/api/notes/${noteId}/restore/${versionId}`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
-				},
-			});
-			const body = await res.json().catch(() => ({}));
-			if (!res.ok) {
-				console.error("restoreVersion failed", body);
-				throw new Error(body.error || body || "Restore failed");
-			}
-			// refresh notes so UI reflects restored content
+			const res = await fetch(
+				`${host}/api/notes/${noteId}/restore/${versionId}`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"auth-token": localStorage.getItem("token"),
+					},
+				}
+			);
+
+			if (!res.ok) throw new Error("Restore failed");
 			await getNotes();
-			return body;
+			return true;
 		} catch (err) {
 			console.error("restoreVersion error:", err);
 			throw err;
@@ -309,7 +294,6 @@ const getNotes = async () => {
 				editNote,
 				getNotes,
 				pinNote,
-				// versioning exposed to components
 				getVersions,
 				restoreVersion,
 			}}

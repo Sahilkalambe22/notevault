@@ -1,65 +1,97 @@
+//src/components/TagSelector.jsx
 import React from "react";
 
-const TagSelector = ({ tags = [], tagColorMap = {}, typeValue = "", customValue = "", onTypeChange = () => {}, onCustomChange = () => {}, label = "Tag Type (choose) & Custom Name (optional)" }) => {
-	// Cleaner, modern icons for all tags
-	const TAG_ICON_MAP = {
-		Work: "fa-solid fa-briefcase",
-		Important: "fa-solid fa-triangle-exclamation",
-		Personal: "fa-solid fa-user",
-		Todo: "fa-solid fa-list-check",
-		Random: "fa-solid fa-shuffle",
-		Priority: "fa-solid fa-bolt",
-	};
+const TagSelector = ({
+  tags = [],
+  tagColorMap = {},
+  typeValue = "",
+  customValue = "",
+  onTypeChange = () => {},
+  onCustomChange = () => {},
+  label = "Tag Type (choose) & Custom Name (optional)",
+}) => {
+  /* Icon map */
+  const TAG_ICON_MAP = {
+    Work: "fa-solid fa-briefcase",
+    Important: "fa-solid fa-triangle-exclamation",
+    Personal: "fa-solid fa-user",
+    Todo: "fa-solid fa-list-check",
+    Priority: "fa-solid fa-bolt",
+    Random: "fa-solid fa-shuffle", // fallback only
+  };
 
-	const selectedVariant = typeValue && tagColorMap[typeValue];
-	const previewIcon = TAG_ICON_MAP[typeValue] || null;
+  /* Determine preview values */
+  const effectiveType = typeValue || "Random";
+  const previewLabel =
+    (customValue && customValue.trim()) || effectiveType;
 
-	const previewLabel = (customValue && customValue.trim()) || typeValue || "—";
+  const previewVariant =
+    tagColorMap[effectiveType] || "secondary";
 
-	const isLight = selectedVariant === "light";
+  const previewIcon = TAG_ICON_MAP[effectiveType] || null;
 
-	return (
-		<div className="mb-3">
-			<label className="form-label small text-muted">{label}</label>
+  const isLight = previewVariant === "light";
 
-			<div className="d-flex gap-2 align-items-center flex-wrap">
-				{/* Dropdown with icons */}
-				<select className="form-select" style={{ maxWidth: 200 }} value={typeValue} onChange={(e) => onTypeChange(e.target.value)}>
-					<option value="">Select Tag Type</option>
+  return (
+    <div className="mb-3">
+      <label className="form-label small text-muted">
+        {label}
+      </label>
 
-					{tags.map((t) => (
-						<option key={t} value={t}>
-							{t}
-						</option>
-					))}
-				</select>
+      <div className="d-flex gap-2 align-items-center flex-wrap">
+        {/* TAG TYPE SELECT (Random removed) */}
+        <select
+          className="form-select"
+          style={{ maxWidth: 200 }}
+          value={typeValue}
+          onChange={(e) => onTypeChange(e.target.value)}
+        >
+          <option value="">Select Tag Type</option>
 
-				{/* Preview badge (icon + text) */}
-				<div
-					className={`badge text-bg-${selectedVariant || "secondary"}`}
-					style={{
-						borderRadius: 999,
-						padding: "0.35rem 0.7rem",
-						minWidth: 80,
-						textAlign: "center",
-						color: isLight ? "black" : undefined,
-						display: "flex",
-						alignItems: "center",
-						gap: "6px",
-						fontSize: "0.9rem",
-					}}
-				>
-					{previewIcon && <i className={previewIcon}></i>}
-					{previewLabel}
-				</div>
+          {tags
+            .filter((t) => t !== "Random") // ✅ IMPORTANT FIX
+            .map((t) => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+        </select>
 
-				{/* Custom name */}
-				<input type="text" className="form-control" style={{ maxWidth: 200 }} placeholder="Custom tag (optional)" value={customValue} onChange={(e) => onCustomChange(e.target.value)} />
-			</div>
+        {/* PREVIEW BADGE */}
+        <div
+          className={`badge text-bg-${previewVariant}`}
+          style={{
+            borderRadius: 999,
+            padding: "0.35rem 0.7rem",
+            minWidth: 80,
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            fontSize: "0.9rem",
+            color: isLight ? "#000" : undefined,
+          }}
+        >
+          {previewIcon && <i className={previewIcon}></i>}
+          {previewLabel}
+        </div>
 
-			<div className="form-text mt-1">If custom name is set, it overrides the tag type. Leave it empty to use the selected type.</div>
-		</div>
-	);
+        {/* CUSTOM TAG INPUT */}
+        <input
+          type="text"
+          className="form-control"
+          style={{ maxWidth: 200 }}
+          placeholder="Custom tag (optional)"
+          value={customValue}
+          onChange={(e) => onCustomChange(e.target.value)}
+        />
+      </div>
+
+      <div className="form-text mt-1">
+        Custom name overrides the tag label.  
+        Leave it empty to use the selected type.
+      </div>
+    </div>
+  );
 };
 
 export default TagSelector;

@@ -1,199 +1,149 @@
-// src/components/NoteItem.js
-
+//src/components/NoteItem.js
 import React, { useContext } from "react";
 import noteContext from "../context/notes/notesContext";
 import PinButton from "./PinButton";
 import ReminderBadge from "./ReminderBadge";
-import VersionHistoryModal from "./VersionHistoryModal"; // <-- new import
+
+/* ================= TAG CONFIG ================= */
+
+const TAG_COLOR_MAP = {
+  Work: "primary",
+  Random: "secondary",
+  Important: "danger",
+  Todo: "success",
+  Personal: "light",
+  Priority: "warning",
+};
+
+const TAG_ICON_MAP = {
+  Work: "fa-solid fa-briefcase",
+  Important: "fa-solid fa-triangle-exclamation",
+  Personal: "fa-solid fa-user",
+  Todo: "fa-solid fa-list-check",
+  Random: "fa-solid fa-shuffle",
+  Priority: "fa-solid fa-bolt",
+};
+
+const CUSTOM_VARIANTS = [
+  "primary",
+  "secondary",
+  "success",
+  "danger",
+  "warning",
+  "info",
+  "dark",
+];
+
+const hashIndex = (str, mod) => {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  }
+  return h % mod;
+};
+
+/* ================= COMPONENT ================= */
 
 const NoteItem = (props) => {
-	const context = useContext(noteContext);
-	const { deleteNote, pinNote } = context;
-	const { note, updateNote } = props;
+  const { deleteNote, pinNote } = useContext(noteContext);
+  const { note, updateNote } = props;
 
-	const [showImageModal, setShowImageModal] = React.useState(false);
-	const [showVersions, setShowVersions] = React.useState(false); // <-- new state
-	const host = "http://localhost:5000";
 
-	// canonical predefined tag types (canonical casing)
-	const tagTypes = ["Work", "Random", "Important", "Todo", "Personal", "Priority"];
+  /* ================= TAG NORMALIZATION ================= */
 
-	// map canonical type -> bootstrap variant
-	const tagTypeToVariant = {
-		work: "primary",
-		random: "secondary",
-		important: "danger",
-		todo: "success",
-		personal: "light", // will add text-dark class for readability
-		priority: "warning",
-	};
+  const rawTag = (note.tag || "Random").trim();
 
-	// icon map (same idea as TagSelector)
-	const TAG_ICON_MAP = {
-		Work: "fa-solid fa-briefcase",
-		Important: "fa-solid fa-triangle-exclamation",
-		Personal: "fa-solid fa-user",
-		Todo: "fa-solid fa-list-check",
-		Random: "fa-solid fa-shuffle",
-		Priority: "fa-solid fa-bolt",
-	};
+  // Normalize for comparison
+  const normalizedTag = rawTag.toLowerCase();
 
-	// fallback variants for custom tags (avoid 'light' for custom to keep contrast simple)
-	const customVariants = ["primary", "secondary", "success", "danger", "warning", "info", "dark"];
+  // Find canonical tag (case-insensitive)
+  const canonicalTag = Object.keys(TAG_COLOR_MAP).find(
+    (t) => t.toLowerCase() === normalizedTag
+  );
 
-	// simple deterministic hash to pick a variant index for a custom tag
-	const deterministicIndex = (str, mod) => {
-		let h = 0;
-		for (let i = 0; i < str.length; i++) {
-			h = (h * 31 + str.charCodeAt(i)) >>> 0;
-		}
-		return h % mod;
-	};
+  const isCanonical = Boolean(canonicalTag);
 
-	// Normalise saved tag (string trimmed)
-	const savedTagRaw = (note.tag || "").toString();
-	const savedTag = savedTagRaw.trim();
+  const badgeColor = isCanonical
+    ? TAG_COLOR_MAP[canonicalTag]
+    : CUSTOM_VARIANTS[
+        hashIndex(normalizedTag, CUSTOM_VARIANTS.length)
+      ];
 
-	// If backend provides tagType explicitly (future-proof) and it's non-empty, prefer it
-	const explicitType = note.tagType && typeof note.tagType === "string" && note.tagType.trim() !== "" ? note.tagType.trim() : "";
+  const tagIconClass = isCanonical ? TAG_ICON_MAP[canonicalTag] : null;
 
-	// Try to match savedTag to one of the canonical types (case-insensitive)
-	const matchedType = (() => {
-		if (explicitType) return explicitType; // prefer explicit field
-		if (!savedTag) return "";
-		const lower = savedTag.toLowerCase();
-		const match = tagTypes.find((t) => t.toLowerCase() === lower);
-		return match || "";
-	})();
+  const displayTag = canonicalTag || rawTag;
+  const extraTextClass = badgeColor === "light" ? "text-dark" : "";
 
-	// Decide bootstrap variant
-	const variant = (() => {
-		if (matchedType) {
-			return tagTypeToVariant[matchedType.toLowerCase()] || "secondary";
-		}
-		if (savedTag !== "") {
-			const idx = deterministicIndex(savedTag.toLowerCase(), customVariants.length);
-			return customVariants[idx];
-		}
-		return "secondary";
-	})();
+  /* ================= ACTIONS ================= */
 
-	// Extra classes for contrast (light badges need dark text)
-	const extraClasses = variant === "light" ? " text-dark" : "";
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (!window.confirm("Delete this note permanently?")) return;
+    deleteNote(note._id);
+    props.showAlert("Deleted successfully", "success");
+  };
 
-	// Label to display: prefer saved tag (final label) but fallback to matchedType or "Random"
-	const displayLabel = savedTag !== "" ? savedTag : matchedType || "Random";
+  const handlePin = (e) => {
+    e.stopPropagation();
+    pinNote(note._id, !note.isPinned);
+    props.showAlert(
+      note.isPinned ? "Note unpinned" : "Note pinned",
+      "success"
+    );
+  };
 
-	// Icon to display – based on canonical type
-	const tagIconClass = TAG_ICON_MAP[matchedType] || null;
+  return (
+    <div className="col-md-3 mb-3">
+      <div
+        className="card shadow-sm h-100 d-flex flex-column position-relative"
+        style={{ backgroundColor: "#f3ebc3ff", cursor: "pointer" }}
+        onClick={() => updateNote(note)}
+      >
+        {/* PIN */}
+        <PinButton isPinned={note.isPinned} onToggle={handlePin} />
 
-	return (
-		<div className="col-md-3 mb-3">
-			<div className="card shadow-sm h-100 d-flex flex-column position-relative" style={{ backgroundColor: "#f3ebc3ff" }}>
-				{/* PIN ICON */}
-				<PinButton
-					isPinned={note.isPinned}
-					onToggle={() => {
-						pinNote(note._id, !note.isPinned);
-						props.showAlert(note.isPinned ? "Note unpinned" : "Note pinned", "success");
-					}}
-				/>
+        {/* CONTENT */}
+        <div className="flex-grow-1 p-3">
+          <div className="d-flex justify-content-between align-items-center mb-2 gap-2">
+            <span
+              className={`badge text-bg-${badgeColor} ${extraTextClass}`}
+              style={{
+                borderRadius: "999px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              {tagIconClass && <i className={tagIconClass} />}
+              {displayTag}
+            </span>
 
-				{/* CONTENT */}
-				<div className="flex-grow-1 p-3" style={{ overflowY: "auto", maxHeight: "230px" }}>
-					{/* Tag + Reminder row */}
-					<div className="d-flex justify-content-between align-items-center mb-1 gap-2">
-						<small
-							className={`badge text-bg-${variant}${extraClasses}`}
-							style={{
-								borderRadius: "999px",
-								padding: "0.25rem 0.6rem",
-								display: "inline-flex",
-								alignItems: "center",
-								gap: "6px",
-							}}
-						>
-							{tagIconClass && <i className={tagIconClass}></i>}
-							{displayLabel}
-						</small>
+            <ReminderBadge reminderAt={note.reminderAt} />
+          </div>
 
-						{/* ⏰ Reminder badge (if any) */}
-						<ReminderBadge reminderAt={note.reminderAt} />
-					</div>
+          <h6 className="fw-bold mb-2">
+            {note.title?.trim() || "Untitled"}
+          </h6>
 
-					<h5 className="card-title mt-1 mb-1">{note.title}</h5>
+          <div className="note-preview-text text-muted">
+            {(note.description || "")
+              .replace(/<[^>]+>/g, "")
+              .slice(0, 200)}
+          </div>
+        </div>
 
-					{/* RICH DESCRIPTION (HTML) */}
-					<div className="card-text mb-2" dangerouslySetInnerHTML={{ __html: note.description || "" }} />
+        {/* FOOTER */}
+        <div className="p-2 border-top d-flex gap-3">
+          <i className="fa-solid fa-user-pen" />
 
-					{/* IMAGE */}
-					{note.imagePath && (
-						<div className="mt-1 mb-2">
-							<img
-								src={`${host}${note.imagePath}`}
-								alt={note.imageOriginalName || "note image"}
-								className="img-fluid rounded"
-								style={{
-									maxHeight: "120px",
-									objectFit: "cover",
-									width: "100%",
-									cursor: "pointer",
-								}}
-								onClick={() => setShowImageModal(true)}
-							/>
-						</div>
-					)}
-				</div>
-
-				{/* FOOTER ICONS */}
-				<div className="p-2 border-top d-flex justify-content-start gap-3" style={{ backgroundColor: "#f3ebc3ff" }}>
-					<i className="fa-solid fa-user-pen" style={{ cursor: "pointer" }} onClick={() => updateNote(note)}></i>
-
-					<i
-						className="fa-solid fa-trash-can"
-						style={{ cursor: "pointer" }}
-						onClick={() => {
-							deleteNote(note._id);
-							props.showAlert("Deleted successfully", "success");
-						}}
-					></i>
-
-					{note.attachments && note.attachments.length > 0 && (
-						<div className="d-flex align-items-center gap-2">
-							{note.attachments.map((file, idx) => (
-								<i
-									key={idx}
-									className="fa-solid fa-link"
-									style={{ cursor: "pointer" }}
-									title={file.originalName || `Attachment ${idx + 1}`}
-									onClick={() => {
-										window.open(`${host}${file.path}`, "_blank", "noopener,noreferrer");
-									}}
-								></i>
-							))}
-						</div>
-					)}
-
-					{/* VERSION HISTORY ICON */}
-					<i className="fa-solid fa-clock-rotate-left" title="Version history" style={{ cursor: "pointer", marginLeft: "4px" }} onClick={() => setShowVersions(true)}></i>
-				</div>
-
-				{/* IMAGE MODAL */}
-				{note.imagePath && showImageModal && (
-					<div className="modal fade show d-block" tabIndex="-1" onClick={() => setShowImageModal(false)} style={{ background: "rgba(0, 0, 0, 0.7)" }}>
-						<div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
-							<div className="modal-content bg-transparent border-0">
-								<img src={`${host}${note.imagePath}`} alt={note.imageOriginalName || "note image"} className="img-fluid rounded" />
-							</div>
-						</div>
-					</div>
-				)}
-
-				{/* VERSION HISTORY MODAL */}
-				{showVersions && <VersionHistoryModal noteId={note._id} currentNote={note} onClose={() => setShowVersions(false)} showAlert={props.showAlert} />}
-			</div>
-		</div>
-	);
+          <i
+            className="fa-solid fa-trash-can"
+            onClick={handleDelete}
+          />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default NoteItem;
