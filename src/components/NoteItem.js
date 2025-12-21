@@ -1,4 +1,5 @@
-//src/components/NoteItem.js
+// src/components/NoteItem.js
+
 import React, { useContext } from "react";
 import noteContext from "../context/notes/notesContext";
 import PinButton from "./PinButton";
@@ -24,54 +25,28 @@ const TAG_ICON_MAP = {
   Priority: "fa-solid fa-bolt",
 };
 
-const CUSTOM_VARIANTS = [
-  "primary",
-  "secondary",
-  "success",
-  "danger",
-  "warning",
-  "info",
-  "dark",
-];
-
-const hashIndex = (str, mod) => {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = (h * 31 + str.charCodeAt(i)) >>> 0;
-  }
-  return h % mod;
-};
-
 /* ================= COMPONENT ================= */
 
 const NoteItem = (props) => {
   const { deleteNote, pinNote } = useContext(noteContext);
   const { note, updateNote } = props;
 
-
   /* ================= TAG NORMALIZATION ================= */
 
   const rawTag = (note.tag || "Random").trim();
-
-  // Normalize for comparison
   const normalizedTag = rawTag.toLowerCase();
 
-  // Find canonical tag (case-insensitive)
   const canonicalTag = Object.keys(TAG_COLOR_MAP).find(
     (t) => t.toLowerCase() === normalizedTag
   );
 
-  const isCanonical = Boolean(canonicalTag);
+  // 🔥 FIX: custom tags = Random behavior
+  const effectiveTag = canonicalTag || "Random";
 
-  const badgeColor = isCanonical
-    ? TAG_COLOR_MAP[canonicalTag]
-    : CUSTOM_VARIANTS[
-        hashIndex(normalizedTag, CUSTOM_VARIANTS.length)
-      ];
+  const badgeColor = TAG_COLOR_MAP[effectiveTag];
+  const tagIconClass = TAG_ICON_MAP[effectiveTag] || null;
 
-  const tagIconClass = isCanonical ? TAG_ICON_MAP[canonicalTag] : null;
-
-  const displayTag = canonicalTag || rawTag;
+  const displayTag = canonicalTag ? canonicalTag : rawTag;
   const extraTextClass = badgeColor === "light" ? "text-dark" : "";
 
   /* ================= ACTIONS ================= */
@@ -135,7 +110,6 @@ const NoteItem = (props) => {
         {/* FOOTER */}
         <div className="p-2 border-top d-flex gap-3">
           <i className="fa-solid fa-user-pen" />
-
           <i
             className="fa-solid fa-trash-can"
             onClick={handleDelete}

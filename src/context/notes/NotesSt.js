@@ -25,15 +25,6 @@ const NotesState = (props) => {
 	// =========================
 	const getNotes = async () => {
 		try {
-			// 1️⃣ Load cached notes first (offline / instant UI)
-			try {
-				const cached = await getCachedNotes();
-				if (Array.isArray(cached) && cached.length > 0) {
-					setnotes(cached);
-				}
-			} catch (cacheErr) {
-				console.warn("Failed to load cached notes:", cacheErr);
-			}
 
 			// 2️⃣ Fetch fresh notes from backend
 			const response = await fetch(`${host}/api/notes/fetchallnotes`, {

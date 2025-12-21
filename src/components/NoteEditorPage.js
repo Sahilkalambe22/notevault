@@ -1,11 +1,11 @@
+// src/components/NoteEditorPage.jsx
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import noteContext from "../context/notes/notesContext";
 
+import TagSelectorModal from "./TagSelectorModal";
 import RichTextEditor from "./RichTextEditor";
 import VersionHistoryModal from "./VersionHistoryModal";
-import NoteImagesPanel from "./NoteImagesPanel";
-import NoteAttachmentsPanel from "./NoteAttachmentsPanel";
 
 const TAGS = ["Work", "Random", "Important", "Todo", "Personal", "Priority"];
 
@@ -18,25 +18,16 @@ const TAG_COLOR_MAP = {
   Priority: "warning",
 };
 
-const NoteEditorPage = ({ showAlert }) => {
-  const { id } = useParams();
+const NoteEditorPage = ({ note, showAlert,props }) => {
   const navigate = useNavigate();
+  const { addNote, editNote, deleteNote, pinNote } = useContext(noteContext);
 
-  const {
-    notes,
-    addNote,
-    editNote,
-    deleteNote,
-    pinNote,
-    getNotes,
-  } = useContext(noteContext);
-
-  const isNew = id === "new";
-  const existingNote = notes.find((n) => n._id === id);
+  const isNew = !note;
 
   const saveTimer = useRef(null);
   const createdOnceRef = useRef(false);
   const createdNoteIdRef = useRef(null);
+  const originalTagRef = useRef("");
 
   const [data, setData] = useState({
     title: "",
@@ -45,63 +36,47 @@ const NoteEditorPage = ({ showAlert }) => {
     tagCustom: "",
   });
 
-  const originalTagRef = useRef("");
-
-  const [lastSaved, setLastSaved] = useState({
-    title: "",
-    description: "",
-    tag: "",
-  });
-
+  const [tempTag, setTempTag] = useState({ type: "", custom: "" });
+  const [lastSaved, setLastSaved] = useState({ title: "", description: "", tag: "" });
   const [isSaving, setIsSaving] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
+  const [showTagModal, setShowTagModal] = useState(false);
 
-  /* ================= LOAD EXISTING NOTE ================= */
+  /* ================= LOAD NOTE ================= */
 
   useEffect(() => {
-    if (!existingNote) return;
+    if (!note) return;
 
-    const savedTag = (existingNote.tag || "").trim();
+    const savedTag = (note.tag || "").trim();
     originalTagRef.current = savedTag;
 
-    let tagType = "";
-    let tagCustom = "";
+    setData({
+      title: note.title || "",
+      description: note.description || "",
+      tagType: TAGS.includes(savedTag) ? savedTag : "",
+      tagCustom: TAGS.includes(savedTag) ? "" : savedTag,
+    });
 
-    if (TAGS.includes(savedTag)) tagType = savedTag;
-    else tagCustom = savedTag;
-
-    const initial = {
-      title: existingNote.title || "",
-      description: existingNote.description || "",
-      tagType,
-      tagCustom,
-    };
-
-    setData(initial);
     setLastSaved({
-      title: initial.title,
-      description: initial.description,
+      title: note.title || "",
+      description: note.description || "",
       tag: savedTag,
     });
-  }, [existingNote]);
+  }, [note]);
 
-  /* ================= AUTO SAVE ================= */
+  /* ================= AUTOSAVE ================= */
 
   useEffect(() => {
     const plainDesc = data.description.replace(/<[^>]+>/g, "").trim();
-    const hasContent =
-      data.title.trim().length > 0 || plainDesc.length > 0;
-
-    if (!hasContent) return;
+    if (!data.title.trim() && !plainDesc) return;
 
     clearTimeout(saveTimer.current);
 
     saveTimer.current = setTimeout(async () => {
+      const resolvedTag = data.tagCustom || data.tagType || "Random";
+
       if (isNew && !createdOnceRef.current) {
         setIsSaving(true);
-
-        const resolvedTag =
-          data.tagCustom || data.tagType || "Random";
 
         const created = await addNote(
           data.title || "Untitled",
@@ -113,195 +88,133 @@ const NoteEditorPage = ({ showAlert }) => {
           createdOnceRef.current = true;
           createdNoteIdRef.current = created._id;
           navigate(`/note/${created._id}`, { replace: true });
-
-          setLastSaved({
-            title: created.title,
-            description: created.description,
-            tag: created.tag,
-          });
         }
 
         setIsSaving(false);
         return;
       }
 
-      const noteId = createdNoteIdRef.current || id;
+      const noteId = createdNoteIdRef.current || note?._id;
       if (!noteId) return;
 
-      let resolvedTag = originalTagRef.current;
-      if (data.tagCustom) resolvedTag = data.tagCustom;
-      else if (data.tagType) resolvedTag = data.tagType;
-
-      const snapshot = {
-        title: data.title.trim(),
-        description: data.description,
-        tag: resolvedTag,
-      };
-
       if (
-        snapshot.title === lastSaved.title &&
-        snapshot.description === lastSaved.description &&
-        snapshot.tag === lastSaved.tag
-      )
-        return;
+        data.title === lastSaved.title &&
+        data.description === lastSaved.description &&
+        resolvedTag === lastSaved.tag
+      ) return;
 
       setIsSaving(true);
-      await editNote(noteId, snapshot.title, snapshot.description, snapshot.tag);
-      setLastSaved(snapshot);
-      originalTagRef.current = snapshot.tag;
+      await editNote(noteId, data.title, data.description, resolvedTag);
+
+      setLastSaved({ title: data.title, description: data.description, tag: resolvedTag });
+      originalTagRef.current = resolvedTag;
 
       setTimeout(() => setIsSaving(false), 300);
     }, 1000);
 
     return () => clearTimeout(saveTimer.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
-
-  /* ================= IMAGE UPLOAD ================= */
-
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("image", file);
-
-    await fetch(`http://localhost:5000/api/notes/updatenote/${id}`, {
-      method: "PUT",
-      headers: { "auth-token": localStorage.getItem("token") },
-      body: formData,
-    });
-
-    getNotes();
-  };
-
-  /* ================= ATTACHMENTS ================= */
-
-  const uploadAttachments = async (files) => {
-    const formData = new FormData();
-    files.forEach((f) => formData.append("attachments", f));
-
-    await fetch(`http://localhost:5000/api/notes/updatenote/${id}`, {
-      method: "PUT",
-      headers: { "auth-token": localStorage.getItem("token") },
-      body: formData,
-    });
-
-    getNotes();
-  };
+  },
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [data]);
 
   /* ================= ACTIONS ================= */
 
-  const handleBack = () => navigate(-1);
-
   const handleDelete = () => {
-    if (!existingNote) return;
+    if (!note) return;
     if (!window.confirm("Delete this note permanently?")) return;
-    deleteNote(existingNote._id);
+    deleteNote(note._id);
     showAlert("Deleted successfully", "success");
     navigate("/profile");
   };
 
   const handlePin = () => {
-    if (!existingNote) return;
-    pinNote(existingNote._id, !existingNote.isPinned);
+    if (!note) return;
+    pinNote(note._id, !note.isPinned);
   };
 
-  const displayTag =
-    data.tagCustom || data.tagType || originalTagRef.current || "Random";
-
-  const badgeColor = TAG_COLOR_MAP[data.tagType] || "secondary";
+  const displayTag = data.tagCustom || data.tagType || originalTagRef.current || "Random";
+  const badgeColor = TAG_COLOR_MAP[data.tagType || "Random"] || "secondary";
 
   /* ================= RENDER ================= */
 
   return (
     <>
-      {showVersions && existingNote && (
+    
+    
+      <TagSelectorModal
+        show={showTagModal}
+        tags={TAGS}
+        tagColorMap={TAG_COLOR_MAP}
+        typeValue={tempTag.type}
+        customValue={tempTag.custom}
+        onTypeChange={(type) => setTempTag({ type, custom: "" })}
+        onCustomChange={(custom) =>
+          setTempTag((p) => ({ type: custom ? "Random" : p.type, custom }))
+        }
+        onClose={() => setShowTagModal(false)}
+        onDone={() => {
+          setData((p) => ({ ...p, tagType: tempTag.type, tagCustom: tempTag.custom }));
+          setShowTagModal(false);
+        }}
+      />
+
+      {showVersions && note && (
         <VersionHistoryModal
-          noteId={existingNote._id}
-          currentNote={existingNote}
+          noteId={note._id}
+          currentNote={note}
           onClose={() => setShowVersions(false)}
           showAlert={showAlert}
         />
       )}
 
-      <div className="editor-shell">
+      <div className="ne-editor-page">
+        <div className="ne-editor-card">
+          <div className="ne-topbar">
+            {/* BACK BUTTON */}
+  <button
+    className="ne-topbar-btn"
+    onClick={() => navigate(-1)}
+    aria-label="Go back"
+  >
+    <i className="fa-solid fa-arrow-left" />
+  </button>
+            <span style={{ color: isSaving ? "#ffaa00" : "#4CAF50" }}>
+              {isSaving ? "Saving..." : "Saved"}
+            </span>
 
-        {/* LEFT — IMAGE */}
-        <NoteImagesPanel
-          image={
-            existingNote?.imagePath
-              ? {
-                  path: existingNote.imagePath,
-                  originalName: existingNote.imageOriginalName,
-                }
-              : null
-          }
-          onUpload={uploadImage}
-        />
+            <div style={{ marginLeft: "auto", display: "flex", gap: 14 }}>
+              {!isNew && (
+                <>
+                  <i className={`fa-solid fa-thumbtack editor-action${note?.isPinned ? " pinned" : ""}`} onClick={handlePin} />
+                  <i className="fa-solid fa-clock-rotate-left editor-action" onClick={() => setShowVersions(true)} />
+                  <i className="fa-solid fa-trash-can editor-action" onClick={handleDelete} />
+                </>
+              )}
 
-        {/* CENTER — EDITOR */}
-        <div className="wf-editor-page">
-          <div className="wf-editor-inner">
-
-            <div className="wf-editor-topbar">
-              <button className="wf-topbar-btn" onClick={handleBack}>
-                <i className="fa-solid fa-arrow-left" />
-              </button>
-
-              <span style={{ color: isSaving ? "#ffaa00" : "#4CAF50" }}>
-                {isSaving ? "Saving..." : "Saved"}
+              <span
+                className={`badge text-bg-${badgeColor}`}
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowTagModal(true)}
+              >
+                {displayTag}
               </span>
-
-              <div style={{ marginLeft: "auto", display: "flex", gap: 14 }}>
-                {!isNew && (
-                  <>
-                    <i
-                      className={`fa-solid fa-thumbtack editor-action${
-                        existingNote?.isPinned ? " pinned" : ""
-                      }`}
-                      onClick={handlePin}
-                    />
-                    <i
-                      className="fa-solid fa-clock-rotate-left editor-action"
-                      onClick={() => setShowVersions(true)}
-                    />
-                    <i
-                      className="fa-solid fa-trash-can editor-action"
-                      onClick={handleDelete}
-                    />
-                  </>
-                )}
-
-                <span className={`badge text-bg-${badgeColor}`}>
-                  {displayTag}
-                </span>
-              </div>
-            </div>
-
-            <input
-              className="wf-editor-title-input"
-              value={data.title}
-              onChange={(e) =>
-                setData((p) => ({ ...p, title: e.target.value }))
-              }
-              placeholder="Untitled"
-            />
-
-            <div className="wf-note-desc-editor">
-              <RichTextEditor
-                value={data.description}
-                onChange={(html) =>
-                  setData((p) => ({ ...p, description: html }))
-                }
-              />
             </div>
           </div>
+
+          <input
+            className="ne-title-input"
+            value={data.title}
+            onChange={(e) => setData((p) => ({ ...p, title: e.target.value }))}
+            placeholder="Untitled"
+          />
+
+          <div className="ne-desc-editor">
+            <RichTextEditor
+              value={data.description}
+              onChange={(html) => setData((p) => ({ ...p, description: html }))}
+            />
+          </div>
         </div>
-
-        {/* RIGHT — ATTACHMENTS */}
-        <NoteAttachmentsPanel
-          attachments={existingNote?.attachments || []}
-          onUpload={uploadAttachments}
-        />
-
       </div>
     </>
   );

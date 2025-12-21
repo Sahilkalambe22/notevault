@@ -74,7 +74,7 @@ const RichTextEditor = ({
 
       <div
         ref={editorRef}
-        className="form-control"
+        className="form-control" 
         contentEditable
         style={{ minHeight }}
         onInput={handleInput}

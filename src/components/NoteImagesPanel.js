@@ -2,20 +2,28 @@ import React, { useRef } from "react";
 
 const NoteImagesPanel = ({ image, onUpload, onRemove }) => {
   const fileRef = useRef(null);
+  const host = "http://localhost:5000";
 
   return (
-    <aside className="editor-side note-images-panel">
+    <aside className="ne-side ne-images-panel">
       <div className="side-panel side-panel-full">
         <div className="side-panel-header">Images</div>
 
         <div className="side-panel-body side-panel-scroll">
           {image ? (
             <>
-              <img
-                src={`http://localhost:5000${image.path}`}
-                alt={image.originalName}
-                className="side-image-preview"
-              />
+              {/* OPEN IMAGE IN NEW BROWSER TAB */}
+              <a
+                href={`${host}${image.path}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={`${host}${image.path}`}
+                  alt={image.originalName}
+                  className="side-image-preview"
+                />
+              </a>
 
               <div className="side-actions">
                 <button onClick={() => fileRef.current.click()}>

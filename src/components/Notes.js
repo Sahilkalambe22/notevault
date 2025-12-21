@@ -14,13 +14,20 @@ const Notes = (props) => {
 
   // 🔁 Fetch notes on mount (if logged in)
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      getNotes();
-    } else {
-      navigate("/login");
-    }
-    // eslint-disable-next-line
-  }, []);
+  let mounted = true;
+
+  if (localStorage.getItem("token")) {
+    mounted && getNotes();
+  } else {
+    navigate("/login");
+  }
+
+  return () => {
+    mounted = false;
+  };
+},
+// eslint-disable-next-line react-hooks/exhaustive-deps
+[]);
 
   // open note editor
   const updateNote = (currentnote) => {
@@ -89,7 +96,7 @@ const Notes = (props) => {
         <div className="notes-sticky-header">
 
           {/* Title + actions */}
-          <div className="d-flex justify-content-between align-items-center gap-2 mb-3">
+          <div className="d-flex justify-content-between align-items-center gap-2 mb-3" style={{paddingTop: '20px'}}>
             <h4 className="mb-0">Your Notes</h4>
 
             <div className="d-flex align-items-center gap-2">
@@ -126,7 +133,7 @@ const Notes = (props) => {
         </div>
 
         {/* ================= SCROLLABLE NOTES ================= */}
-        <div className="notes-scroll-area">
+        <div className="notes-scroll-area" style={{paddingTop: '10px'}}>
           <div className="row">
             {sortedNotes.length === 0 && "No notes to display"}
 

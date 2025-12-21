@@ -1,62 +1,60 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const ReminderManager = ({ notes, showAlert }) => {
-	useEffect(() => {
-		if (typeof window === "undefined") return;
-		if (!("Notification" in window)) return;
+  const scheduledRef = useRef(new Set());
 
-		// Ask for permission once (best-effort)
-		if (Notification.permission === "default") {
-			Notification.requestPermission().catch(() => {});
-		}
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!("Notification" in window)) return;
 
-		const timeouts = [];
-		const now = Date.now();
+    if (Notification.permission === "default") {
+      Notification.requestPermission().catch(() => {});
+    }
 
-		(notes || []).forEach((note) => {
-			if (!note.reminderAt) return;
+    const now = Date.now();
 
-			const when = new Date(note.reminderAt).getTime();
-			if (Number.isNaN(when)) return;
+    (notes || []).forEach((note) => {
+      if (!note._id || !note.reminderAt) return;
 
-			const delay = when - now;
-			if (delay <= 0) return; // already past
-			// Optional: only schedule within next 24 hours
-			if (delay > 24 * 60 * 60 * 1000) return;
+      // ✅ already scheduled → skip
+      if (scheduledRef.current.has(note._id)) return;
 
-			const timeoutId = setTimeout(() => {
-				const title = note.title || "Note Reminder";
-				const plainDesc = (note.description || "")
-					.replace(/<[^>]+>/g, "")
-					.trim();
+      const when = new Date(note.reminderAt).getTime();
+      if (Number.isNaN(when)) return;
 
-				// In-app alert
-				if (showAlert) {
-					showAlert(`Reminder: ${title}`, "info");
-				}
+      const delay = when - now;
+      if (delay <= 0 || delay > 24 * 60 * 60 * 1000) return;
 
-				// Browser notification
-				if (Notification.permission === "granted") {
-					try {
-						new Notification("Note Reminder", {
-							body: plainDesc || title,
-						});
-					} catch {
-						// ignore
-					}
-				}
-			}, delay);
+      const timeoutId = setTimeout(() => {
+        const title = note.title || "Note Reminder";
+        const plainDesc = (note.description || "")
+          .replace(/<[^>]+>/g, "")
+          .trim();
 
-			timeouts.push(timeoutId);
-		});
+        showAlert?.(`Reminder: ${title}`, "info");
 
-		// cleanup when notes change / unmount
-		return () => {
-			timeouts.forEach((id) => clearTimeout(id));
-		};
-	}, [notes, showAlert]);
+        if (Notification.permission === "granted") {
+          try {
+            new Notification("Note Reminder", {
+              body: plainDesc || title,
+            });
+          } catch {}
+        }
 
-	return null; // no UI, just background logic
+        // ✅ remove after firing
+        scheduledRef.current.delete(note._id);
+      }, delay);
+
+      scheduledRef.current.add(note._id);
+
+      // store timeout id on note (optional)
+      note.__timeoutId = timeoutId;
+    });
+
+    return () => {};
+  }, [notes, showAlert]);
+
+  return null;
 };
 
 export default ReminderManager;

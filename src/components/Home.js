@@ -56,7 +56,7 @@ const Home = () => {
           {/* Feature 3 */}
           <div className="col-md-3 col-sm-6 mb-4">
             <div className="card shadow-sm p-3" style={{ backgroundColor: "#f3ebc3ff" }}>
-              <h4><i class="fa-solid fa-link"></i> Attach Anything</h4>
+              <h4><i className="fa-solid fa-link"></i> Attach Anything</h4>
               <p className="text-muted">
                 Add images, documents, PDFs and keep everything organized.
               </p>

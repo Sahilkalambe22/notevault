@@ -1,436 +1,54 @@
+/* ======================================================
+   APP BASICS
+====================================================== */
+
 .App {
-  text-align: center;
+	text-align: center;
 }
 
 .App-logo {
-  height: 40vmin;
-  pointer-events: none;
+	height: 40vmin;
+	pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+	.App-logo {
+		animation: App-logo-spin infinite 20s linear;
+	}
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+	background-color: #282c34;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	font-size: calc(10px + 2vmin);
+	color: white;
 }
 
 .App-link {
-  color: #61dafb;
+	color: #61dafb;
 }
 
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
 }
-
 /* ======================================================
-   EDITOR PAGE LAYOUT
-====================================================== */
-
-.wf-editor-page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 24px 0 40px;
-
-  /* Remove bootstrap container padding */
-  margin-left: -12px;
-  margin-right: -12px;
-}
-
-.wf-editor-inner {
-  width: 100%;
-  max-width: 820px;   /* ✅ reduced from 1200px */
-  padding: 0;
-}
-
-/* ======================================================
-   TOP BAR
-====================================================== */
-
-.wf-editor-topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.wf-topbar-btn {
-  border: none;
-  background: transparent;
-  padding: 6px 10px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-.wf-topbar-btn:hover {
-  background: #f1f1f1;
-}
-
-/* ======================================================
-   BODY
-====================================================== */
-
-.wf-editor-body {
-  margin-top: 4px;
-}
-
-.wf-note-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 4px 0;
-}
-
-.wf-note-row-editor {
-  cursor: text;
-}
-
-.wf-note-main {
-  flex: 1;
-  min-width: 0;
-
-  /* Small breathing space without big margins */
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-/* ======================================================
-   TITLE INPUT
-====================================================== */
-
-.wf-editor-title-input {
-  border: none;
-  outline: none;
-  font-size: 2.2rem;     /* ⬅️ bigger title */
-  font-weight: 600;
-  width: 100%;
-  padding: 0;
-  margin-bottom: 14px;
-}
-
-.wf-editor-title-input::placeholder {
-  color: #b0b0b0;
-}
-
-/* ======================================================
-   IMAGE
-====================================================== */
-
-.wf-editor-image-wrap {
-  margin-bottom: 10px;
-}
-
-.wf-editor-image {
-  max-width: 100%;
-  border-radius: 8px;
-}
-
-/* ======================================================
-   RICH TEXT
-====================================================== */
-
-.wf-note-desc-editor {
-  font-size: 1rem;
-}
-
-/* ======================================================
-   AUTOSAVE STATUS
-====================================================== */
-
-.wf-save-status {
-  font-size: 0.9rem;
-  color: #777;
-}
-
-/* ======================================================
-   TAG BADGE (TOP RIGHT)
+   TAG BADGE
 ====================================================== */
 
 .badge {
-  user-select: none;
-}
-
-
-/* ===============================
-   NOTE CARD STYLING
-=============================== */
-
-.wf-editor-inner {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 32px 36px;
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.18),
-    0 1px 2px rgba(0, 0, 0, 0.12);
-}
-
-/* soften edges on small screens */
-@media (max-width: 768px) {
-  .wf-editor-inner {
-    border-radius: 0;
-    padding: 24px 18px;
-  }
-}
-
-/* title looks like a real note title */
-.wf-editor-title-input {
-  font-size: 2.3rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #111;
-}
-
-/* description area spacing */
-.wf-note-desc-editor {
-  margin-top: 12px;
-  line-height: 1.65;
-  color: #222;
-}
-
-/* subtle separation between title & body */
-.wf-editor-title-input {
-  border-bottom: 1px solid #e6e6e6;
-  padding-bottom: 12px;
-}
-
-/* tag badge feels like a label */
-.badge {
-  background-color: #6c757d !important;
-  font-size: 13px;
-  letter-spacing: 0.3px;
-}
-
-
-.editor-action {
-  color: #6c757d;      /* neutral gray */
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.15s ease;
-}
-
-
-.note-preview-text {
-  font-size: 0.95rem;
-  line-height: 1.4;
-  color: #333;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-    line-clamp: 4; 
-  overflow: hidden;
-}
-
-.editor-actions i {
-  color: #6c757d;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.editor-actions i:hover {
-  color: #212529;
-}
-
-.wf-note-desc-editor .form-control {
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  font-size: 1.05rem;
-  line-height: 1.7;
-}
-
-
-/* pin icon default */
-.editor-action {
-  color: #6c757d;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.15s ease;
-}
-
-/* pinned = RED (same as note card) */
-.editor-action.pinned {
-  color: #dc3545 !important; /* Bootstrap danger red */
-}
-
-/* hover polish */
-.editor-action:hover {
-  transform: scale(1.15);
-}
-
-/* ======================================================
-   VERSION HISTORY MODAL
-====================================================== */
-
-/* Version list items (left column) */
-.version-item {
-  cursor: pointer;
-  border-left: 3px solid transparent;
-  transition: background 0.15s ease, border-left 0.15s ease;
-}
-
-.version-item:hover {
-  background: #f8f9fa;
-}
-
-.version-item.active {
-  background: #eef5ff;
-  border-left: 3px solid #0d6efd;
-}
-
-/* Scroll areas */
-.version-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.25) transparent;
-}
-
-.version-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.version-scroll::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.25);
-  border-radius: 3px;
-}
-
-/* ======================================================
-   DIFF VIEWER
-====================================================== */
-
-.diff-container {
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #fafafa;
-}
-
-/* Diff text */
-.diff-container span {
-  font-size: 13px;
-  line-height: 1.6;
-  word-break: break-word;
-}
-
-/* Softer diff colors */
-.diff-added {
-  background-color: rgba(76, 175, 80, 0.18);
-}
-
-.diff-removed {
-  background-color: rgba(244, 67, 54, 0.18);
-  text-decoration: line-through;
-}
-
-.notes-page {
-  position: relative;
-}
-
-.notes-sticky-header {
-  position: sticky;
-  top: 64px;
-  z-index: 20;
-  background: linear-gradient(180deg, #0b0432 0%, #14085a 100%);
-  padding-bottom: 12px;
-  margin-bottom: 12px;
-}
-
-/* ======================================================
-   EDITOR PAGE LAYOUT
-====================================================== */
-
-.editor-shell {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 20px;
-  padding: 24px 16px 40px;
-  min-height: calc(100vh - 64px);
-}
-
-.wf-editor-page {
-  display: flex;
-  justify-content: center;
-}
-
-.wf-editor-inner {
-  width: 820px;
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 32px 36px;
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.18),
-    0 1px 2px rgba(0, 0, 0, 0.12);
-}
-
-/* ======================================================
-   TOP BAR
-====================================================== */
-
-.wf-editor-topbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.wf-topbar-btn {
-  border: none;
-  background: transparent;
-  padding: 6px 10px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-.wf-topbar-btn:hover {
-  background: #f1f1f1;
-}
-
-/* ======================================================
-   TITLE
-====================================================== */
-
-.wf-editor-title-input {
-  width: 100%;
-  border: none;
-  outline: none;
-  font-size: 2.3rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #111;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e6e6e6;
-  margin-bottom: 14px;
-}
-
-.wf-editor-title-input::placeholder {
-  color: #b0b0b0;
-}
-
-/* ======================================================
-   RICH TEXT
-====================================================== */
-
-.wf-note-desc-editor {
-  margin-top: 12px;
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: #222;
-}
-
-.wf-note-desc-editor .form-control {
-  border: none;
-  box-shadow: none;
-  padding: 0;
+	user-select: none;
+	background-color: #6c757d !important;
+	font-size: 13px;
+	letter-spacing: 0.3px;
 }
 
 /* ======================================================
@@ -438,92 +56,490 @@
 ====================================================== */
 
 .editor-action {
-  color: #6c757d;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.15s ease;
+	color: #6c757d;
+	cursor: pointer;
+	transition: color 0.2s ease, transform 0.15s ease;
 }
 
 .editor-action:hover {
-  transform: scale(1.15);
+	transform: scale(1.15);
 }
 
 .editor-action.pinned {
-  color: #dc3545 !important;
+	color: #dc3545 !important;
 }
 
 /* ======================================================
-   TAG BADGE
+   NOTE PREVIEW
 ====================================================== */
+
+.note-preview-text {
+	font-size: 0.95rem;
+	line-height: 1.4;
+	color: #333;
+	display: -webkit-box;
+	-webkit-line-clamp: 4;
+	-webkit-box-orient: vertical;
+	line-clamp: 4;
+	overflow: hidden;
+}
+
+/* ======================================================
+   VERSION HISTORY MODAL
+====================================================== */
+
+.version-item {
+	cursor: pointer;
+	border-left: 3px solid transparent;
+	transition: background 0.15s ease, border-left 0.15s ease;
+}
+
+.version-item:hover {
+	background: #f8f9fa;
+}
+
+.version-item.active {
+	background: #eef5ff;
+	border-left: 3px solid #0d6efd;
+}
+
+.version-scroll {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+}
+
+.version-scroll::-webkit-scrollbar {
+	width: 6px;
+}
+
+.version-scroll::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, 0.25);
+	border-radius: 3px;
+}
+
+/* ======================================================
+   DIFF VIEWER
+====================================================== */
+
+.diff-container {
+	margin-top: 12px;
+	padding: 12px;
+	border-radius: 8px;
+	border: 1px solid #e5e7eb;
+	background: #fafafa;
+}
+
+.diff-container span {
+	font-size: 13px;
+	line-height: 1.6;
+	word-break: break-word;
+}
+
+.diff-added {
+	background-color: rgba(76, 175, 80, 0.18);
+}
+
+.diff-removed {
+	background-color: rgba(244, 67, 54, 0.18);
+	text-decoration: line-through;
+}
+
+/* ---------- NOTE DESCRIPTION EDITOR ---------- */
+
+.ne-desc-editor .form-control {
+	background-color: #f3ebc3ff !important;
+	border: 1px solid #d6cfa8;
+	color: #1f2937;
+	border-radius: 10px;
+	padding: 14px;
+	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Cursor + focus polish */
+.ne-desc-editor .form-control:focus {
+	outline: none;
+	box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.35);
+}
+
+.user-header {
+  position: fixed;
+  top: 56px; /* navbar height */
+  left: 0;
+  right: 0;
+
+  z-index: 200;
+
+  height: 56px;
+  display: flex;
+  align-items: center;
+
+  background: linear-gradient(
+    180deg,
+    #0b0e2a 0%,
+    #0f0c32 40%,
+    #111827 100%
+  );
+
+  color: #ffffff;
+  font-size: 2.0rem;
+  font-weight: 600;
+
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+
+/* ======================================================
+   NOTE EDITOR — PREMIUM, MODERN, FOCUSED
+   (ne-*)
+====================================================== */
+
+/* ---------- PAGE BACKGROUND ---------- */
+
+.ne-layout {
+	min-height: calc(100vh - 64px);
+	padding: 0;
+	background: linear-gradient(180deg, #0b0e2a 0%, #0f0c32 40%, #111827 100%);
+}
+
+/* ---------- MAIN SHELL ---------- */
+
+.ne-shell {
+	display: flex;
+	align-items: stretch;
+	width: 100%;
+	max-width: 100vw;
+	min-width: 0;
+	padding: 0 6px 40px;
+}
+
+/* ---------- SIDE PANELS (COMMON) ---------- */
+
+.ne-side {
+	background-color: #f3ebc3ff;
+	backdrop-filter: blur(10px);
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	display: flex;
+	min-width: 0;
+	flex-shrink: 0;
+}
+
+/* ---------- LEFT: IMAGES PANEL ---------- */
+
+.ne-images-panel {
+	width: 220px;
+	border-radius: 14px 0 0 14px;
+}
+
+/* ---------- RIGHT: ATTACHMENTS PANEL ---------- */
+
+.ne-attachments-panel {
+	width: 320px; /* increased to consume space */
+	border-radius: 0 14px 14px 0;
+}
+
+/* ---------- SIDE PANEL CONTENT ---------- */
+
+.side-panel-full {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-width: 0;
+}
+
+.side-panel-header {
+	font-weight: 600;
+	padding: 12px 14px;
+	color: #374151;
+	font-size: 0.85rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.side-panel-body {
+	flex: 1;
+	padding: 12px;
+	overflow-y: auto;
+	color: #0b0e2a;
+}
+
+/* ---------- SIDE IMAGE ---------- */
+
+.side-image-preview {
+	width: 100%;
+	max-width: 100%;
+	border-radius: 10px;
+	margin-bottom: 12px;
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- SIDE ACTION BUTTONS ---------- */
+
+.side-actions {
+	display: flex;
+	gap: 10px;
+}
+
+.side-add,
+.side-actions button {
+	width: 100%;
+	font-size: 0.85rem;
+	padding: 8px 10px;
+	border-radius: 6px;
+	border: 1px dashed rgba(255, 255, 255, 0.25);
+	color: black;
+	background-color: white;
+	cursor: pointer;
+	transition: background 0.2s, border 0.2s;
+}
+
+.side-add:hover,
+.side-actions button:hover {
+	background: #212529;
+	border-color: rgba(255, 255, 255, 0.4);
+}
+
+button.danger {
+	color: #f87171;
+	border-color: rgba(248, 113, 113, 0.4);
+}
+
+/* ---------- ATTACHMENTS LIST ---------- */
+
+.side-attachment-list {
+	list-style: none;
+	padding: 0;
+	margin-top: 14px;
+}
+
+.side-attachment-list li {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+
+	padding: 10px 12px;
+	margin-bottom: 10px;
+
+	background: rgb(15, 12, 50);
+	border-radius: 8px;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+
+	font-size: 0.85rem;
+	color: #ffffff;
+}
+
+.side-attachment-list li span {
+	flex: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* ---------- CENTER EDITOR COLUMN ---------- */
+
+.ne-editor-page {
+	flex: 1; /* absorbs empty space */
+	display: flex;
+	justify-content: center; /* IMPORTANT */
+	min-width: 0;
+}
+
+/* ---------- EDITOR CARD ---------- */
+
+.ne-editor-card {
+	width: 100%;
+	max-width: 820px;
+	background-color: #f3ebc3ff;
+	padding: 24px 28px;
+	border-radius: 14px;
+	min-width: 0;
+	box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35), 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- FIX: MEDIA OVERFLOW (CRITICAL) ---------- */
+
+.ne-editor-card img,
+.ne-editor-card video,
+.ne-editor-card iframe {
+	max-width: 100%;
+	height: auto;
+	display: block;
+	margin: 12px auto;
+	border-radius: 8px;
+}
+
+/* ---------- TOP BAR ---------- */
+
+.ne-topbar {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	margin-bottom: 18px;
+}
+
+/* ---------- EDITOR ICONS ---------- */
+
+.editor-action {
+	font-size: 1.05rem;
+	color: #6b7280;
+	cursor: pointer;
+	transition: color 0.2s, transform 0.15s;
+}
+
+.editor-action:hover {
+	color: #111827;
+	transform: scale(1.1);
+}
+
+.editor-action.pinned {
+	color: #f59e0b;
+}
+
+/* ---------- TITLE ---------- */
+
+.ne-title-input {
+	width: 100%;
+	border: none;
+	outline: none;
+	font-size: 2.4rem;
+	font-weight: 700;
+	line-height: 1.25;
+	color: #111827;
+	background-color: #f3ebc3ff;
+	padding-bottom: 14px;
+	margin-bottom: 18px;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.ne-title-input::placeholder {
+	color: #9ca3af;
+}
+
+/* ---------- EDITOR BODY ---------- */
+
+.ne-desc-editor {
+	margin-top: 14px;
+	font-size: 1.08rem;
+	line-height: 1.8;
+	color: #1f2937;
+}
+
+/* ---------- TAG BADGE ---------- */
 
 .badge {
-  background-color: #6c757d !important;
-  font-size: 13px;
-  letter-spacing: 0.3px;
+	font-weight: 500;
+	padding: 6px 10px;
+	border-radius: 999px;
+	font-size: 0.75rem;
 }
 
-/* ======================================================
-   SIDE PANELS — FULL HEIGHT
-====================================================== */
-
-.editor-shell {
-  display: flex;
-  align-items: stretch; /* IMPORTANT */
+.ne-panels-row {
+  display: none;
 }
 
-/* ASIDE takes full height */
-.editor-side {
-  display: flex;
-}
+/* ---------- MOBILE ---------- */
+@media (max-width: 768px) {
 
-/* Sidebar width + sticky */
-.note-images-panel,
-.note-attachments-panel {
-  position: sticky;
-  top: 64px; /* navbar height */
-  height: calc(100vh - 64px);
-}
+  .ne-shell {
+    flex-direction: column;
+    gap: 14px;
+    padding: 12px;
+  }
 
-/* Widths */
-.note-images-panel {
-  width: 220px;
-}
-
-.note-attachments-panel {
-  width: 240px;
-}
-
-/* Panel container fills height */
-.side-panel-full {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* Header stays fixed */
-.side-panel-header {
-  flex-shrink: 0;
-}
-
-/* Scrollable content */
-.side-panel-scroll {
-  flex: 1;
-  overflow-y: auto;
-}
-
-/* Optional scrollbar polish */
-.side-panel-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.side-panel-scroll::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-/* Mobile */
-@media (max-width: 1200px) {
-  .note-images-panel,
-  .note-attachments-panel {
+  /* Hide desktop side panels */
+  .ne-shell > .ne-images-panel,
+  .ne-shell > .ne-attachments-panel {
     display: none;
   }
+
+  /* Editor full width */
+  .ne-editor-card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 12px;
+  }
+
+  /* Mobile side-by-side panels */
+  .ne-panels-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .ne-panels-row .ne-images-panel,
+  .ne-panels-row .ne-attachments-panel {
+    width: 50%;
+    min-width: 0;
+    border-radius: 12px;
+  }
+}
+
+
+
+/* =========================
+   SETTINGS PAGE
+========================= */
+
+.settings-layout {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px;
+  background: linear-gradient(180deg, #0b0e2a, #111827);
+}
+
+.settings-card {
+  background: #f3ebc3ff;
+  color: black;
+  width: 100%;
+  max-width: 520px;
+  padding: 28px;
+  border-radius: 14px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+}
+
+.settings-card h2 {
+  margin-bottom: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.settings-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
+
+.settings-form input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d6cfa8;
+  background: #fff;
+}
+
+.settings-upload {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px dashed #9ca3af;
+  background: white;
+  cursor: pointer;
+}
+
+.settings-save {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #111827;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings-save:hover {
+  opacity: 0.9;
 }

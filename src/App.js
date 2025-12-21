@@ -14,11 +14,13 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import About from './components/About';
 import NotesState from './context/notes/NotesSt';
-import NoteEditorPage from "./components/NoteEditorPage";
 import Alert from './components/Alert';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Profile from './components/Profile';
+import ShowNote from './components/ShowNote';
+import UserHeader from "./components/UserHeader";
+import Settings from "./components/Settings";
 
 document.body.style.backgroundColor = "rgb(15, 12, 50)";
 document.body.style.color = "white";
@@ -27,32 +29,36 @@ document.body.style.color = "white";
 
 function AppContent({ showAlert }) {
   const location = useLocation();
-
-  // Detect editor route
   const isEditorPage = location.pathname.startsWith("/note/");
 
   return (
     <>
       <Navbar />
       <Alert alert={showAlert.alert} />
+      <UserHeader />
 
-      {isEditorPage ? (
-        // ✅ NO container for editor
-        <Routes>
-          <Route path="/note/:id" element={<NoteEditorPage showAlert={showAlert.fn} />} />
-        </Routes>
-      ) : (
-        // ✅ container for normal pages
-        <div className="container">
+      {/* ✅ CONTENT OFFSET APPLIED HERE */}
+      <div className="app-content">
+        {isEditorPage ? (
           <Routes>
-            <Route exact path="/" element={<Home showAlert={showAlert.fn} />} />
-            <Route exact path="/profile" element={<Profile showAlert={showAlert.fn} />} />
-            <Route exact path="/about" element={<About />} />
-            <Route exact path="/login" element={<Login showAlert={showAlert.fn} />} />
-            <Route exact path="/signup" element={<Signup showAlert={showAlert.fn} />} />
+            <Route
+              path="/note/:id"
+              element={<ShowNote showAlert={showAlert.fn} />}
+            />
           </Routes>
-        </div>
-      )}
+        ) : (
+          <div className="container">
+            <Routes>
+              <Route path="/" element={<Home showAlert={showAlert.fn} />} />
+              <Route path="/profile" element={<Profile showAlert={showAlert.fn} />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/login" element={<Login showAlert={showAlert.fn} />} />
+              <Route path="/signup" element={<Signup showAlert={showAlert.fn} />} />
+            </Routes>
+          </div>
+        )}
+      </div>
     </>
   );
 }

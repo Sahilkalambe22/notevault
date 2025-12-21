@@ -2,9 +2,10 @@ import React, { useRef } from "react";
 
 const NoteAttachmentsPanel = ({ attachments = [], onUpload, onRemove }) => {
   const fileRef = useRef(null);
+  const host = "http://localhost:5000";
 
   return (
-    <aside className="editor-side note-attachments-panel">
+    <aside className="ne-side ne-attachments-panel">
       <div className="side-panel side-panel-full">
         <div className="side-panel-header">Attachments</div>
 
@@ -27,7 +28,21 @@ const NoteAttachmentsPanel = ({ attachments = [], onUpload, onRemove }) => {
           <ul className="side-attachment-list">
             {attachments.map((a, i) => (
               <li key={i}>
-                <span>📎 {a.originalName}</span>
+                {/* FILE NAME (not clickable) */}
+                <span>{a.originalName}</span>
+
+                {/* OPEN IN NEW TAB ICON */}
+                <a
+                  href={`${host}${a.path}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Open in new tab"
+                  style={{ marginRight: "10px", color: "#2563eb" }}
+                >
+                  <i className="fa-solid fa-link"></i>
+                </a>
+
+                {/* REMOVE BUTTON */}
                 <button
                   className="danger"
                   onClick={() => onRemove(i)}
