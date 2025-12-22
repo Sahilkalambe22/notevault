@@ -15,17 +15,20 @@ const ReminderManager = ({ notes, showAlert }) => {
     const now = Date.now();
     const activeIds = new Set();
 
+    // ✅ snapshot ref for eslint-safe cleanup
+    const timeouts = timeoutsRef.current;
+
     (notes || []).forEach((note) => {
-      if (!note._id) return;
+      if (!note?._id) return;
 
       activeIds.add(note._id);
 
-      // 🔴 No reminder → clear existing timeout
+      /* 🔴 No reminder → clear existing timeout */
       if (!note.reminderAt) {
-        const oldTimeout = timeoutsRef.current.get(note._id);
+        const oldTimeout = timeouts.get(note._id);
         if (oldTimeout) {
           clearTimeout(oldTimeout);
-          timeoutsRef.current.delete(note._id);
+          timeouts.delete(note._id);
         }
         return;
       }
@@ -35,11 +38,11 @@ const ReminderManager = ({ notes, showAlert }) => {
 
       const delay = when - now;
 
-      // Ignore past or very distant reminders
+      // Ignore past or very distant reminders (24h limit)
       if (delay <= 0 || delay > 24 * 60 * 60 * 1000) return;
 
-      // 🔁 If already scheduled, skip
-      if (timeoutsRef.current.has(note._id)) return;
+      // 🔁 Already scheduled → skip
+      if (timeouts.has(note._id)) return;
 
       const timeoutId = setTimeout(() => {
         const title = note.title || "Note Reminder";
@@ -47,8 +50,10 @@ const ReminderManager = ({ notes, showAlert }) => {
           .replace(/<[^>]+>/g, "")
           .trim();
 
+        // In-app alert
         showAlert?.(`Reminder: ${title}`, "info");
 
+        // Browser notification
         if (Notification.permission === "granted") {
           try {
             new Notification("Note Reminder", {
@@ -58,26 +63,26 @@ const ReminderManager = ({ notes, showAlert }) => {
         }
 
         // cleanup after fire
-        timeoutsRef.current.delete(note._id);
+        timeouts.delete(note._id);
       }, delay);
 
-      timeoutsRef.current.set(note._id, timeoutId);
+      timeouts.set(note._id, timeoutId);
     });
 
-    // 🧹 Cleanup removed notes
-    for (const [id, timeoutId] of timeoutsRef.current.entries()) {
+    /* 🧹 Remove timeouts for deleted notes */
+    for (const [id, timeoutId] of timeouts.entries()) {
       if (!activeIds.has(id)) {
         clearTimeout(timeoutId);
-        timeoutsRef.current.delete(id);
+        timeouts.delete(id);
       }
     }
 
-    // 🧹 Cleanup on unmount
+    /* 🧹 Cleanup on unmount */
     return () => {
-      for (const timeoutId of timeoutsRef.current.values()) {
+      for (const timeoutId of timeouts.values()) {
         clearTimeout(timeoutId);
       }
-      timeoutsRef.current.clear();
+      timeouts.clear();
     };
   }, [notes, showAlert]);
 
