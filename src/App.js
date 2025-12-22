@@ -52,7 +52,7 @@ function AppContent({ showAlert }) {
               <Route path="/" element={<Home showAlert={showAlert.fn} />} />
               <Route path="/profile" element={<Profile showAlert={showAlert.fn} />} />
               <Route path="/about" element={<About />} />
-              <Route path="/settings" element={<Settings />} />
+              <Route path="/settings" element={<Settings showAlert={showAlert.fn} />} />
               <Route path="/login" element={<Login showAlert={showAlert.fn} />} />
               <Route path="/signup" element={<Signup showAlert={showAlert.fn} />} />
             </Routes>
@@ -79,7 +79,9 @@ function App() {
         <AppContent showAlert={{ fn: showAlert, alert }} />
       </Router>
     </NotesState>
-  );
+ 
+);
+
 }
 
 export default App;

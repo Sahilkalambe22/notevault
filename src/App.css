@@ -349,10 +349,9 @@ button.danger {
 
 .ne-editor-card {
 	width: 100%;
-	max-width: 820px;
+	max-width: 970px;
 	background-color: #f3ebc3ff;
 	padding: 24px 28px;
-	border-radius: 14px;
 	min-width: 0;
 	box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35), 0 5px 15px rgba(0, 0, 0, 0.15);
 }
@@ -478,7 +477,7 @@ button.danger {
 
 
 /* =========================
-   SETTINGS PAGE
+   SETTINGS PAGE – CLEAN THEME
 ========================= */
 
 .settings-layout {
@@ -490,56 +489,96 @@ button.danger {
   background: linear-gradient(180deg, #0b0e2a, #111827);
 }
 
+/* Container */
 .settings-card {
   background: #f3ebc3ff;
-  color: black;
+  color: #111827;
   width: 100%;
   max-width: 520px;
-  padding: 28px;
-  border-radius: 14px;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #d6cfa8;
 }
 
+/* Title */
 .settings-card h2 {
   margin-bottom: 18px;
-  font-weight: 700;
-  color: #111827;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
-.settings-form label {
+/* ================= VIEW MODE ================= */
+
+.settings-view {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+
+.settings-row span {
+  color: #555;
+}
+
+/* Edit button */
+.settings-edit-btn {
+  margin-top: 14px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ================= EDIT MODE ================= */
+
+.settings-form label {
+  display: block;
   margin-bottom: 14px;
   font-size: 0.9rem;
 }
 
 .settings-form input {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #d6cfa8;
+  width: 100%;
+  padding: 8px;
+  margin-top: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
   background: #fff;
 }
 
-.settings-upload {
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px dashed #9ca3af;
-  background: white;
-  cursor: pointer;
+/* Actions */
+.settings-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
 }
 
 .settings-save {
-  margin-top: 14px;
-  padding: 12px;
-  border-radius: 10px;
+  flex: 1;
+  padding: 10px;
+  border-radius: 4px;
   border: none;
   background: #111827;
-  color: white;
-  font-weight: 600;
+  color: #fff;
   cursor: pointer;
 }
 
-.settings-save:hover {
-  opacity: 0.9;
+.settings-cancel {
+  flex: 1;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #999;
+  background: #f5f5f5;
+  cursor: pointer;
 }

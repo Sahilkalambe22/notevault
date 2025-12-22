@@ -114,3 +114,31 @@ router.post("/getuser", fetchuser, async (req, res) => {
 );
 
 module.exports = router;
+
+// route:4 Update user details, /update, login required
+router.put("/update", fetchuser, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { name, email, password } = req.body;
+
+    const updateFields = {};
+    if (name) updateFields.name = name;
+    if (email) updateFields.email = email;
+
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      updateFields.password = await bcrypt.hash(password, salt);
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateFields },
+      { new: true }
+    ).select("-password");
+
+    res.json(user);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error Occured.");
+  }
+});

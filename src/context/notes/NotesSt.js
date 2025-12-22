@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import noteContext from "./notesContext";
-import { getCachedNotes, cacheNotes } from "../../offline/NoteCache";
+import { cacheNotes } from "../../offline/NoteCache";
 
 const NotesState = (props) => {
 	const host = "http://localhost:5000";
@@ -163,44 +163,35 @@ const NotesState = (props) => {
 	};
 
 	// =========================
-	// EDIT NOTE
-	// =========================
-	const editNote = async (id, title, description, tag, tagType = "") => {
-		try {
-			const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
-				},
-				body: JSON.stringify({ title, description, tag }),
-			});
+// EDIT NOTE (CORRECT & SAFE)
+// =========================
+const editNote = async (id, title, description, tag) => {
+  try {
+    const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("token"),
+      },
+      body: JSON.stringify({ title, description, tag }),
+    });
 
-			const result = await response.json();
-			if (!response.ok) return null;
+    if (!response.ok) return null;
 
-			setnotes((prev) =>
-				prev.map((n) =>
-					n._id === id
-						? {
-								...n,
-								title,
-								description,
-								tag,
-								tagType:
-									tagType?.trim() ||
-									deriveTagTypeFromTag(tag),
-						  }
-						: n
-				)
-			);
+    const updatedNote = await response.json();
 
-			return result;
-		} catch (err) {
-			console.error("editNote error:", err);
-			return null;
-		}
-	};
+    // ✅ Replace entire note (attachments included)
+    setnotes((prev) =>
+      prev.map((n) => (n._id === id ? updatedNote : n))
+    );
+
+    return updatedNote;
+  } catch (err) {
+    console.error("editNote error:", err);
+    return null;
+  }
+};
+
 
 	// =========================
 	// PIN / UNPIN NOTE
@@ -276,6 +267,15 @@ const NotesState = (props) => {
 		}
 	};
 
+	// =========================
+	// Helpers
+	// =========================
+	const replaceNote = (updatedNote) => {
+  setnotes((prev) =>
+    prev.map((n) => (n._id === updatedNote._id ? updatedNote : n))
+  );
+};
+
 	return (
 		<noteContext.Provider
 			value={{
@@ -283,6 +283,7 @@ const NotesState = (props) => {
 				addNote,
 				deleteNote,
 				editNote,
+				replaceNote,
 				getNotes,
 				pinNote,
 				getVersions,

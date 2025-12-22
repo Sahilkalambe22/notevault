@@ -1,5 +1,3 @@
-// src/components/ShowNote.jsx
-
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import noteContext from "../context/notes/notesContext";
@@ -13,6 +11,7 @@ const ShowNote = ({ showAlert }) => {
   const { notes } = useContext(noteContext);
 
   const existingNote = notes.find((n) => n._id === id);
+  if (!existingNote) return null;
 
   return (
     <div className="ne-layout" style={{ paddingTop: "30px" }}>
@@ -20,14 +19,8 @@ const ShowNote = ({ showAlert }) => {
 
         {/* DESKTOP LEFT */}
         <NoteImagesPanel
-          image={
-            existingNote?.imagePath
-              ? {
-                  path: existingNote.imagePath,
-                  originalName: existingNote.imageOriginalName,
-                }
-              : null
-          }
+          note={existingNote}
+          showAlert={showAlert}
         />
 
         {/* CENTER EDITOR */}
@@ -38,23 +31,19 @@ const ShowNote = ({ showAlert }) => {
 
         {/* DESKTOP RIGHT */}
         <NoteAttachmentsPanel
-          attachments={existingNote?.attachments || []}
+          note={existingNote}
+          showAlert={showAlert}
         />
 
-        {/* MOBILE ROW */}
+        {/* MOBILE */}
         <div className="ne-panels-row">
           <NoteImagesPanel
-            image={
-              existingNote?.imagePath
-                ? {
-                    path: existingNote.imagePath,
-                    originalName: existingNote.imageOriginalName,
-                  }
-                : null
-            }
+            note={existingNote}
+            showAlert={showAlert}
           />
           <NoteAttachmentsPanel
-            attachments={existingNote?.attachments || []}
+            note={existingNote}
+            showAlert={showAlert}
           />
         </div>
 

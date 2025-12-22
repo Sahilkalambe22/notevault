@@ -1,8 +1,70 @@
-import React, { useRef } from "react";
+import React, { useRef, useContext } from "react";
+import noteContext from "../context/notes/notesContext";
 
-const NoteAttachmentsPanel = ({ attachments = [], onUpload, onRemove }) => {
+const NoteAttachmentsPanel = ({ note, showAlert }) => {
   const fileRef = useRef(null);
   const host = "http://localhost:5000";
+
+  const { replaceNote } = useContext(noteContext);
+
+  const handleUpload = async (files) => {
+    if (!note?._id || !files?.length) return;
+
+    try {
+      const formData = new FormData();
+      files.forEach((f) => formData.append("attachments", f));
+
+      const res = await fetch(
+        `${host}/api/notes/updatenote/${note._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "auth-token": localStorage.getItem("token"),
+          },
+          body: formData,
+        }
+      );
+
+      if (!res.ok) throw new Error("Upload failed");
+
+      const updatedNote = await res.json();
+
+      // 🔑 only sync state
+      replaceNote(updatedNote);
+
+      showAlert("Attachment added", "success");
+    } catch (err) {
+      console.error(err);
+      showAlert("Upload failed", "danger");
+    }
+  };
+
+  const handleRemove = async (index) => {
+    if (!note?._id) return;
+
+    try {
+      const res = await fetch(
+        `${host}/api/notes/${note._id}/attachments/${index}`,
+        {
+          method: "DELETE",
+          headers: {
+            "auth-token": localStorage.getItem("token"),
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      const updatedNote = await res.json();
+
+      replaceNote(updatedNote);
+
+      showAlert("Attachment removed", "success");
+    } catch (err) {
+      console.error(err);
+      showAlert("Remove failed", "danger");
+    }
+  };
 
   return (
     <aside className="ne-side ne-attachments-panel">
@@ -22,30 +84,29 @@ const NoteAttachmentsPanel = ({ attachments = [], onUpload, onRemove }) => {
             type="file"
             multiple
             hidden
-            onChange={(e) => onUpload([...e.target.files])}
+            onChange={(e) => handleUpload([...e.target.files])}
           />
 
           <ul className="side-attachment-list">
-            {attachments.map((a, i) => (
+            {!note?.attachments?.length && (
+              <li style={{ opacity: 0.6 }}>No attachments</li>
+            )}
+
+            {note?.attachments?.map((a, i) => (
               <li key={i}>
-                {/* FILE NAME (not clickable) */}
                 <span>{a.originalName}</span>
 
-                {/* OPEN IN NEW TAB ICON */}
                 <a
                   href={`${host}${a.path}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  title="Open in new tab"
-                  style={{ marginRight: "10px", color: "#2563eb" }}
                 >
                   <i className="fa-solid fa-link"></i>
                 </a>
 
-                {/* REMOVE BUTTON */}
                 <button
                   className="danger"
-                  onClick={() => onRemove(i)}
+                  onClick={() => handleRemove(i)}
                 >
                   ✕
                 </button>

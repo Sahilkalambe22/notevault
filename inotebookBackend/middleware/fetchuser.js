@@ -5,8 +5,9 @@ const fetchuser = (req, res, next) =>{
     // get user form the authtoken and add id to req obj
     const token = req.header('auth-token');
     if (!token) {
-        res.status(401).send({error: "Please use a valid user for authentication"});
-    }
+  return res.status(401).send({ error: "Please use a valid user for authentication" });
+}
+
 
     try {
         const data = jwt.verify(token, JWT_SECRET);
