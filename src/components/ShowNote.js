@@ -10,8 +10,8 @@ const ShowNote = ({ showAlert }) => {
   const { id } = useParams();
   const { notes } = useContext(noteContext);
 
-  const existingNote = notes.find((n) => n._id === id);
-  if (!existingNote) return null;
+  const existingNote =
+  id === "new" ? null : notes.find((n) => n._id === id);
 
   return (
     <div className="ne-layout" style={{ paddingTop: "30px" }}>

@@ -20,6 +20,38 @@ const NotesState = (props) => {
 		return match || "";
 	};
 
+	const updateReminder = async (noteId, reminderAt) => {
+  try {
+    const res = await fetch(
+      `${host}/api/notes/updatenote/${noteId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": localStorage.getItem("token"),
+        },
+        body: JSON.stringify({
+          reminderAt: reminderAt ?? null,
+        }),
+      }
+    );
+
+    if (!res.ok) throw new Error("Failed to update reminder");
+
+    const updatedNote = await res.json();
+
+    // 🔑 sync frontend
+    setnotes((prev) =>
+      prev.map((n) => (n._id === updatedNote._id ? updatedNote : n))
+    );
+
+    return updatedNote;
+  } catch (err) {
+    console.error("updateReminder error:", err);
+    return null;
+  }
+};
+
 	// =========================
 	// GET ALL NOTES
 	// =========================
@@ -284,6 +316,7 @@ const editNote = async (id, title, description, tag) => {
 				deleteNote,
 				editNote,
 				replaceNote,
+				updateReminder,
 				getNotes,
 				pinNote,
 				getVersions,
