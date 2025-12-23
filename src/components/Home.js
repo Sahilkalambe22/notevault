@@ -9,7 +9,7 @@ const Home = () => {
 
       {/* Hero Section */}
       <div className="text-center py-5">
-        <h1 className="display-4 fw-bold">Welcome to iNotebook</h1>
+        <h1 className="display-4 fw-bold">Welcome to NoteVault</h1>
         <p className="lead mt-3">
           Your secure digital space to store notes, images, ideas, attachments,
           and everything that matters — accessible anywhere.
@@ -28,48 +28,84 @@ const Home = () => {
       <hr className="my-5" />
 
       {/* Features Section */}
-      <div className="text-center">
-        <h2 className="fw-bold mb-4">Why Use iNotebook?</h2>
+<div className="text-center">
+  <h2 className="fw-bold mb-4">Why Use NoteVault?</h2>
 
-        <div className="row d-flex justify-content-center">
+  <div className="row d-flex justify-content-center">
 
-          {/* Feature 1 */}
-          <div className="col-md-3 col-sm-6 mb-4">
-            <div className="card shadow-sm p-3" style={{ backgroundColor: "#f3ebc3ff" }}>
-              <h4>🔒 Secure Notes</h4>
-              <p className="text-muted">
-                Your notes, images, and attachments are stored safely.
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="col-md-3 col-sm-6 mb-4">
-            <div className="card shadow-sm p-3" style={{ backgroundColor: "#f3ebc3ff" }}>
-              <h4>⚡ Fast & Simple</h4>
-              <p className="text-muted">
-                Focused UI designed for fast note-taking.
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="col-md-3 col-sm-6 mb-4">
-            <div className="card shadow-sm p-3" style={{ backgroundColor: "#f3ebc3ff" }}>
-              <h4><i className="fa-solid fa-link"></i> Attach Anything</h4>
-              <p className="text-muted">
-                Add images, documents, PDFs and keep everything organized.
-              </p>
-            </div>
-          </div>
-
-        </div>
+    {/* Feature 1 */}
+    <div className="col-md-3 col-sm-6 mb-4">
+      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+        <h4>🔒 Secure Notes</h4>
+        <p className="text-muted">
+          Your notes, images, and attachments are stored safely and accessible
+          only to you.
+        </p>
       </div>
+    </div>
+
+    {/* Feature 2 */}
+    <div className="col-md-3 col-sm-6 mb-4">
+      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+        <h4>⚡ Fast & Simple</h4>
+        <p className="text-muted">
+          Focused, distraction-free UI designed for fast and efficient
+          note-taking.
+        </p>
+      </div>
+    </div>
+
+    {/* Feature 3 */}
+    <div className="col-md-3 col-sm-6 mb-4">
+      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+        <h4><i className="fa-solid fa-link"></i> Attach Anything</h4>
+        <p className="text-muted">
+          Add images, documents, and PDFs directly to your notes and keep
+          everything organized.
+        </p>
+      </div>
+    </div>
+
+    {/* Feature 4 */}
+    <div className="col-md-3 col-sm-6 mb-4">
+      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+        <h4>🏷️ Custom Tags</h4>
+        <p className="text-muted">
+          Organize notes using custom tags like work, personal, priority,
+          or anything you choose.
+        </p>
+      </div>
+    </div>
+
+    {/* Feature 5 */}
+    <div className="col-md-3 col-sm-6 mb-4">
+      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+        <h4>⏰ Reminders</h4>
+        <p className="text-muted">
+          Set reminders on notes so you never miss important tasks or follow-ups.
+        </p>
+      </div>
+    </div>
+
+    {/* Feature 6 */}
+    <div className="col-md-3 col-sm-6 mb-4">
+      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+        <h4>🕘 Version History</h4>
+        <p className="text-muted">
+          Automatically track changes and restore previous versions of your
+          notes anytime.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 
       {/* Live Demo Notes Section */}
       <div className="mt-5">
-        <h2 className="fw-bold text-center mb-4">See iNotebook in Action</h2>
-        <p className="text-center text-muted mb-4">
+        <h2 className="fw-bold text-center mb-4">See NoteVault in Action</h2>
+        <p className="text-center mb-4">
           A preview of how your notes will look inside the notebook.
         </p>
 
@@ -82,7 +118,8 @@ const Home = () => {
                 <small className="badge text-bg-secondary">personal</small>
                 <h5 className="card-title mt-2">Morning Routine</h5>
                 <p className="card-text">
-                  Water, workout, planning the day.
+                  Water, workout.
+                  Everything starts with a good morning!
                 </p>
                 <i className="fa-solid fa-user-pen mx-2"></i>
                 <i className="fa-solid fa-trash-can mx-2"></i>
