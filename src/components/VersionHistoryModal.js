@@ -15,7 +15,7 @@ const NoteCardMini = ({ noteData, host = "http://localhost:5000" }) => {
   const extraClasses = variant === "light" ? " text-dark" : "";
 
   return (
-    <div className="card shadow-sm h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+    <div className="card shadow-sm h-100" style={{ backgroundColor: "#1e293bff" }}>
       <div className="card-body" style={{ overflow: "hidden" }}>
         <div className="d-flex justify-content-between align-items-start mb-2">
           <small

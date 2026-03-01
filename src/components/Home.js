@@ -5,12 +5,12 @@ const Home = () => {
   const isLoggedIn = localStorage.getItem("token");
 
   return (
-    <div className="container mt-5">
+    <div className="container-home mt-5">
 
       {/* Hero Section */}
-      <div className="text-center py-5">
+      <div className="hero-section text-center">
         <h1 className="display-4 fw-bold">Welcome to NoteVault</h1>
-        <p className="lead mt-3">
+        <p className="hero-subtext">
           Your secure digital space to store notes, images, ideas, attachments,
           and everything that matters — accessible anywhere.
         </p>
@@ -19,87 +19,118 @@ const Home = () => {
         <Link
           to={isLoggedIn ? "/profile" : "/login"}
           className="btn btn-primary btn-lg mt-3"
-          style={{ backgroundColor: "#f3ebc3ff", color: "black" }}
         >
           {isLoggedIn ? "Jump back into your notes" : "Get Started"}
         </Link>
       </div>
 
-      <hr className="my-5" />
+<div className="section-divider"></div>
 
-      {/* Features Section */}
-<div className="text-center">
-  <h2 className="fw-bold mb-4">Why Use NoteVault?</h2>
 
-  <div className="row d-flex justify-content-center">
+{/* ================= FEATURES SECTION ================= */}
 
-    {/* Feature 1 */}
-    <div className="col-md-3 col-sm-6 mb-4">
-      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
-        <h4>🔒 Secure Notes</h4>
-        <p className="text-muted">
-          Your notes, images, and attachments are stored safely and accessible
-          only to you.
+<section className="features-section">
+
+  <div className="features-container text-center">
+    
+    <h2 className="fw-bold mb-3">Why Use NoteVault?</h2>
+    <p className="features-subtext">
+      Everything you need to organize, protect, and manage your digital thoughts — all in one place.
+    </p>
+
+    <div className="features-grid">
+
+      <div className="feature-card">
+        <div className="feature-icon">🔒</div>
+        <h4>Secure Notes</h4>
+        <p>
+          Your notes, images, and attachments are encrypted and accessible only to you.
         </p>
+      </div>
+
+      <div className="feature-card">
+        <div className="feature-icon">⚡</div>
+        <h4>Fast & Simple</h4>
+        <p>
+          A distraction-free interface designed for speed and productivity.
+        </p>
+      </div>
+
+      <div className="feature-card">
+        <div className="feature-icon">🔗</div>
+        <h4>Attach Anything</h4>
+        <p>
+          Add images, PDFs, and documents directly to your notes.
+        </p>
+      </div>
+
+      <div className="feature-card">
+        <div className="feature-icon">🏷️</div>
+        <h4>Custom Tags</h4>
+        <p>
+          Organize notes using flexible tags like work, personal, or priority.
+        </p>
+      </div>
+
+      <div className="feature-card">
+        <div className="feature-icon">⏰</div>
+        <h4>Reminders</h4>
+        <p>
+          Set reminders so you never miss important tasks or follow-ups.
+        </p>
+      </div>
+
+      <div className="feature-card">
+        <div className="feature-icon">🕘</div>
+        <h4>Version History</h4>
+        <p>
+          Track changes automatically and restore previous versions anytime.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<div className="section-divider"></div>
+
+
+{/* ========================How It Works Section==================== */}
+<div className="how-section text-center">
+  <h2 className="fw-bold mb-5">How It Works</h2>
+
+  <div className="row justify-content-center">
+
+    <div className="col-md-3 col-sm-6 mb-4">
+      <div className="how-step">
+        <div className="step-number">1</div>
+        <h5>Create Notes</h5>
+        <p>Write rich text notes, attach files, and organize with tags.</p>
       </div>
     </div>
 
-    {/* Feature 2 */}
     <div className="col-md-3 col-sm-6 mb-4">
-      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
-        <h4>⚡ Fast & Simple</h4>
-        <p className="text-muted">
-          Focused, distraction-free UI designed for fast and efficient
-          note-taking.
-        </p>
+      <div className="how-step">
+        <div className="step-number">2</div>
+        <h5>Stay Organized</h5>
+        <p>Filter by tags, set reminders, and track version history.</p>
       </div>
     </div>
 
-    {/* Feature 3 */}
     <div className="col-md-3 col-sm-6 mb-4">
-      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
-        <h4><i className="fa-solid fa-link"></i> Attach Anything</h4>
-        <p className="text-muted">
-          Add images, documents, and PDFs directly to your notes and keep
-          everything organized.
-        </p>
-      </div>
-    </div>
-
-    {/* Feature 4 */}
-    <div className="col-md-3 col-sm-6 mb-4">
-      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
-        <h4>🏷️ Custom Tags</h4>
-        <p className="text-muted">
-          Organize notes using custom tags like work, personal, priority,
-          or anything you choose.
-        </p>
-      </div>
-    </div>
-
-    {/* Feature 5 */}
-    <div className="col-md-3 col-sm-6 mb-4">
-      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
-        <h4>⏰ Reminders</h4>
-        <p className="text-muted">
-          Set reminders on notes so you never miss important tasks or follow-ups.
-        </p>
-      </div>
-    </div>
-
-    {/* Feature 6 */}
-    <div className="col-md-3 col-sm-6 mb-4">
-      <div className="card shadow-sm p-3 h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
-        <h4>🕘 Version History</h4>
-        <p className="text-muted">
-          Automatically track changes and restore previous versions of your
-          notes anytime.
-        </p>
+      <div className="how-step">
+        <div className="step-number">3</div>
+        <h5>Access Anywhere</h5>
+        <p>Securely access your notes anytime from any device.</p>
       </div>
     </div>
 
   </div>
 </div>
+<div className="section-divider"></div>
+
 
 
       {/* Live Demo Notes Section */}
@@ -113,10 +144,10 @@ const Home = () => {
 
           {/* Demo Note 1 */}
           <div className="col-md-3 mb-3">
-            <div className="card shadow-sm h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
-              <div className="card-body">
+            <div className="card shadow-sm h-100">
+              <div className="card-body  ">
                 <small className="badge text-bg-secondary">personal</small>
-                <h5 className="card-title mt-2">Morning Routine</h5>
+                <h5 className="card-title mt-2  ">Morning Routine</h5>
                 <p className="card-text">
                   Water, workout.
                   Everything starts with a good morning!
@@ -129,7 +160,7 @@ const Home = () => {
 
           {/* Demo Note 2 */}
           <div className="col-md-3 mb-3">
-            <div className="card shadow-sm h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+            <div className="card shadow-sm h-100  ">
               <div className="card-body">
                 <small className="badge text-bg-secondary">work</small>
                 <h5 className="card-title mt-2">Project Ideas</h5>
@@ -144,7 +175,7 @@ const Home = () => {
 
           {/* Demo Note 3 */}
           <div className="col-md-3 mb-3">
-            <div className="card shadow-sm h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+            <div className="card shadow-sm h-100  ">
               <div className="card-body">
                 <small className="badge text-bg-secondary">learning</small>
                 <h5 className="card-title mt-2">Skills to Learn</h5>
@@ -159,7 +190,7 @@ const Home = () => {
 
           {/* Demo Note 4 */}
           <div className="col-md-3 mb-3">
-            <div className="card shadow-sm h-100" style={{ backgroundColor: "#f3ebc3ff" }}>
+            <div className="card shadow-sm h-100 " >
               <div className="card-body">
                 <small className="badge text-bg-secondary">private</small>
                 <h5 className="card-title mt-2">Client Meeting</h5>
@@ -174,31 +205,39 @@ const Home = () => {
 
         </div>
       </div>
+<div className="section-divider"></div>
 
-      {/* Call-To-Action */}
-      <div className="mt-5">
-        <div
-          className="p-4 rounded-3 text-center"
-          style={{ backgroundColor: "#f3ebc3ff", color: "black" }}
-        >
-          <h3 className="mb-2">Ready to organize your life?</h3>
-          <p className="mb-3">
-            {isLoggedIn
-              ? "Open your notebook and continue where you left off."
-              : "Create an account and start taking notes instantly."}
-          </p>
+    {/* =================CTA SECTION ================= */}
 
-          <Link
-            to={isLoggedIn ? "/profile" : "/signup"}
-            className="btn btn-light btn-lg"
-            style={{ backgroundColor: "rgb(15, 12, 50)", color: "white" }}
-          >
-            {isLoggedIn ? "Go to Your Notebook" : "Create Free Account"}
-          </Link>
-        </div>
-      </div>
+<section className="cta">
+  <div className="cta-card">
+
+    <h2 className="cta-title">
+      Ready to organize your life?
+    </h2>
+
+    <p className="cta-text">
+      {isLoggedIn
+        ? "Open your notebook and continue where you left off."
+        : "Create an account and start taking notes instantly."}
+    </p>
+
+    <Link
+      to={isLoggedIn ? "/profile" : "/signup"}
+      className="btn btn-primary final-cta-btn"
+    >
+      {isLoggedIn ? "Go to Your Notebook" : "Create Free Account"}
+    </Link>
+
+  </div>
+</section>
+
+<div className="section-divider"></div>
+
+
 
     </div>
+    
   );
 };
 

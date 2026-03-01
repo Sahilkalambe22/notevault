@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const Settings = (props) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -92,13 +93,44 @@ const Settings = (props) => {
   if (loading) return null;
 
   /* ================= UI ================= */
-  return (
-    <div className="settings-layout">
-      <div className="settings-card">
-        <h2>Account Settings</h2>
+ return (
+  <div className="settings-layout">
+    <motion.div
+      className="settings-card"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* ================= PROFILE HEADER ================= */}
+      <div className="settings-profile">
+        <div className="settings-avatar">
+          {form.name ? form.name.charAt(0).toUpperCase() : "U"}
+        </div>
+        <h3>{form.name}</h3>
+        <p>{form.email}</p>
+      </div>
+
+      {/* ================= ACCOUNT STATS ================= */}
+      <div className="settings-section">
+        <h4>Account Activity</h4>
+        <div className="settings-stats">
+          <div>
+            <span>Total Notes</span>
+            <b>{localStorage.getItem("noteCount") || 0}</b>
+          </div>
+          <div>
+            <span>Pinned</span>
+            <b>{localStorage.getItem("pinnedCount") || 0}</b>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= PROFILE INFO ================= */}
+      <div className="settings-section">
+        <h4>Profile Information</h4>
 
         {!isEditing ? (
-          <div className="settings-view">
+          <>
             <div className="settings-row">
               <span>Name</span>
               <b>{form.name}</b>
@@ -106,71 +138,42 @@ const Settings = (props) => {
 
             <div className="settings-row">
               <span>Email</span>
-              <b>{form.email || "Not set"}</b>
-            </div>
-
-            <div className="settings-row">
-              <span>Password</span>
-              <b>********</b>
+              <b>{form.email}</b>
             </div>
 
             <button
-              className="settings-edit-btn"
+              className="settings-primary-btn"
               onClick={() => setIsEditing(true)}
             >
-              Edit
+              Edit Profile
             </button>
-          </div>
+          </>
         ) : (
-          <form className="settings-form" onSubmit={handleSave}>
-            <label>
-              Name
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
-            </label>
+          <form onSubmit={handleSave} className="settings-form">
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Name"
+              required
+            />
 
-            <label>
-              Email
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-              />
-            </label>
-
-            <label>
-              New Password
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-              />
-            </label>
-
-            <label>
-              Confirm Password
-              <input
-                type="password"
-                name="confirmPassword"
-                value={form.confirmPassword}
-                onChange={handleChange}
-              />
-            </label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Email"
+              required
+            />
 
             <div className="settings-actions">
-              <button className="settings-save" type="submit">
+              <button className="settings-primary-btn" type="submit">
                 Save
               </button>
               <button
-                className="settings-cancel"
+                className="settings-secondary-btn"
                 type="button"
                 onClick={handleCancel}
               >
@@ -180,8 +183,31 @@ const Settings = (props) => {
           </form>
         )}
       </div>
-    </div>
-  );
+
+      {/* ================= SECURITY ================= */}
+      <div className="settings-section">
+        <h4>Security</h4>
+
+        <button className="settings-secondary-btn">
+          Change Password
+        </button>
+
+        <button className="settings-secondary-btn">
+          Logout From All Devices
+        </button>
+      </div>
+
+      {/* ================= DANGER ZONE ================= */}
+      <div className="settings-section danger-zone">
+        <h4>Danger Zone</h4>
+
+        <button className="settings-danger-btn">
+          Delete Account
+        </button>
+      </div>
+    </motion.div>
+  </div>
+);
 };
 
 export default Settings;

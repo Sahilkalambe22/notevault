@@ -1,12 +1,4 @@
-Perfect 👍
-Here is the **FULL README written as a Bash command**, so you can **copy–paste it directly into your terminal** and it will **replace your README.md completely**.
 
----
-
-## ✅ One-command README update (copy–paste)
-
-```bash
-cat << 'EOF' > README.md
 # 🗂️ NoteVault
 
 **NoteVault** is a secure, modern note-taking web application built using the **MERN stack**.  
@@ -259,3 +251,84 @@ If you find this project useful:
 
 
 
+
+```
+notevault
+├─ eng.traineddata
+├─ notevaultBackend
+│  ├─ .env
+│  ├─ db.js
+│  ├─ ExtractionUploads
+│  ├─ index.js
+│  ├─ middleware
+│  │  ├─ fetchuser.js
+│  │  └─ uploads.js
+│  ├─ models
+│  │  ├─ Note.js
+│  │  ├─ NoteVersion.js
+│  │  └─ User.js
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ routes
+│  │  ├─ aiSuggest.js
+│  │  ├─ auth.js
+│  │  ├─ notes.js
+│  │  └─ ocr.js
+│  ├─ uploads
+│  │  ├─ 1764566446121-326302813.jpg
+│  │  ├─ 1764566446125-863861465.pdf
+│  │  ├─ 1764593621952-549563739.jpg
+│  │  ├─ 1764593621953-788304018.pdf
+│  └─ utils
+│     └─ pruneNoteVersions.js
+├─ package-lock.json
+├─ package.json
+├─ public
+│  ├─ favicon.ico
+│  ├─ index.html
+│  ├─ logo192.png
+│  ├─ logo512.png
+│  ├─ manifest.json
+│  └─ robots.txt
+├─ README.md
+├─ src
+│  ├─ App.css
+│  ├─ App.js
+│  ├─ components
+│  │  ├─ About.js
+│  │  ├─ Alert.js
+│  │  ├─ DiffViewer.js
+│  │  ├─ Home.js
+│  │  ├─ Login.js
+│  │  ├─ Navbar.js
+│  │  ├─ NoteAttachmentsPanel.js
+│  │  ├─ NoteEditorPage.js
+│  │  ├─ NoteImagesPanel.js
+│  │  ├─ NoteItem.js
+│  │  ├─ Notes.js
+│  │  ├─ NotesFilters.js
+│  │  ├─ OcrExtractor.js
+│  │  ├─ PinButton.js
+│  │  ├─ Profile.js
+│  │  ├─ ReminderBadge.js
+│  │  ├─ ReminderManager.js
+│  │  ├─ ReminderModal.js
+│  │  ├─ RichTextEditor.js
+│  │  ├─ Settings.js
+│  │  ├─ ShowNote.js
+│  │  ├─ Signup.js
+│  │  ├─ TagSelector.js
+│  │  ├─ TagSelectorModal.js
+│  │  ├─ UserHeader.js
+│  │  └─ VersionHistoryModal.js
+│  ├─ context
+│  │  └─ notes
+│  │     ├─ notesContext.js
+│  │     └─ NotesSt.js
+│  ├─ index.css
+│  ├─ index.js
+│  └─ offline
+│     └─ NoteCache.js
+└─ uploads
+
+```

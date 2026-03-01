@@ -14,50 +14,42 @@ const NotesState = (props) => {
 	const deriveTagTypeFromTag = (tag) => {
 		if (!tag || typeof tag !== "string") return "";
 		const trimmed = tag.trim();
-		const match = PREDEFINED_TYPES.find(
-			(t) => t.toLowerCase() === trimmed.toLowerCase()
-		);
+		const match = PREDEFINED_TYPES.find((t) => t.toLowerCase() === trimmed.toLowerCase());
 		return match || "";
 	};
 
 	const updateReminder = async (noteId, reminderAt) => {
-  try {
-    const res = await fetch(
-      `${host}/api/notes/updatenote/${noteId}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": localStorage.getItem("token"),
-        },
-        body: JSON.stringify({
-          reminderAt: reminderAt ?? null,
-        }),
-      }
-    );
+		try {
+			const res = await fetch(`${host}/api/notes/updatenote/${noteId}`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					"auth-token": localStorage.getItem("token"),
+				},
+				body: JSON.stringify({
+					reminderAt: reminderAt ?? null,
+				}),
+			});
 
-    if (!res.ok) throw new Error("Failed to update reminder");
+			if (!res.ok) throw new Error("Failed to update reminder");
 
-    const updatedNote = await res.json();
+			const updatedNote = await res.json();
 
-    // 🔑 sync frontend
-    setnotes((prev) =>
-      prev.map((n) => (n._id === updatedNote._id ? updatedNote : n))
-    );
+			// 🔑 sync frontend
+			setnotes((prev) => prev.map((n) => (n._id === updatedNote._id ? updatedNote : n)));
 
-    return updatedNote;
-  } catch (err) {
-    console.error("updateReminder error:", err);
-    return null;
-  }
-};
+			return updatedNote;
+		} catch (err) {
+			console.error("updateReminder error:", err);
+			return null;
+		}
+	};
 
 	// =========================
 	// GET ALL NOTES
 	// =========================
 	const getNotes = async () => {
 		try {
-
 			// 2️⃣ Fetch fresh notes from backend
 			const response = await fetch(`${host}/api/notes/fetchallnotes`, {
 				method: "GET",
@@ -77,9 +69,7 @@ const NotesState = (props) => {
 			}));
 
 			// ⭐ pinned first
-			const sorted = annotated
-				.slice()
-				.sort((a, b) => (b.isPinned === true) - (a.isPinned === true));
+			const sorted = annotated.slice().sort((a, b) => (b.isPinned === true) - (a.isPinned === true));
 
 			setnotes(sorted);
 
@@ -97,15 +87,7 @@ const NotesState = (props) => {
 	// =========================
 	// ADD NOTE
 	// =========================
-	const addNote = async (
-		title,
-		description,
-		tag,
-		imageFile,
-		attachmentFiles = [],
-		tagType = "",
-		reminderAt = null
-	) => {
+	const addNote = async (title, description, tag, imageFile, attachmentFiles = [], tagType = "", reminderAt = null) => {
 		try {
 			const formData = new FormData();
 			formData.append("title", title);
@@ -118,9 +100,7 @@ const NotesState = (props) => {
 
 			if (imageFile) formData.append("image", imageFile);
 			if (attachmentFiles?.length) {
-				attachmentFiles.forEach((f) =>
-					formData.append("attachments", f)
-				);
+				attachmentFiles.forEach((f) => formData.append("attachments", f));
 			}
 
 			const response = await fetch(`${host}/api/notes/addnotes`, {
@@ -143,23 +123,17 @@ const NotesState = (props) => {
 				return null;
 			}
 
-			const newNote =
-				(created && (created._id ? created : created.note || created.data)) ||
-				null;
+			const newNote = (created && (created._id ? created : created.note || created.data)) || null;
 
 			if (newNote && newNote._id) {
 				const annotated = {
 					...newNote,
-					tagType:
-						tagType?.trim() ||
-						deriveTagTypeFromTag(newNote.tag),
+					tagType: tagType?.trim() || deriveTagTypeFromTag(newNote.tag),
 				};
 
 				setnotes((prev) => {
 					if (prev.some((n) => n._id === annotated._id)) return prev;
-					return [annotated, ...prev].sort(
-						(a, b) => (b.isPinned === true) - (a.isPinned === true)
-					);
+					return [annotated, ...prev].sort((a, b) => (b.isPinned === true) - (a.isPinned === true));
 				});
 
 				return annotated;
@@ -195,35 +169,32 @@ const NotesState = (props) => {
 	};
 
 	// =========================
-// EDIT NOTE (CORRECT & SAFE)
-// =========================
-const editNote = async (id, title, description, tag) => {
-  try {
-    const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token": localStorage.getItem("token"),
-      },
-      body: JSON.stringify({ title, description, tag }),
-    });
+	// EDIT NOTE (CORRECT & SAFE)
+	// =========================
+	const editNote = async (id, title, description, tag) => {
+		try {
+			const response = await fetch(`${host}/api/notes/updatenote/${id}`, {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					"auth-token": localStorage.getItem("token"),
+				},
+				body: JSON.stringify({ title, description, tag }),
+			});
 
-    if (!response.ok) return null;
+			if (!response.ok) return null;
 
-    const updatedNote = await response.json();
+			const updatedNote = await response.json();
 
-    // ✅ Replace entire note (attachments included)
-    setnotes((prev) =>
-      prev.map((n) => (n._id === id ? updatedNote : n))
-    );
+			// ✅ Replace entire note (attachments included)
+			setnotes((prev) => prev.map((n) => (n._id === id ? updatedNote : n)));
 
-    return updatedNote;
-  } catch (err) {
-    console.error("editNote error:", err);
-    return null;
-  }
-};
-
+			return updatedNote;
+		} catch (err) {
+			console.error("editNote error:", err);
+			return null;
+		}
+	};
 
 	// =========================
 	// PIN / UNPIN NOTE
@@ -239,14 +210,16 @@ const editNote = async (id, title, description, tag) => {
 				body: JSON.stringify({ isPinned }),
 			});
 
-			const updated = await response.json();
 			if (!response.ok) return null;
 
-			setnotes((prev) =>
-				prev.map((n) =>
-					n._id === id ? { ...n, isPinned: updated.isPinned } : n
-				)
-			);
+			const updated = await response.json();
+
+			setnotes((prev) => {
+				const updatedList = prev.map((n) => (n._id === id ? { ...n, isPinned: updated.isPinned } : n));
+
+				// 🔥 SORT AGAIN
+				return updatedList.sort((a, b) => (b.isPinned === true) - (a.isPinned === true));
+			});
 
 			return updated;
 		} catch (err) {
@@ -279,16 +252,13 @@ const editNote = async (id, title, description, tag) => {
 
 	const restoreVersion = async (noteId, versionId) => {
 		try {
-			const res = await fetch(
-				`${host}/api/notes/${noteId}/restore/${versionId}`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						"auth-token": localStorage.getItem("token"),
-					},
-				}
-			);
+			const res = await fetch(`${host}/api/notes/${noteId}/restore/${versionId}`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"auth-token": localStorage.getItem("token"),
+				},
+			});
 
 			if (!res.ok) throw new Error("Restore failed");
 			await getNotes();
@@ -303,10 +273,8 @@ const editNote = async (id, title, description, tag) => {
 	// Helpers
 	// =========================
 	const replaceNote = (updatedNote) => {
-  setnotes((prev) =>
-    prev.map((n) => (n._id === updatedNote._id ? updatedNote : n))
-  );
-};
+		setnotes((prev) => prev.map((n) => (n._id === updatedNote._id ? updatedNote : n)));
+	};
 
 	return (
 		<noteContext.Provider

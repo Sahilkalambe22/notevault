@@ -146,7 +146,12 @@ const NoteEditorPage = ({ note, showAlert }) => {
 
 	const handlePin = () => {
 		if (!note) return;
-		pinNote(note._id, !note.isPinned);
+
+		const newPinnedState = !note.isPinned;
+
+		pinNote(note._id, newPinnedState);
+
+		showAlert(newPinnedState ? "Note pinned" : "Note unpinned", "success");
 	};
 
 	const displayTag = data.tagCustom || data.tagType || originalTagRef.current || "Random";
@@ -198,16 +203,9 @@ const NoteEditorPage = ({ note, showAlert }) => {
 							<i className="fa-solid fa-arrow-left" />
 						</button>
 
-						<span style={{ color: isSaving ? "#ffaa00" : "#4CAF50" }}>{isSaving ? "Saving..." : "Saved"}</span>
+						<span className={`save-indicator ${isSaving ? "saving" : "saved"}`}>{isSaving ? "Saving..." : "Saved"}</span>
 
-						<div
-							style={{
-								marginLeft: "auto",
-								display: "flex",
-								gap: 12,
-								alignItems: "center",
-							}}
-						>
+						<div className="ne-topbar-right">
 							{/* 🔔 Reminder badge */}
 							<ReminderBadge reminderAt={note?.reminderAt} />
 
@@ -228,7 +226,7 @@ const NoteEditorPage = ({ note, showAlert }) => {
 							)}
 
 							{/* 🏷️ Tag */}
-							<span className={`badge text-bg-${badgeColor}`} style={{ cursor: "pointer" }} onClick={() => setShowTagModal(true)}>
+							<span className={`badge text-bg-${badgeColor} editor-tag-badge`} onClick={() => setShowTagModal(true)}>
 								{displayTag}
 							</span>
 						</div>

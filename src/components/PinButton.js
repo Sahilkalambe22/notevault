@@ -6,7 +6,7 @@ const PinButton = ({ isPinned, onToggle }) => {
 			className="fa-solid fa-thumbtack"
 			style={{
 				cursor: "pointer",
-				color: isPinned ? "red" : "#555",
+				color: isPinned ? "red" : "",
 				transform: isPinned ? "rotate(0deg)" : "rotate(40deg)",
 				transition: "0.2s",
 				zIndex: 2,

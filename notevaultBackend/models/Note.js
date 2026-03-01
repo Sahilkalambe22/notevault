@@ -17,13 +17,7 @@ const NotesSchema = new Schema({
 	tag: {
 		type: String,
 	},
-	// 🔹 Single image per note (optional)
-	imagePath: {
-		type: String,
-	},
-	imageOriginalName: {
-		type: String,
-	},
+	
 
 	// 🔹 Multiple attachments (optional)
 	attachments: [

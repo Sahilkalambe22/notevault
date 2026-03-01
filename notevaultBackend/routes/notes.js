@@ -45,8 +45,7 @@ router.post(
   "/addnotes",
   fetchuser,
   upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "attachments", maxCount: 3 },
+    { name: "attachments", maxCount: 5 },
   ]),
   [
     body("title", "Enter a valid title").isLength({ min: 3 }),
@@ -62,8 +61,6 @@ router.post(
       }
 
       const { title, description, tag, reminderAt } = req.body;
-
-      const imageFile = req.files?.image?.[0];
       const attachmentFiles = req.files?.attachments || [];
 
       const note = new Note({
@@ -71,8 +68,6 @@ router.post(
         description,
         tag,
         user: req.user.id,
-        imagePath: imageFile ? `/uploads/${imageFile.filename}` : null,
-        imageOriginalName: imageFile ? imageFile.originalname : null,
         attachments: attachmentFiles.map((file) => ({
           path: `/uploads/${file.filename}`,
           originalName: file.originalname,
@@ -92,8 +87,6 @@ router.post(
           title: savedNote.title,
           description: savedNote.description,
           tag: savedNote.tag,
-          imagePath: savedNote.imagePath,
-          imageOriginalName: savedNote.imageOriginalName,
           attachments: savedNote.attachments,
           isPinned: savedNote.isPinned,
           reminderAt: savedNote.reminderAt,
@@ -120,7 +113,6 @@ router.put(
   fetchuser,
   validateObjectId("id"),
   upload.fields([
-    { name: "image", maxCount: 1 },
     { name: "attachments", maxCount: 5 },
   ]),
   async (req, res) => {
@@ -140,8 +132,6 @@ router.put(
           title: note.title,
           description: note.description,
           tag: note.tag,
-          imagePath: note.imagePath,
-          imageOriginalName: note.imageOriginalName,
           attachments: note.attachments,
           isPinned: note.isPinned,
           reminderAt: note.reminderAt,
@@ -152,21 +142,7 @@ router.put(
         console.error("Version snapshot error:", err);
       }
 
-      /* ========= IMAGE UPLOAD ========= */
-      const imageFile = req.files?.image?.[0];
-      if (imageFile) {
-        note.imagePath = `/uploads/${imageFile.filename}`;
-        note.imageOriginalName = imageFile.originalname;
-      }
-
-      /* ========= IMAGE REMOVE ========= */
-      if (
-        req.body.imagePath === null ||
-        req.body.imagePath === "null"
-      ) {
-        note.imagePath = null;
-        note.imageOriginalName = null;
-      }
+      
 
       /* ========= ATTACHMENTS ========= */
       const attachmentFiles = req.files?.attachments || [];
@@ -182,7 +158,7 @@ router.put(
       }
 
       /* ========= SAFE BODY UPDATES ========= */
-      const allowedFields = ["title", "description", "tag", "reminderAt"];
+      const allowedFields = ["title", "description", "tag", "reminderAt", "isPinned"];
       allowedFields.forEach((field) => {
         if (req.body[field] !== undefined) {
           if (field === "reminderAt") {
@@ -291,8 +267,6 @@ router.post(
         title: note.title,
         description: note.description,
         tag: note.tag,
-        imagePath: note.imagePath,
-        imageOriginalName: note.imageOriginalName,
         attachments: note.attachments,
         isPinned: note.isPinned,
         reminderAt: note.reminderAt,
@@ -305,8 +279,6 @@ router.post(
         title: version.title,
         description: version.description,
         tag: version.tag,
-        imagePath: version.imagePath,
-        imageOriginalName: version.imageOriginalName,
         attachments: version.attachments,
         isPinned: version.isPinned,
         reminderAt: version.reminderAt,
@@ -349,6 +321,41 @@ router.delete(
       res.json(note);
     } catch (err) {
       console.error(err);
+      res.status(500).send("Server error occurred.");
+    }
+  }
+);
+
+
+/* =====================================================
+   ROUTE 8: UPLOAD INLINE IMAGE
+===================================================== */
+
+router.post(
+  "/:id/upload-inline-image",
+  fetchuser,
+  validateObjectId("id"),
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const note = await Note.findById(req.params.id);
+
+      if (!note) return res.status(404).send("Note not found");
+
+      if (note.user.toString() !== req.user.id) {
+        return res.status(401).send("Not allowed");
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ error: "No image uploaded" });
+      }
+
+      const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
+      res.json({ imageUrl });
+
+    } catch (err) {
+      console.error("Inline image upload error:", err);
       res.status(500).send("Server error occurred.");
     }
   }

@@ -6,8 +6,15 @@ const UserHeader = () => {
   if (!name) return null;
 
   return (
-    <div className="user-header" >
-      Welcome {name}
+    <div className="profile-header">
+      <div className="profile-header-content">
+        <div>
+          <h1 className="profile-title">Welcome back, {name}</h1>
+          <p className="profile-subtitle">
+            Manage your notes, organize your ideas, and stay productive.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

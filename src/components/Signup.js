@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { LuFileLock2 } from "react-icons/lu";
+import { motion } from "framer-motion";
 
 const Signup = (props) => {
-	const [credentials, setcredentials] = useState({ name: "", email: "", password: "", cpassword: "" });
-	let navigate = useNavigate();
+	const [credentials, setCredentials] = useState({
+		name: "",
+		email: "",
+		password: "",
+		cpassword: "",
+	});
 
+	const navigate = useNavigate();
 	const host = "http://localhost:5000";
 
 	const handleSubmit = async (e) => {
@@ -24,7 +31,6 @@ const Signup = (props) => {
 		});
 
 		const json = await response.json();
-		console.log(json);
 
 		if (json.success) {
 			localStorage.setItem("token", json.authtoken);
@@ -36,57 +42,65 @@ const Signup = (props) => {
 	};
 
 	const onChange = (e) => {
-		setcredentials({ ...credentials, [e.target.name]: e.target.value });
+		setCredentials({ ...credentials, [e.target.name]: e.target.value });
 	};
 
 	return (
-		<div className="d-flex justify-content-center mt-5">
-			<div className="card p-4 col-md-4" style={{ backgroundColor: "#f3ebc3ff", borderRadius: "12px" }}>
-				<h2 className="mb-4 text-center fw-bold">Create your iNotebook account</h2>
+		<div className="nv-auth-container">
+			{/* LEFT SIDE */}
+			<motion.div className="nv-auth-left" initial={{ x: -150, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 1 }}>
+				<div className="nv-brand-content">
+					<h1 className="nv-logo">
+						<LuFileLock2 className="nv-logo-icon" />
+						NoteVault
+					</h1>
+					<div className="nv-brand-divider"></div>
+					<p>Secure. Organize. Access Anywhere.</p>
 
-				<form onSubmit={handleSubmit}>
-					<div className="mb-3">
-						<input type="text" className="form-control border-0 border-bottom rounded-0 px-1" id="name" name="name" placeholder="Name" value={credentials.name} onChange={onChange} minLength={5} required style={{ backgroundColor: "#f3ebc3ff" }} />
-					</div>
-
-					<div className="mb-3">
-						<input type="email" className="form-control border-0 border-bottom rounded-0 px-1" id="email" name="email" placeholder="Email address" value={credentials.email} onChange={onChange} minLength={5} required style={{ backgroundColor: "#f3ebc3ff" }} />
-					</div>
-
-					<div className="mb-3">
-						<input type="password" className="form-control border-0 border-bottom rounded-0 px-1" id="password" name="password" placeholder="Password" value={credentials.password} onChange={onChange} minLength={5} required style={{ backgroundColor: "#f3ebc3ff" }} />
-					</div>
-
-					<div className="mb-3">
-						<input
-							type="password"
-							className="form-control border-0 border-bottom rounded-0 px-1"
-							id="cpassword"
-							name="cpassword"
-							placeholder="Confirm Password"
-							value={credentials.cpassword}
-							onChange={onChange}
-							minLength={5}
-							required
-							onInput={(e) => {
-								e.target.setCustomValidity("");
-								e.target.setCustomValidity(e.target.value !== document.getElementById("password").value ? "Passwords do not match" : "");
-							}}
-							style={{ backgroundColor: "#f3ebc3ff" }}
-						/>
-					</div>
-
-					<button type="submit" className="btn w-100 mt-2" style={{ backgroundColor: "rgb(15, 12, 50)", color: "white" }}>
-						Submit
-					</button>
-				</form>
-
-				<div className="text-center mt-3">
-					<Link to="/login" style={{ textDecoration: "none", color: "rgb(15, 12, 50)" }}>
-						<h5>Already have an account? Login</h5>
-					</Link>
+					<ul className="nv-feature-list">
+						<li>✔ End-to-End Security</li>
+						<li>✔ Cloud Sync</li>
+						<li>✔ Private & Encrypted</li>
+					</ul>
 				</div>
-			</div>
+			</motion.div>
+
+			{/* RIGHT SIDE */}
+			<motion.div className="nv-auth-right">
+				<div className="nv-auth-card">
+					<h2 className="nv-auth-title">Create your account</h2>
+
+					<form onSubmit={handleSubmit}>
+						<div className="nv-input-group">
+							<input type="text" className="form-control" name="name" value={credentials.name} onChange={onChange} minLength={5} required placeholder=" " />
+							<label>Full Name</label>
+						</div>
+
+						<div className="nv-input-group">
+							<input type="email" className="form-control" name="email" value={credentials.email} onChange={onChange} minLength={5} required placeholder=" " />
+							<label>Email Address</label>
+						</div>
+
+						<div className="nv-input-group">
+							<input type="password" className="form-control" name="password" value={credentials.password} onChange={onChange} minLength={5} required placeholder=" " />
+							<label>Password</label>
+						</div>
+
+						<div className="nv-input-group">
+							<input type="password" className="form-control" name="cpassword" value={credentials.cpassword} onChange={onChange} minLength={5} required placeholder=" " />
+							<label>Confirm Password</label>
+						</div>
+
+						<button type="submit" className="nv-auth-btn w-100 mt-3">
+							Create Account
+						</button>
+					</form>
+
+					<div className="nv-auth-footer">
+						Already have an account? <Link to="/login">Login</Link>
+					</div>
+				</div>
+			</motion.div>
 		</div>
 	);
 };
