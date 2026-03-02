@@ -4,6 +4,7 @@ import noteContext from "../context/notes/notesContext";
 
 import NoteEditorPage from "./NoteEditorPage";
 import NoteAttachmentsPanel from "./NoteAttachmentsPanel";
+import "./ShowNote.css";
 
 const ShowNote = ({ showAlert }) => {
   const { id } = useParams();

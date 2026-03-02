@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import noteContext from "../context/notes/notesContext";
 import PinButton from "./PinButton";
 import ReminderBadge from "./ReminderBadge";
+import "./NoteItem.css";
 
 /* ================= TAG CONFIG ================= */
 
@@ -25,9 +26,8 @@ const TAG_ICON_MAP = {
 
 /* ================= COMPONENT ================= */
 
-const NoteItem = (props) => {
+const NoteItem = ({ note, updateNote, showAlert }) => {
   const { deleteNote, pinNote } = useContext(noteContext);
-  const { note, updateNote, showAlert } = props;
 
   /* ================= TAG NORMALIZATION ================= */
 
@@ -39,7 +39,6 @@ const NoteItem = (props) => {
   );
 
   const effectiveTag = canonicalTag || "Random";
-
   const badgeColor = TAG_COLOR_MAP[effectiveTag];
   const tagIconClass = TAG_ICON_MAP[effectiveTag] || null;
 
@@ -51,41 +50,55 @@ const NoteItem = (props) => {
   const handleDelete = (e) => {
     e.stopPropagation();
     if (!window.confirm("Delete this note permanently?")) return;
+
     deleteNote(note._id);
     showAlert("Deleted successfully", "success");
   };
 
   const handlePin = (e) => {
     e.stopPropagation();
+
     pinNote(note._id, !note.isPinned);
+
     showAlert(
       note.isPinned ? "Note unpinned" : "Note pinned",
       "success"
     );
   };
 
+  const handleOpenNote = () => {
+    updateNote(note);
+  };
+
   /* ================= RENDER ================= */
 
   return (
-    <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4">
+    <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 mb-4">
       <div
         className={`card note-card h-100 d-flex flex-column position-relative ${
           note.isPinned ? "note-pinned" : ""
         }`}
-        onClick={() => updateNote(note)}
       >
-        {/* PIN BUTTON */}
-        <PinButton isPinned={note.isPinned} onToggle={handlePin} />
+        {/* PIN BUTTON (isolated interaction zone) */}
+        <PinButton
+          isPinned={note.isPinned}
+          onToggle={handlePin}
+        />
 
-        {/* MAIN CONTENT */}
-        <div className="flex-grow-1 p-4">
+        {/* MAIN CONTENT (clickable area only) */}
+        <div
+          className="flex-grow-1 p-4 note-clickable"
+          onClick={handleOpenNote}
+        >
           {/* TAG + REMINDER */}
           <div className="d-flex justify-content-between align-items-center mb-3 gap-2">
             <span
               className={`badge text-bg-${badgeColor} ${extraTextClass} rounded-pill d-inline-flex align-items-center`}
               style={{ gap: "6px" }}
             >
-              {tagIconClass && <i className={`${tagIconClass} me-1`} />}
+              {tagIconClass && (
+                <i className={`${tagIconClass} me-1`} />
+              )}
               {displayTag}
             </span>
 
@@ -98,25 +111,15 @@ const NoteItem = (props) => {
           </h6>
 
           {/* DESCRIPTION PREVIEW */}
-          <div className="note-preview-text text-secondary">
+          <div className="note-preview-text">
             {(note.description || "")
               .replace(/<[^>]+>/g, "")
               .slice(0, 200)}
           </div>
         </div>
 
-        {/* FOOTER ACTIONS */}
+        {/* FOOTER ACTIONS (isolated zone) */}
         <div className="note-footer d-flex justify-content-end align-items-center px-3 py-2 gap-3">
-          <button
-            className="note-icon"
-            onClick={(e) => {
-              e.stopPropagation();
-              updateNote(note);
-            }}
-          >
-            <i className="fa-solid fa-user-pen" />
-          </button>
-
           <button
             className="note-icon text-danger"
             onClick={handleDelete}

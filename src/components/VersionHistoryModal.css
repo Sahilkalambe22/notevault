@@ -1,0 +1,145 @@
+/* ======================================================
+   VERSION HISTORY MODAL — DARK GLASS VERSION
+====================================================== */
+.note-preview-image {
+  width: 100%;
+  max-height: 350px;   /* This controls how tall it can be */
+  object-fit: cover;   /* Keeps it looking nice */
+  border-radius: 14px;
+}
+
+/* FULLSCREEN */
+.vh-fullscreen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(145deg,#0f172a,#020617);
+  z-index: 3000;
+  display: flex;
+  color: #e2e8f0;
+}
+
+.vh-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* TIMELINE */
+.vh-timeline {
+  width: 300px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.vh-timeline-header {
+  padding: 20px;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.vh-timeline-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.vh-timeline-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.vh-timeline-item:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.vh-timeline-item.active {
+  background: rgba(99,102,241,0.18);
+}
+
+.vh-dot {
+  width: 8px;
+  height: 8px;
+  background: #6366f1;
+  border-radius: 50%;
+  margin-top: 6px;
+}
+
+/* DIFF PANEL */
+.vh-diff-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.vh-diff-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vh-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.vh-restore {
+  background: linear-gradient(135deg,#6366f1,#8b5cf6);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.vh-close {
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.vh-diff-body {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+}
+
+.vh-muted {
+  opacity: 0.6;
+}
+
+.vh-empty-state {
+  opacity: 0.6;
+  padding: 20px;
+}
+
+.vh-mini-preview {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.vh-mini-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #e2e8f0;
+}
+
+.vh-mini-image {
+  max-height: 160px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}

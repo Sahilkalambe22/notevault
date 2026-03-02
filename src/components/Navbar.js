@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import "./Navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -75,11 +76,6 @@ function Navbar() {
                 ></i>
 
                 <ul className="dropdown-menu dropdown-menu-end nv-dropdown">
-                  <li>
-                    <Link className="dropdown-item" to="/profile">
-                      Your Profile
-                    </Link>
-                  </li>
                   <li>
                     <Link className="dropdown-item" to="/settings">
                       Settings

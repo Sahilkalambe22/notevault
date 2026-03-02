@@ -8,6 +8,7 @@ import ReminderManager from "./ReminderManager";
 import NotesHeader from "./NotesHeader";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import "./Notes.css";
 
 const Notes = (props) => {
 	const context = useContext(noteContext);

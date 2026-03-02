@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import "./RichTextEditor.css";
 
 const defaultFormat = {
 	bold: false,
@@ -188,7 +189,7 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 				</button>
 
 				<button type="button" className="btn btn-outline-secondary" onClick={handleImageClick}>
-					🖼
+					<i className="fa-solid fa-image"></i>
 				</button>
 			</div>
 

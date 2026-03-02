@@ -14,7 +14,7 @@ import Profile from "./components/Profile";
 import ShowNote from "./components/ShowNote";
 import Settings from "./components/Settings";
 import Alert from "./components/Alert";
-
+import Footer from "./components/Footer";
 import NotesState from "./context/notes/NotesSt";
 import noteContext from "./context/notes/notesContext";
 import ReminderManager from "./components/ReminderManager";
@@ -49,7 +49,7 @@ function AppContent({ showAlert }) {
 						/>
 					</Routes>
 				) : (
-					<div className="container">
+					<div>
 						<Routes>
 							<Route path="/" element={<Home showAlert={showAlert.fn} />} />
 							<Route
@@ -72,6 +72,7 @@ function AppContent({ showAlert }) {
 							<Route path="/login" element={<Login showAlert={showAlert.fn} />} />
 							<Route path="/signup" element={<Signup showAlert={showAlert.fn} />} />
 						</Routes>
+						<Footer />
 					</div>
 				)}
 			</div>

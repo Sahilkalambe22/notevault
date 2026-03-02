@@ -1,0 +1,87 @@
+/* ================= ATTACHMENTS — CALM VERSION ================= */
+
+/* Header */
+.side-panel-header {
+	font-size: 0.95rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	color: #cbd5e1;
+	text-transform: none;
+	margin-bottom: 16px;
+}
+
+/* Add file button — subtle */
+.side-add {
+	width: 100%;
+	padding: 10px;
+	border-radius: 10px;
+
+	background: rgba(255, 255, 255, 0.4);
+	border: 1px dashed rgba(255, 255, 255, 0.12);
+
+	color: #f8fafc;
+	font-size: 0.85rem;
+	transition: background 0.2s ease;
+}
+
+.side-add:hover {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+/* ================= ATTACHMENT ROW FIX ================= */
+
+.side-attachment-list {
+	list-style: none;
+	padding: 0;
+	margin-top: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px; /* spacing between rows */
+}
+
+.side-attachment-list li {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+
+	padding: 9px 12px;
+	border-radius: 10px;
+
+	/* LIGHTER than container */
+	background: rgba(255, 255, 255, 0.06);
+
+	/* subtle separator edge */
+	border: 1px solid rgba(255, 255, 255, 0.08);
+
+	font-size: 0.83rem;
+	color: #e5e7eb;
+
+	transition: all 0.15s ease;
+}
+
+.side-attachment-list li:hover {
+	background: rgba(99, 102, 241, 0.15);
+	border-color: rgba(99, 102, 241, 0.35);
+}
+
+/* File name */
+.side-attachment-list li span {
+	flex: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Remove button */
+button.danger {
+	background: transparent;
+	border: none;
+	color: #f87171;
+	font-size: 0.9rem;
+	cursor: pointer;
+	opacity: 0.8;
+}
+
+button.danger:hover {
+	opacity: 1;
+}

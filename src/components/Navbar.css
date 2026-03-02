@@ -1,0 +1,106 @@
+/* ================= NAVBAR – PREMIUM GLASS ================= */
+
+.nv-navbar {
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+
+	backdrop-filter: blur(16px);
+	background: rgba(15, 23, 42, 0.75);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+	padding: 14px 0;
+}
+
+.nv-container {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	padding: 0 24px;
+}
+
+.nv-name {
+	font-size: 1.3rem;
+	font-weight: 700;
+	color: #f8fafc;
+	text-decoration: none;
+	letter-spacing: -0.5px;
+}
+
+.nv-name:hover {
+	color: #ffffff;
+}
+
+.nv-right {
+	display: flex;
+	align-items: center;
+	gap: 26px;
+}
+
+.nv-link {
+	text-decoration: none;
+	font-weight: 500;
+	color: #cbd5e1;
+	transition: color 0.2s ease;
+}
+
+.nv-link:hover {
+	color: #ffffff;
+}
+
+.nv-link.active {
+	color: #6366f1 !important;
+}
+
+/* CTA Button */
+.nv-cta {
+	padding: 8px 18px;
+	border-radius: 8px;
+	background: linear-gradient(135deg, #6366f1, #8b5cf6);
+	color: white;
+	font-weight: 600;
+	text-decoration: none;
+	box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.nv-cta:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 30px rgba(139, 92, 246, 0.6);
+}
+
+/* Profile Icon */
+.nv-profile-icon {
+	font-size: 20px;
+	cursor: pointer;
+	color: #e5e7eb;
+	transition: transform 0.2s ease;
+}
+
+.nv-profile-icon:hover {
+	transform: scale(1.1);
+}
+
+/* Dropdown */
+.nv-dropdown {
+	background: #1e293b;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 12px;
+	padding: 8px;
+}
+
+.nv-dropdown .dropdown-item {
+	color: #e5e7eb;
+}
+
+.nv-dropdown .dropdown-item:hover {
+	background: rgba(99, 102, 241, 0.15);
+	color: white;
+}

@@ -1,4 +1,5 @@
 import React from "react";
+import "./UserHeader.css";
 
 const UserHeader = () => {
   const name = localStorage.getItem("name");

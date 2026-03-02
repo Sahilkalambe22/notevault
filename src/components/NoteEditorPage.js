@@ -6,6 +6,7 @@ import RichTextEditor from "./RichTextEditor";
 import VersionHistoryModal from "./VersionHistoryModal";
 import ReminderBadge from "./ReminderBadge";
 import ReminderModal from "./ReminderModal";
+import "./NoteEditorPage.css";
 
 const TAGS = ["Work", "Random", "Important", "Todo", "Personal", "Priority"];
 
@@ -221,7 +222,7 @@ const NoteEditorPage = ({ note, showAlert }) => {
 									<i className="fa-solid fa-clock-rotate-left editor-action" onClick={() => setShowVersions(true)} />
 
 									{/* 🗑️ Delete */}
-									<i className="fa-solid fa-trash-can editor-action" onClick={handleDelete} />
+									<i className="fa-solid fa-trash-can editor-action" style={{ color: "#ef4444" }} onClick={handleDelete} />
 								</>
 							)}
 

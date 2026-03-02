@@ -1,0 +1,109 @@
+/* ================= DASHBOARD CARDS ================= */
+
+.dashboard-card {
+	background: rgba(30, 41, 59, 0.85);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	border-radius: 14px;
+	padding: 18px;
+	backdrop-filter: blur(10px);
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+	transition: transform 0.2s ease;
+}
+
+.dashboard-card:hover {
+	transform: translateY(-4px);
+}
+
+.dashboard-card h6 {
+	font-size: 0.85rem;
+	color: #94a3b8;
+	margin-bottom: 6px;
+}
+
+.dashboard-card h3 {
+	font-size: 1.6rem;
+	margin: 0;
+	font-weight: 700;
+}
+
+/* ================= NOTES FILTERS ================= */
+
+.notes-filters {
+	display: flex;
+	margin-top: 10px;
+	margin-bottom: 24px;
+	gap: 16px;
+}
+
+.notes-filter-item {
+	flex: 1;
+}
+
+.notes-select,
+.notes-search {
+	width: 100%;
+	padding: 10px 14px;
+
+	border-radius: 12px;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+
+	background: rgba(30, 41, 59, 0.9);
+	color: #e5e7eb;
+
+	outline: none;
+	transition:
+		border 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+/* Focus state */
+.notes-select:focus,
+.notes-search:focus {
+	border-color: #6366f1;
+	box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+}
+
+/* Placeholder */
+.notes-search::placeholder {
+	color: #94a3b8;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+	.notes-filters {
+		flex-direction: column;
+	}
+}
+
+
+
+/* ================= EMPTY STATE ================= */
+
+.empty-state-card {
+	margin-top: 60px;
+	padding: 50px 30px;
+	text-align: center;
+
+	border-radius: 18px;
+
+	background: rgba(30, 41, 59, 0.85);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+
+	backdrop-filter: blur(12px);
+}
+
+.empty-icon {
+	font-size: 42px;
+	margin-bottom: 16px;
+	opacity: 0.7;
+}
+
+.empty-state-card h5 {
+	font-weight: 600;
+	margin-bottom: 10px;
+}
+
+.empty-state-card p {
+	color: #94a3b8;
+	font-size: 0.95rem;
+}

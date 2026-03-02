@@ -1,0 +1,53 @@
+/* ---------- MAIN SHELL ---------- */
+
+.ne-toolbar {
+	display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 0;
+  background: transparent;
+  border: none;	
+}
+
+.ne-toolbar::-webkit-scrollbar {
+	display: none;
+}
+
+.ne-toolbar-btn {
+	background: transparent;
+	border: none;
+
+	padding: 4px 8px;
+	border-radius: 6px;
+
+	font-size: 0.75rem;
+	font-weight: 500;
+
+	color: #94a3b8;
+	white-space: nowrap;
+
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.ne-toolbar-btn:hover {
+	background: rgba(255, 255, 255, 0.08);
+	color: #ffffff;
+}
+
+.ne-toolbar-btn.active {
+	background: rgba(99, 102, 241, 0.25);
+	color: #ffffff;
+}
+
+@media (max-width: 576px) {
+	.ne-toolbar {
+		padding: 3px 4px;
+		gap: 3px;
+	}
+
+	.ne-toolbar-btn {
+		padding: 2px 5px;
+		font-size: 0.65rem;
+	}
+}

@@ -1,0 +1,308 @@
+/* ======================= AUTH LAYOUT ========================== */
+
+.nv-auth-container {
+  display: flex;
+  min-height: 100vh;
+  background: #0f172a;
+}
+
+/* ================= LEFT SIDE ================= */
+
+.nv-auth-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+
+/* Glow effect */
+.nv-auth-left::before {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99,102,241,0.35), transparent 70%);
+  border-radius: 50%;
+  top: -150px;
+  left: -150px;
+}
+
+.nv-brand-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  padding: 40px;
+}
+
+.nv-brand-content h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.nv-brand-content p {
+  font-size: 1.1rem;
+  opacity: 0.7;
+  margin-bottom: 30px;
+}
+
+.nv-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nv-feature-list li {
+  margin: 10px 0;
+  opacity: 0.8;
+}
+
+/* ================= RIGHT SIDE ================= */
+
+.nv-auth-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0f172a;
+}
+
+/* ================= AUTH CARD ================= */
+
+.nv-auth-card {
+  width: 420px;
+  padding: 50px 40px;
+  animation: fadeIn 0.5s ease-in-out;
+  border-radius: 24px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(30,41,59,0.95),
+    rgba(15,23,42,0.95)
+  );
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.6),
+    0 0 100px rgba(99,102,241,0.12);
+
+  backdrop-filter: blur(20px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================= TITLE ================= */
+
+.nv-auth-title {
+  font-weight: 700;
+  font-size: 1.9rem;
+  text-align: center;
+  margin-bottom: 35px;
+  color: #f1f5f9;
+}
+
+/* ================= INPUTS ================= */
+
+.nv-auth-card .form-control {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  margin-bottom: 18px;
+  border-radius: 12px;
+  padding: 13px 16px;
+  color: #e5e7eb;
+  transition: all 0.25s ease;
+}
+
+.nv-auth-card .form-control:hover {
+  border-color: rgba(139,92,246,0.5);
+}
+
+.nv-auth-card .form-control:focus {
+  background: rgba(255,255,255,0.08);
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.25);
+}
+
+/* Wrapper */
+.nv-input-group {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+/* Remove margin from bootstrap */
+.nv-input-group .form-control {
+  margin-bottom: 0;
+}
+
+/* Input */
+.nv-input-group input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  margin-bottom: 18px;
+  border-radius: 12px;
+  padding: 13px 16px;
+  color: #e5e7eb;
+  transition: all 0.25s ease;
+  width: 100%;
+  font-size: 16px;
+  outline: none;
+}
+
+/* Focus */
+.nv-input-group input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.25);
+}
+
+/* Label */
+.nv-input-group label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.6);
+  font-size: 15px;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  padding: 0 6px;
+}
+
+/* Floating state */
+.nv-input-group input:focus + label,
+.nv-input-group input:not(:placeholder-shown) + label {
+  top: 0px;
+  transform: translateY(-50%) scale(0.85);
+  letter-spacing: 0.5px;
+  background-color: #0e1629;
+  color: #e5e7eb;
+  border-radius: 5px;
+}
+/* ================= BUTTON ================= */
+
+.nv-auth-btn {
+  padding: 13px;
+  border-radius: 14px;
+  border: none;
+
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background-size: 200% 200%;
+
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+
+  transition: all 0.3s ease;
+}
+
+.nv-auth-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(139,92,246,0.45);
+  background-position: right center;
+}
+
+.nv-auth-btn:active {
+  transform: scale(0.98);
+}
+/* ================= FOOTER ================= */
+
+.nv-auth-footer {
+  text-align: center;
+  margin-top: 25px;
+  color: rgba(255,255,255,0.6);
+}
+
+.nv-auth-footer a {
+  color: #818cf8;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nv-auth-footer a:hover {
+  color: #a5b4fc;
+}
+
+/* LOGO STYLE */
+
+.nv-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(90deg, #ffffff, #c7d2fe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.nv-logo-icon {
+  font-size: 2.8rem;
+  color: #8b5cf6;
+
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 18px rgba(139,92,246,0.6));
+}
+
+.nv-logo:hover .nv-logo-icon {
+  transform: rotate(-10deg) scale(1.1);
+}
+
+.nv-brand-divider {
+  width: 60px;
+  height: 4px;
+  margin: 18px auto 25px;
+  border-radius: 20px;
+
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 900px) {
+  .nv-auth-container {
+    flex-direction: column;
+  }
+
+  .nv-auth-left {
+    height: auto;
+    padding: 60px 20px;
+  }
+
+  .nv-auth-card {
+    width: 90%;
+    margin-bottom: 40px;
+  }
+
+  .nv-logo {
+    font-size: 2.3rem;
+  }
+
+  .nv-logo-icon {
+    font-size: 2.2rem;
+  }
+}
+
+
+/* Reverse layout when needed */
+.nv-auth-container.reverse {
+  flex-direction: row-reverse;
+}
+
+/* Keep mobile correct */
+@media (max-width: 900px) {
+  .nv-auth-container,
+  .nv-auth-container.reverse {
+    flex-direction: column;
+  }
+}

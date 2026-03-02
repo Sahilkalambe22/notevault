@@ -249,9 +249,6 @@ If you find this project useful:
 
 
 
-
-
-
 ```
 notevault
 ├─ eng.traineddata
@@ -297,7 +294,10 @@ notevault
 │  ├─ components
 │  │  ├─ About.js
 │  │  ├─ Alert.js
+│  │  ├─ AuthLayout.js
 │  │  ├─ DiffViewer.js
+│  │  ├─ Footer.css
+│  │  ├─ Footer.js
 │  │  ├─ Home.js
 │  │  ├─ Login.js
 │  │  ├─ Navbar.js
@@ -305,11 +305,14 @@ notevault
 │  │  ├─ NoteEditorPage.js
 │  │  ├─ NoteImagesPanel.js
 │  │  ├─ NoteItem.js
+│  │  ├─ NotePreview.js
 │  │  ├─ Notes.js
 │  │  ├─ NotesFilters.js
+│  │  ├─ NotesHeader.js
 │  │  ├─ OcrExtractor.js
 │  │  ├─ PinButton.js
 │  │  ├─ Profile.js
+│  │  ├─ ProtectedRoute.js
 │  │  ├─ ReminderBadge.js
 │  │  ├─ ReminderManager.js
 │  │  ├─ ReminderModal.js
@@ -327,8 +330,9 @@ notevault
 │  │     └─ NotesSt.js
 │  ├─ index.css
 │  ├─ index.js
-│  └─ offline
-│     └─ NoteCache.js
+│  ├─ offline
+│  │  └─ NoteCache.js
+│  └─ static
 └─ uploads
 
 ```

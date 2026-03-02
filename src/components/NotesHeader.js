@@ -1,5 +1,5 @@
 import React from "react";
-
+import "./NotesHeader.css";
 const NotesHeader = ({ onAddNote }) => {
   return (
     <div className="notes-header">

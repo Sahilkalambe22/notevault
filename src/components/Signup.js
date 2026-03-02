@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LuFileLock2 } from "react-icons/lu";
 import { motion } from "framer-motion";
+import "./AuthLayout.css";
 
 const Signup = (props) => {
 	const [credentials, setCredentials] = useState({
@@ -12,7 +13,7 @@ const Signup = (props) => {
 	});
 
 	const navigate = useNavigate();
-	const host = "http://localhost:5000";
+	const host = "http://localhost:5000"; 
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();

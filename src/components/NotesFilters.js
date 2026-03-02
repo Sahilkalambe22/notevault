@@ -1,6 +1,7 @@
 // src/components/NotesFilters.jsx
 
 import React from "react";
+import "./Notes.css";
 
 const NotesFilters = ({
   selectedTag,

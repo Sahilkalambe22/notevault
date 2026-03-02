@@ -1,0 +1,41 @@
+/* ======================================================
+   DIFF VIEWER
+====================================================== */
+
+.nv-diff-container {
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 20px;
+  max-height: 420px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+/* NORMAL TEXT */
+
+.nv-diff-normal {
+  color: #cbd5e1;
+}
+
+/* ADDED */
+
+.nv-diff-added {
+  background: rgba(34,197,94,0.18);
+  color: #bbf7d0;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+/* REMOVED */
+
+.nv-diff-removed {
+  background: rgba(239,68,68,0.18);
+  color: #fecaca;
+  text-decoration: line-through;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
