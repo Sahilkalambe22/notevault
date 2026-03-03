@@ -1,87 +1,116 @@
-/* ================= ATTACHMENTS — CALM VERSION ================= */
+/* ================= MODERN ATTACHMENTS ================= */
 
-/* Header */
-.side-panel-header {
-	font-size: 0.95rem;
-	font-weight: 600;
-	letter-spacing: 0.02em;
-	color: #cbd5e1;
-	text-transform: none;
-	margin-bottom: 16px;
+.nv-attachments {
+	margin-top: 40px;
+	padding: 24px;
+	border-radius: 18px;
+
+	background: rgba(30, 41, 59, 0.6);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+	backdrop-filter: blur(12px);
 }
 
-/* Add file button — subtle */
-.side-add {
-	width: 100%;
-	padding: 10px;
+.nv-attachments-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+
+	font-weight: 600;
+	color: #e2e8f0;
+}
+
+.nv-add-btn {
+	width: 34px;
+	height: 34px;
 	border-radius: 10px;
 
-	background: rgba(255, 255, 255, 0.4);
-	border: 1px dashed rgba(255, 255, 255, 0.12);
+	background: rgba(99, 102, 241, 0.2);
+	border: 1px solid rgba(99, 102, 241, 0.4);
+	color: #c7d2fe;
 
-	color: #f8fafc;
-	font-size: 0.85rem;
-	transition: background 0.2s ease;
-}
-
-.side-add:hover {
-	background: rgba(255, 255, 255, 0.2);
-}
-
-/* ================= ATTACHMENT ROW FIX ================= */
-
-.side-attachment-list {
-	list-style: none;
-	padding: 0;
-	margin-top: 16px;
-	display: flex;
-	flex-direction: column;
-	gap: 8px; /* spacing between rows */
-}
-
-.side-attachment-list li {
 	display: flex;
 	align-items: center;
-	gap: 12px;
+	justify-content: center;
 
-	padding: 9px 12px;
-	border-radius: 10px;
-
-	/* LIGHTER than container */
-	background: rgba(255, 255, 255, 0.06);
-
-	/* subtle separator edge */
-	border: 1px solid rgba(255, 255, 255, 0.08);
-
-	font-size: 0.83rem;
-	color: #e5e7eb;
-
-	transition: all 0.15s ease;
+	transition: all 0.2s ease;
 }
 
-.side-attachment-list li:hover {
-	background: rgba(99, 102, 241, 0.15);
-	border-color: rgba(99, 102, 241, 0.35);
+.nv-add-btn:hover {
+	background: rgba(99, 102, 241, 0.35);
+	transform: translateY(-2px);
 }
 
-/* File name */
-.side-attachment-list li span {
+/* List */
+
+.nv-attachments-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.nv-empty {
+	font-size: 0.85rem;
+	opacity: 0.6;
+	padding: 8px 4px;
+}
+
+/* Attachment chip */
+
+.nv-attachment-chip {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	padding: 10px 14px;
+	border-radius: 12px;
+
+	background: rgba(15, 23, 42, 0.7);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+
+	transition: 0.2s ease;
+}
+
+.nv-attachment-chip:hover {
+	border-color: rgba(99, 102, 241, 0.4);
+	background: rgba(30, 41, 59, 0.8);
+}
+
+.nv-file-info {
+	display: flex;
+	align-items: center;
+	gap: 10px;
 	flex: 1;
+
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
-/* Remove button */
-button.danger {
-	background: transparent;
-	border: none;
-	color: #f87171;
-	font-size: 0.9rem;
-	cursor: pointer;
-	opacity: 0.8;
+.nv-file-info i {
+	color: #94a3b8;
 }
 
-button.danger:hover {
-	opacity: 1;
+.nv-file-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.nv-file-actions a,
+.nv-file-actions button {
+	background: transparent;
+	border: none;
+	color: #94a3b8;
+	cursor: pointer;
+	font-size: 0.85rem;
+	transition: 0.15s ease;
+}
+
+.nv-file-actions a:hover {
+	color: #c7d2fe;
+}
+
+.nv-file-actions button:hover {
+	color: #f87171;
 }

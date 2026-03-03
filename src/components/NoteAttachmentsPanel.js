@@ -63,38 +63,58 @@ const NoteAttachmentsPanel = ({ note, showAlert }) => {
 	};
 
 	return (
-		<aside className="ne-side ne-attachments-panel">
-			<div className="side-panel side-panel-full">
-				<div className="side-panel-header">Attachments</div>
+  <div className="nv-attachments">
+    <div className="nv-attachments-header">
+      <span>
+        <i className="fa-solid fa-paperclip"></i> Attachments
+      </span>
 
-				<div className="side-panel-body side-panel-scroll">
-					<button className="side-add" onClick={() => fileRef.current.click()}>
-						+ Add files
-					</button>
+      <button
+        className="nv-add-btn"
+        onClick={() => fileRef.current.click()}
+      >
+        <i className="fa-solid fa-plus"></i>
+      </button>
+    </div>
 
-					<input ref={fileRef} type="file" multiple hidden onChange={(e) => handleUpload([...e.target.files])} />
+    <input
+      ref={fileRef}
+      type="file"
+      multiple
+      hidden
+      onChange={(e) => handleUpload([...e.target.files])}
+    />
 
-					<ul className="side-attachment-list">
-						{!note?.attachments?.length && <li style={{ opacity: 0.6 }}>No attachments</li>}
+    <div className="nv-attachments-list">
+      {!note?.attachments?.length && (
+        <div className="nv-empty">No attachments yet</div>
+      )}
 
-						{note?.attachments?.map((a, i) => (
-							<li key={i}>
-								<span><i className="fa-solid fa-file-lines" />{a.originalName}</span>
+      {note?.attachments?.map((a, i) => (
+        <div className="nv-attachment-chip" key={i}>
+          <div className="nv-file-info">
+            <i className="fa-solid fa-file"></i>
+            <span>{a.originalName}</span>
+          </div>
 
-								<a href={`${host}${a.path}`} target="_blank" rel="noopener noreferrer">
-									<i className="fa-solid fa-link"></i>
-								</a>
+          <div className="nv-file-actions">
+            <a
+              href={`${host}${a.path}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i className="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
 
-								<button className="danger" onClick={() => handleRemove(i)}>
-									✕
-								</button>
-							</li>
-						))}
-					</ul>
-				</div>
-			</div>
-		</aside>
-	);
+            <button onClick={() => handleRemove(i)}>
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 };
 
 export default NoteAttachmentsPanel;

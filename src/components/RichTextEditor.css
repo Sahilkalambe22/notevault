@@ -1,16 +1,21 @@
 /* ---------- MAIN SHELL ---------- */
 
 .ne-toolbar {
-	display: flex;
+  display: flex;
   gap: 8px;
   margin-bottom: 18px;
   padding: 0;
   background: transparent;
-  border: none;	
+  border: none;
+
+  flex-wrap: nowrap;          /* prevent wrapping */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;      /* Firefox */
 }
 
 .ne-toolbar::-webkit-scrollbar {
-	display: none;
+  display: none;
 }
 
 .ne-toolbar-btn {
@@ -40,14 +45,37 @@
 	color: #ffffff;
 }
 
-@media (max-width: 576px) {
-	.ne-toolbar {
-		padding: 3px 4px;
-		gap: 3px;
-	}
+.ne-inline-code {
+  background: rgba(99, 102, 241, 0.15);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.85em;
+}
 
-	.ne-toolbar-btn {
-		padding: 2px 5px;
-		font-size: 0.65rem;
-	}
+blockquote {
+  border-left: 4px solid #6366f1;
+  padding-left: 12px;
+  margin: 12px 0;
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px 0;
+}
+
+@media (max-width: 576px) {
+  .ne-toolbar {
+    padding: 4px 2px;
+    gap: 6px;
+  }
+
+  .ne-toolbar-btn {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+  }
 }

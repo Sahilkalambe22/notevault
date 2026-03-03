@@ -1,20 +1,19 @@
-
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Modal.css";
 
 const ReminderModal = ({ show, initialValue, onSave, onRemove, onClose }) => {
-	const [value, setValue] = useState("");
+	const [value, setValue] = useState(null);
 
 	useEffect(() => {
 		if (initialValue) {
 			const d = new Date(initialValue);
 			if (!Number.isNaN(d.getTime())) {
-				setValue(d.toISOString().slice(0, 16));
+				setValue(d);
 			}
 		} else {
-			setValue("");
+			setValue(null);
 		}
 	}, [initialValue, show]);
 
@@ -25,20 +24,20 @@ const ReminderModal = ({ show, initialValue, onSave, onRemove, onClose }) => {
 			<div className="modal-card">
 				<h5>⏰ Set Reminder</h5>
 
-				<DatePicker selected={value ? new Date(value) : null} onChange={(date) => setValue(date)} showTimeSelect dateFormat="dd/MM/yyyy HH:mm" className="custom-datepicker-input" />
+				<DatePicker selected={value} onChange={(date) => setValue(date)} showTimeSelect timeIntervals={5} dateFormat="dd/MM/yyyy HH:mm" className="custom-datepicker-input" />
 
 				<div className="modal-actions">
 					{initialValue && (
-						<button className="settings-danger-btn" style={{ width: "auto", padding: "8px 14px" }} onClick={onRemove}>
+						<button className="settings-danger-btn" onClick={onRemove}>
 							Remove
 						</button>
 					)}
 
-					<button className="settings-secondary-btn" style={{ width: "auto", padding: "8px 14px" }} onClick={onClose}>
+					<button className="settings-secondary-btn" onClick={onClose}>
 						Cancel
 					</button>
 
-					<button className="settings-primary-btn" style={{ width: "auto", padding: "8px 16px" }} disabled={!value} onClick={() => onSave(new Date(value).toISOString())}>
+					<button className="settings-primary-btn" disabled={!value} onClick={() => onSave(value.toISOString())}>
 						Save
 					</button>
 				</div>

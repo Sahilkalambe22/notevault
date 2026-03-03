@@ -96,28 +96,28 @@ const sortedNotes = filteredNotes;
 				<div className="notes-sticky-header">
 					{/* ================= DASHBOARD STATS ROW ================= */}
 					<div className="row mb-4">
-						<div className="col-md-3 col-sm-6 mb-3">
+						<div className="col-6 col-md-3 mb-3">
 							<div className="dashboard-card">
 								<h6>Total Notes</h6>
 								<h3>{stats.total}</h3>
 							</div>
 						</div>
 
-						<div className="col-md-3 col-sm-6 mb-3">
+						<div className="col-6 col-md-3 mb-3">
 							<div className="dashboard-card">
 								<h6>Pinned Notes</h6>
 								<h3>{stats.pinned}</h3>
 							</div>
 						</div>
 
-						<div className="col-md-3 col-sm-6 mb-3">
+						<div className="col-6 col-md-3 mb-3">
 							<div className="dashboard-card">
 								<h6>Active Reminders</h6>
 								<h3>{stats.reminders}</h3>
 							</div>
 						</div>
 
-						<div className="col-md-3 col-sm-6 mb-3">
+						<div className="col-6 col-md-3 mb-3">
 							<div className="dashboard-card">
 								<h6>Tags Used</h6>
 								<h3>{stats.tags}</h3>

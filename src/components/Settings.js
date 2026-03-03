@@ -9,12 +9,18 @@ const Settings = (props) => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [showPasswordForm, setShowPasswordForm] = useState(false);
+	const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+
+	// Available DiceBear styles
+	const avatarStyles = ["adventurer", "avataaars", "bottts", "pixel-art", "lorelei"];
 
 	const [form, setForm] = useState({
 		name: "",
 		email: "",
 		password: "",
 		confirmPassword: "",
+		joinedDate: "",
+		avatar: "", // stored as "style:seed"
 	});
 
 	/* ================= FETCH USER ================= */
@@ -35,10 +41,13 @@ const Settings = (props) => {
 					...prev,
 					name: data.name || "",
 					email: data.email || "",
+					joinedDate: data.date || "",
+					avatar: data.avatar || "",
 				}));
 
 				localStorage.setItem("name", data.name || "");
-			} catch (err) {
+				localStorage.setItem("avatar", data.avatar || "");
+			} catch {
 				props.showAlert("Failed to load user data", "danger");
 			} finally {
 				setLoading(false);
@@ -46,16 +55,56 @@ const Settings = (props) => {
 		};
 
 		fetchUser();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	/* ================= HANDLERS ================= */
+	/* ================= PARSE AVATAR ================= */
+	const parsedAvatar = form.avatar ? form.avatar.split(":") : [];
+	const selectedStyle = parsedAvatar[0];
+	const selectedSeed = parsedAvatar[1];
+
+	/* ================= HELPERS ================= */
+	const formatDate = (dateString) => {
+		if (!dateString) return "";
+		const date = new Date(dateString);
+		return date.toLocaleDateString("en-IN", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		});
+	};
 
 	const handleChange = (e) => {
 		setForm({ ...form, [e.target.name]: e.target.value });
 	};
 
-	/* -------- PROFILE UPDATE -------- */
+	const generateRandomSeed = () => {
+		return Math.random().toString(36).substring(2, 10);
+	};
+
+	/* ================= UPDATE AVATAR ================= */
+	const handleAvatarSelect = async (style, seed) => {
+		const avatarValue = style ? `${style}:${seed}` : "";
+
+		try {
+			await fetch("http://localhost:5000/api/auth/update", {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+					"auth-token": localStorage.getItem("token"),
+				},
+				body: JSON.stringify({ avatar: avatarValue }),
+			});
+
+			setForm({ ...form, avatar: avatarValue });
+			setShowAvatarPicker(false);
+			localStorage.setItem("avatar", avatarValue);
+			props.showAlert("Avatar updated", "success");
+		} catch {
+			props.showAlert("Failed to update avatar", "danger");
+		}
+	};
+
+	/* ================= PROFILE UPDATE ================= */
 	const handleSave = async (e) => {
 		e.preventDefault();
 
@@ -75,12 +124,12 @@ const Settings = (props) => {
 			localStorage.setItem("name", form.name);
 			setIsEditing(false);
 			props.showAlert("Profile updated successfully", "success");
-		} catch (err) {
+		} catch {
 			props.showAlert("Update failed", "danger");
 		}
 	};
 
-	/* -------- PASSWORD UPDATE -------- */
+	/* ================= PASSWORD UPDATE ================= */
 	const handlePasswordUpdate = async (e) => {
 		e.preventDefault();
 
@@ -101,9 +150,7 @@ const Settings = (props) => {
 					"Content-Type": "application/json",
 					"auth-token": localStorage.getItem("token"),
 				},
-				body: JSON.stringify({
-					password: form.password,
-				}),
+				body: JSON.stringify({ password: form.password }),
 			});
 
 			props.showAlert("Password updated", "success");
@@ -115,29 +162,24 @@ const Settings = (props) => {
 			});
 
 			setShowPasswordForm(false);
-		} catch (err) {
+		} catch {
 			props.showAlert("Password update failed", "danger");
 		}
 	};
 
-	/* -------- LOGOUT -------- */
+	/* ================= LOGOUT ================= */
 	const handleLogoutAll = () => {
-		const confirmLogout = window.confirm("Are you sure you want to logout from all devices?");
-
-		if (!confirmLogout) return;
+		if (!window.confirm("Are you sure you want to logout from all devices?")) return;
 
 		localStorage.removeItem("token");
 		localStorage.removeItem("name");
-
 		props.showAlert("Logged out successfully", "success");
 		navigate("/login");
 	};
 
-	/* -------- DELETE ACCOUNT -------- */
+	/* ================= DELETE ACCOUNT ================= */
 	const handleDeleteAccount = async () => {
-		const confirmDelete = window.confirm("This will permanently delete your account and all notes. This action cannot be undone. Continue?");
-
-		if (!confirmDelete) return;
+		if (!window.confirm("This will permanently delete your account and all notes. Continue?")) return;
 
 		try {
 			await fetch("http://localhost:5000/api/auth/delete", {
@@ -150,28 +192,66 @@ const Settings = (props) => {
 			localStorage.clear();
 			props.showAlert("Account deleted successfully", "success");
 			navigate("/");
-		} catch (err) {
+		} catch {
 			props.showAlert("Delete failed", "danger");
 		}
 	};
 
-	const handleCancel = () => {
-		setIsEditing(false);
-	};
-
 	if (loading) return null;
-
-	/* ================= UI ================= */
 
 	return (
 		<div className="settings-layout">
 			<motion.div className="settings-card" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
 				{/* PROFILE HEADER */}
 				<div className="settings-profile">
-					<div className="settings-avatar">{form.name ? form.name.charAt(0).toUpperCase() : "U"}</div>
+					<div className="settings-avatar" onClick={() => setShowAvatarPicker(true)}>
+						{form.avatar ? <img src={`https://api.dicebear.com/7.x/${selectedStyle}/svg?seed=${selectedSeed}`} alt="avatar" className="settings-avatar-img" /> : <span className="settings-avatar-letter">{form.name ? form.name.charAt(0).toUpperCase() : "U"}</span>}
+					</div>
+
 					<h3>{form.name}</h3>
 					<p>{form.email}</p>
+
+					<p className="settings-joined">
+						<i className="fa-solid fa-calendar"></i>
+						Joined on {formatDate(form.joinedDate)}
+					</p>
 				</div>
+
+				{/* AVATAR MODAL */}
+				{showAvatarPicker && (
+					<div className="avatar-modal">
+						<div className="avatar-modal-content">
+							<h4>Choose Your Avatar</h4>
+
+							<div className="avatar-grid">
+								{/* NONE OPTION */}
+								<div className={`avatar-style-wrapper ${!selectedStyle ? "selected" : ""}`} onClick={() => handleAvatarSelect("", "")}>
+									<div className="avatar-none-option">{form.name ? form.name.charAt(0).toUpperCase() : "U"}</div>
+									<span className="avatar-style-name">Default</span>
+								</div>
+
+								{/* STYLES */}
+								{avatarStyles.map((style, index) => {
+									const isSelected = selectedStyle === style;
+
+									return (
+										<div key={index} className={`avatar-style-wrapper ${isSelected ? "selected" : ""}`} onClick={() => handleAvatarSelect(style, generateRandomSeed())}>
+											<img src={`https://api.dicebear.com/7.x/${style}/svg?seed=test`} alt={style} className="avatar-option-img" />
+
+											<span className="avatar-style-name">{style}</span>
+
+											{isSelected && <div className="avatar-selected-badge">✓</div>}
+										</div>
+									);
+								})}
+							</div>
+
+							<button className="settings-secondary-btn" onClick={() => setShowAvatarPicker(false)}>
+								Cancel
+							</button>
+						</div>
+					</div>
+				)}
 
 				{/* PROFILE INFO */}
 				<div className="settings-section">
@@ -191,7 +271,8 @@ const Settings = (props) => {
 								<button className="settings-primary-btn" type="submit">
 									Save
 								</button>
-								<button className="settings-secondary-btn" type="button" onClick={handleCancel}>
+
+								<button className="settings-secondary-btn" type="button" onClick={() => setIsEditing(false)}>
 									Cancel
 								</button>
 							</div>
@@ -199,7 +280,7 @@ const Settings = (props) => {
 					)}
 				</div>
 
-				{/* ================= SECURITY ================= */}
+				{/* SECURITY */}
 				<div className="settings-section">
 					<h4>Security</h4>
 
@@ -208,34 +289,21 @@ const Settings = (props) => {
 							Change Password
 						</button>
 					) : (
-						<>
-							<form onSubmit={handlePasswordUpdate} className="settings-form">
-								<input type="password" name="password" placeholder="New Password" value={form.password} onChange={handleChange} />
+						<form onSubmit={handlePasswordUpdate} className="settings-form">
+							<input type="password" name="password" placeholder="New Password" value={form.password} onChange={handleChange} />
 
-								<input type="password" name="confirmPassword" placeholder="Confirm Password" value={form.confirmPassword} onChange={handleChange} />
+							<input type="password" name="confirmPassword" placeholder="Confirm Password" value={form.confirmPassword} onChange={handleChange} />
 
-								<div className="settings-actions">
-									<button className="settings-primary-btn" type="submit">
-										Update Password
-									</button>
+							<div className="settings-actions">
+								<button className="settings-primary-btn" type="submit">
+									Update Password
+								</button>
 
-									<button
-										type="button"
-										className="settings-secondary-btn"
-										onClick={() => {
-											setShowPasswordForm(false);
-											setForm({
-												...form,
-												password: "",
-												confirmPassword: "",
-											});
-										}}
-									>
-										Cancel
-									</button>
-								</div>
-							</form>
-						</>
+								<button type="button" className="settings-secondary-btn" onClick={() => setShowPasswordForm(false)}>
+									Cancel
+								</button>
+							</div>
+						</form>
 					)}
 
 					<button className="settings-secondary-btn" onClick={handleLogoutAll}>

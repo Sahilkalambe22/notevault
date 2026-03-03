@@ -11,7 +11,7 @@
 }
 
 .profile-title {
-	font-size: 2rem;
+	font-size: 2.2rem;
 	font-weight: 700;
 	margin: 0;
 	color: #f8fafc;
@@ -21,6 +21,49 @@
 	margin-top: 8px;
 	font-size: 1rem;
 	color: #94a3b8;
+}
+
+.profile-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Avatar Circle */
+.profile-avatar {
+  width: 90px;   /* was 70px */
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+  transition: 0.3s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+}
+
+/* Avatar Image */
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Default Letter */
+.profile-avatar-letter {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
 }
 
 @media (max-width: 768px) {

@@ -5,9 +5,11 @@ const defaultFormat = {
 	bold: false,
 	italic: false,
 	underline: false,
+	strike: false,
 	ul: false,
 	ol: false,
 	h3: false,
+	highlight: false,
 };
 
 const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
@@ -30,11 +32,11 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 
 		if (el.innerHTML !== (value || "")) {
 			el.innerHTML = value || "";
-      const images = el.querySelectorAll("img");
-      images.forEach(img => {
-  img.removeAttribute("style");
-});
 
+			const images = el.querySelectorAll("img");
+			images.forEach((img) => {
+				img.removeAttribute("style");
+			});
 		}
 	}, [value]);
 
@@ -57,9 +59,11 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 				bold: document.queryCommandState("bold"),
 				italic: document.queryCommandState("italic"),
 				underline: document.queryCommandState("underline"),
+				strike: document.queryCommandState("strikeThrough"),
 				ul: document.queryCommandState("insertUnorderedList"),
 				ol: document.queryCommandState("insertOrderedList"),
 				h3: document.queryCommandValue("formatBlock")?.toLowerCase().includes("h3"),
+				highlight: document.queryCommandValue("backColor") === "yellow",
 			});
 		} catch {}
 	};
@@ -83,16 +87,54 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 	};
 
 	/* ===============================
-     INSERT IMAGE AT CURSOR
+     EXTRA FORMATTING
+  =============================== */
+
+	const toggleHighlight = () => {
+		editorRef.current.focus();
+		const isActive = document.queryCommandValue("backColor") === "yellow";
+
+		document.execCommand("backColor", false, isActive ? "transparent" : "yellow");
+
+		handleInput();
+	};
+
+	const insertInlineCode = () => {
+		editorRef.current.focus();
+		const selection = window.getSelection();
+		const selectedText = selection.toString();
+
+		if (!selectedText) return;
+
+		document.execCommand("insertHTML", false, `<code class="ne-inline-code">${selectedText}</code>`);
+
+		handleInput();
+	};
+
+	const insertQuote = () => {
+		editorRef.current.focus();
+		document.execCommand("formatBlock", false, "blockquote");
+		handleInput();
+	};
+
+	const insertDivider = () => {
+		editorRef.current.focus();
+		document.execCommand("insertHorizontalRule");
+		handleInput();
+	};
+
+	/* ===============================
+     INSERT IMAGE
   =============================== */
 	const insertImageAtCursor = (url) => {
 		const img = document.createElement("img");
 		img.src = url;
 		img.style.maxWidth = "60%";
-    img.style.height = "auto";
-    img.style.display = "block";
-    img.style.margin = "24px auto";
-    img.style.borderRadius = "12px";
+		img.style.height = "auto";
+		img.style.display = "block";
+		img.style.margin = "24px auto";
+		img.style.borderRadius = "12px";
+
 		const selection = window.getSelection();
 
 		if (savedRange.current) {
@@ -106,7 +148,6 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 		range.deleteContents();
 		range.insertNode(img);
 
-		// Move cursor after image
 		range.setStartAfter(img);
 		range.setEndAfter(img);
 		selection.removeAllRanges();
@@ -115,9 +156,6 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 		handleInput();
 	};
 
-	/* ===============================
-     HANDLE IMAGE CLICK
-  =============================== */
 	const handleImageClick = () => {
 		const noteId = window.location.pathname.split("/").pop();
 
@@ -129,7 +167,6 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 		const input = document.createElement("input");
 		input.type = "file";
 		input.accept = "image/*";
-
 		input.click();
 
 		input.onchange = async () => {
@@ -164,31 +201,63 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 	return (
 		<div>
 			<div className="ne-toolbar">
-				<button type="button" className={`btn btn-outline-secondary ${format.bold ? "active" : ""}`} onClick={() => exec("bold")}>
-					<b>B</b>
+				{/* Bold */}
+				<button type="button" className={`btn btn-outline-secondary ${format.bold ? "active" : ""}`} onClick={() => exec("bold")} data-bs-toggle="tooltip" data-bs-placement="top" title="Bold (Ctrl + B)">
+					<i className="fa-solid fa-bold"></i>
 				</button>
 
-				<button type="button" className={`btn btn-outline-secondary ${format.italic ? "active" : ""}`} onClick={() => exec("italic")}>
-					<i>I</i>
+				{/* Italic */}
+				<button type="button" className={`btn btn-outline-secondary ${format.italic ? "active" : ""}`} onClick={() => exec("italic")} data-bs-toggle="tooltip" title="Italic (Ctrl + I)">
+					<i className="fa-solid fa-italic"></i>
 				</button>
 
-				<button type="button" className={`btn btn-outline-secondary ${format.underline ? "active" : ""}`} onClick={() => exec("underline")}>
-					<u>U</u>
+				{/* Underline */}
+				<button type="button" className={`btn btn-outline-secondary ${format.underline ? "active" : ""}`} onClick={() => exec("underline")} data-bs-toggle="tooltip" title="Underline (Ctrl + U)">
+					<i className="fa-solid fa-underline"></i>
 				</button>
 
-				<button type="button" className={`btn btn-outline-secondary ${format.ul ? "active" : ""}`} onClick={() => exec("insertUnorderedList")}>
-					•List
+				{/* Strikethrough */}
+				<button type="button" className={`btn btn-outline-secondary ${format.strike ? "active" : ""}`} onClick={() => exec("strikeThrough")} data-bs-toggle="tooltip" title="Strikethrough">
+					<i className="fa-solid fa-strikethrough"></i>
 				</button>
 
-				<button type="button" className={`btn btn-outline-secondary ${format.ol ? "active" : ""}`} onClick={() => exec("insertOrderedList")}>
-					1.List
+				{/* Highlight */}
+				<button type="button" className={`btn btn-outline-secondary ${format.highlight ? "active" : ""}`} onClick={toggleHighlight} data-bs-toggle="tooltip" title="Highlight">
+					<i className="fa-solid fa-highlighter"></i>
 				</button>
 
-				<button type="button" className={`btn btn-outline-secondary ${format.h3 ? "active" : ""}`} onClick={() => exec("formatBlock", "h3")}>
-					H3
+				{/* Bullet List */}
+				<button type="button" className={`btn btn-outline-secondary ${format.ul ? "active" : ""}`} onClick={() => exec("insertUnorderedList")} data-bs-toggle="tooltip" title="Bullet List">
+					<i className="fa-solid fa-list-ul"></i>
 				</button>
 
-				<button type="button" className="btn btn-outline-secondary" onClick={handleImageClick}>
+				{/* Numbered List */}
+				<button type="button" className={`btn btn-outline-secondary ${format.ol ? "active" : ""}`} onClick={() => exec("insertOrderedList")} data-bs-toggle="tooltip" title="Numbered List">
+					<i className="fa-solid fa-list-ol"></i>
+				</button>
+
+				{/* H3 */}
+				<button type="button" className={`btn btn-outline-secondary ${format.h3 ? "active" : ""}`} onClick={() => exec("formatBlock", "h3")} data-bs-toggle="tooltip" title="Heading 3">
+					<i className="fa-solid fa-heading"></i>
+				</button>
+
+				{/* Quote */}
+				<button type="button" className="btn btn-outline-secondary" onClick={insertQuote} data-bs-toggle="tooltip" title="Quote">
+					<i className="fa-solid fa-quote-left"></i>
+				</button>
+
+				{/* Divider */}
+				<button type="button" className="btn btn-outline-secondary" onClick={insertDivider} data-bs-toggle="tooltip" title="Divider">
+					<i className="fa-solid fa-minus"></i>
+				</button>
+
+				{/* Inline Code */}
+				<button type="button" className="btn btn-outline-secondary" onClick={insertInlineCode} data-bs-toggle="tooltip" title="Inline Code">
+					<i className="fa-solid fa-code"></i>
+				</button>
+
+				{/* Image */}
+				<button type="button" className="btn btn-outline-secondary" onClick={handleImageClick} data-bs-toggle="tooltip" title="Insert Image">
 					<i className="fa-solid fa-image"></i>
 				</button>
 			</div>
@@ -197,6 +266,7 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 				ref={editorRef}
 				className="form-control"
 				contentEditable
+				style={{ minHeight }}
 				onInput={handleInput}
 				onClick={() => {
 					saveSelection();
