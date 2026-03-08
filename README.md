@@ -1,44 +1,90 @@
-
 # 🗂️ NoteVault
 
-**NoteVault** is a secure, modern note-taking web application built using the **MERN stack**.  
-It allows users to create, organize, and manage notes with support for attachments, custom tags, reminders, and version history.
+**NoteVault** is a modern, secure note-taking web application built using the **MERN stack**.
 
-This project is designed as a **real-world portfolio application**, focusing on clean architecture, security, and scalability.
+It allows users to create, organize, and manage notes with **rich text editing, attachments, reminders, tags, and version history** while maintaining a fast and responsive user experience.
 
----
+This project is designed as a **real-world portfolio application**, focusing on:
 
-## ✨ Features
-
-- 🔐 Secure user authentication (JWT)
-- 📝 Create, edit, and delete notes
-- 📎 Attach images, PDFs, and documents
-- 🏷️ Custom tags for better organization
-- ⏰ Reminders for important notes
-- 🕘 Version history to track and restore changes
-- 🖼️ OCR support (extract text from images)
-- ⚡ Fast, clean, and responsive UI
-- 🤖 AI-ready architecture for future features
+- Clean architecture  
+- Security  
+- Scalability  
+- Modern UI/UX practices  
 
 ---
 
-## 🛠 Tech Stack
+# ✨ Features
 
-### Frontend
+## 🔐 Authentication & Security
+- JWT-based authentication
+- Secure API routes
+- Protected frontend routes
+
+## 📝 Notes Management
+- Create, edit, and delete notes
+- Rich text editor
+- Autosave while editing
+- Pin important notes
+
+## 📎 Attachments
+- Upload images and PDF documents
+- Attach files directly to notes
+- View and remove attachments
+
+## 🏷 Organization
+- Built-in tag system
+- Custom tags supported
+- Tag icons and color mapping
+
+## ⏰ Reminders
+- Add reminders to notes
+- Reminder notifications
+- Background reminder manager
+
+## 🕘 Version History
+- Automatic note version tracking
+- Browse previous versions
+- Restore older versions
+
+## 🖼 OCR (Text Extraction)
+- Extract text from uploaded images
+- OCR powered by **Tesseract**
+
+## ⚡ Modern UX
+- Skeleton loaders
+- Route-level loading spinner
+- Lazy-loaded pages
+- Responsive UI
+
+## 💾 Offline Support
+- Note cache system for improved reliability
+
+## 🤖 AI-Ready Architecture
+- AI suggestion route prepared for future AI features
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
 - React (Create React App)
-- Bootstrap
 - React Router
+- Bootstrap
+- Context API
+- Lazy loading + Suspense
 
-### Backend
+## Backend
 - Node.js
 - Express.js
 - MongoDB (Mongoose)
 - JWT Authentication
 - Multer (file uploads)
+- Tesseract OCR
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
+
 
 ```
 
@@ -226,8 +272,8 @@ When deploying:
 
 * AI-powered note suggestions
 * Full-text search
-* Note sharing
-* Calendar-based reminders
+* Note sharing system
+* Collaborative notes
 * Mobile optimization
 
 ---
@@ -246,4 +292,3 @@ If you find this project useful:
 * ⭐ Star the repository
 * 🍴 Fork it
 * 🛠️ Explore and improve it
-
