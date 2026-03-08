@@ -3,7 +3,6 @@
 .note-card {
   position: relative;
   overflow: hidden;
-  transition: all 0.25s ease;
 }
 
 .note-card::before {
@@ -23,7 +22,7 @@
 
 .note-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
 }
 
 .note-card:hover::before {
@@ -33,7 +32,7 @@
 /* Pinned subtle glow */
 .note-pinned {
 	border: 1px solid rgba(139, 92, 246, 0.5);
-  background: rgba(30, 41, 59, 0.85);
+  background: var(--bg-card);
 }
 
 .note-title {
@@ -43,7 +42,7 @@
 }	
 
 .note-footer {
-	border-top: 1px solid rgba(255, 255, 255, 0.05);
+	border-top: 1px solid var(--border-soft);;
   	background: transparent;
 	opacity: 0.5;
   	transition: opacity 0.2s ease;
@@ -65,11 +64,27 @@
   	z-index: 5;
 	border: none;
 	font-size: 0.95rem;
-	color: #94a3b8;
+	color: var(--text-muted);
 	transition: all 0.2s ease;
 }
 
 .note-icon:hover {
-	color: #ffffff;
+	color: var(--text-main);
 	transform: scale(1.2);
+}
+
+
+/* ======================================================
+   NOTE PREVIEW
+====================================================== */
+
+.note-preview-text {
+	font-size: 0.95rem;
+	color: var(--text-secondary);
+	line-height: 1.4;
+	display: -webkit-box;
+	-webkit-line-clamp: 4;
+	-webkit-box-orient: vertical;
+	line-clamp: 4;
+	overflow: hidden;
 }

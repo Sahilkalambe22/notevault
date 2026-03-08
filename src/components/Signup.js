@@ -13,7 +13,7 @@ const Signup = (props) => {
 	});
 
 	const navigate = useNavigate();
-	const host = "http://localhost:5000"; 
+	const host = "http://localhost:5000";
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -34,9 +34,10 @@ const Signup = (props) => {
 		const json = await response.json();
 
 		if (json.success) {
-			localStorage.setItem("token", json.authtoken);
-			navigate("/profile");
-			props.showAlert("Signup Successful", "success");
+			if (json.success) {
+				navigate("/verify-otp", { state: { email: credentials.email } });
+				props.showAlert("OTP sent to your email", "success");
+			}
 		} else {
 			props.showAlert("Invalid credentials", "warning");
 		}

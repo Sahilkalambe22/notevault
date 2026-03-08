@@ -10,13 +10,22 @@ import "./NoteEditorPage.css";
 
 const TAGS = ["Work", "Random", "Important", "Todo", "Personal", "Priority"];
 
+const TAG_ICON_MAP = {
+	Work: "fa-solid fa-briefcase",
+	Important: "fa-solid fa-triangle-exclamation",
+	Personal: "fa-solid fa-user",
+	Todo: "fa-solid fa-list-check",
+	Priority: "fa-solid fa-bolt",
+	Random: "fa-solid fa-shuffle",
+};
+
 const TAG_COLOR_MAP = {
-	Work: "primary",
-	Random: "secondary",
-	Important: "danger",
-	Todo: "success",
-	Personal: "light",
-	Priority: "warning",
+	Work: { bg: "#2563eb", text: "#ffffff" }, // blue
+	Important: { bg: "#ef4444", text: "#ffffff" }, // red
+	Personal: { bg: "#8b5cf6", text: "#ffffff" }, // purple
+	Todo: { bg: "#16a34a", text: "#ffffff" }, // green
+	Priority: { bg: "#facc15", text: "#000000" }, // yellow
+	Random: { bg: "#6b7280", text: "#ffffff" }, // gray
 };
 
 const NoteEditorPage = ({ note, showAlert }) => {
@@ -157,7 +166,8 @@ const NoteEditorPage = ({ note, showAlert }) => {
 
 	const displayTag = data.tagCustom || data.tagType || originalTagRef.current || "Random";
 
-	const badgeColor = TAG_COLOR_MAP[data.tagType || "Random"] || "secondary";
+	const effectiveTag = data.tagType || "Random";
+	const tagIcon = TAG_ICON_MAP[effectiveTag];
 
 	/* ================= RENDER ================= */
 	return (
@@ -227,7 +237,8 @@ const NoteEditorPage = ({ note, showAlert }) => {
 							)}
 
 							{/* 🏷️ Tag */}
-							<span className={`badge text-bg-${badgeColor} editor-tag-badge`} onClick={() => setShowTagModal(true)}>
+							<span className={`editor-tag-badge tag-${effectiveTag.toLowerCase()}`} onClick={() => setShowTagModal(true)}>
+								{tagIcon && <i className={tagIcon}></i>}
 								{displayTag}
 							</span>
 						</div>

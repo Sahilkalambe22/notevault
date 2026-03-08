@@ -15,7 +15,7 @@ const Notes = (props) => {
 	const { notes, getNotes } = context;
 	const navigate = useNavigate();
 
-	// 🔁 Fetch notes on mount (if logged in)
+	// 🔁 Fetch notes on mount (if logged in) 
 	useEffect(
 		() => {
 			let mounted = true;

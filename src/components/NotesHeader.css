@@ -2,30 +2,45 @@
 
 .notes-header {
 	display: flex;
+
 	justify-content: space-between;
+
 	align-items: center;
+
 	margin-bottom: 18px;
 }
 
 .notes-title {
 	margin: 0;
+
 	font-weight: 600;
+
 	font-size: 1.2rem;
+
+	color: var(--text-main);
 }
 
 .notes-header-right {
 	display: flex;
+
 	align-items: center;
+
 	gap: 14px;
 }
 
+/* ================= ADD NOTE BUTTON ================= */
+
 .notes-add-btn {
 	padding: 6px 18px;
+
 	border-radius: 999px;
+
 	border: none;
+
 	font-weight: 500;
 
-	background: linear-gradient(135deg, #6366f1, #8b5cf6);
+	background: linear-gradient(135deg, var(--accent), var(--accent-2));
+
 	color: white;
 
 	transition:
@@ -35,27 +50,38 @@
 
 .notes-add-btn:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+
+	box-shadow: 0 8px 25px color-mix(in srgb, var(--accent-2) 50%, transparent);
 }
+
+/* ================= TOTAL NOTES CARD ================= */
 
 .notes-total-card {
 	padding: 6px 14px;
+
 	border-radius: 12px;
 
-	background: rgba(30, 41, 59, 0.8);
-	border: 1px solid rgba(255, 255, 255, 0.06);
+	background: var(--bg-soft);
+
+	border: 1px solid var(--border-soft);
+
+	color: var(--text-secondary);
 }
 
-/* Mobile */
+/* ================= MOBILE ================= */
+
 @media (max-width: 768px) {
 	.notes-header {
 		flex-direction: column;
+
 		align-items: flex-start;
+
 		gap: 12px;
 	}
 
 	.notes-header-right {
 		width: 100%;
+
 		justify-content: space-between;
 	}
 }

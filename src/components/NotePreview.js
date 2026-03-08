@@ -3,7 +3,7 @@ import "./NoteItem.css";
 
 const NotePreview = ({ note }) => {
   return (
-    <div className="note-card">
+    <div className="">
       <h2>{note.title}</h2>
 
       <div

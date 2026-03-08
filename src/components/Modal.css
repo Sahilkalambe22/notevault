@@ -1,309 +1,380 @@
 /* =========================
-   Reminder Modal - Glass Theme
+   Modal - Glass Theme
 ========================= */
 
 .modal-backdrop-custom {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.65);
+	backdrop-filter: blur(6px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2000;
 }
 
+/* Modal Card */
+
 .modal-card {
-  width: 380px;
-  max-width: 92%;
-  padding: 28px;
-  border-radius: 18px;
+	width: 380px;
+	max-width: 92%;
+	padding: 28px;
 
-  background: linear-gradient(
-    145deg,
-    rgba(30, 41, 59, 0.95),
-    rgba(15, 23, 42, 0.95)
-  );
+	border-radius: 18px;
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
+	background: var(--bg-card);
 
-  box-shadow:
-    0 40px 80px rgba(0, 0, 0, 0.6),
-    0 0 60px rgba(99, 102, 241, 0.15);
+	border: 1px solid var(--border-soft);
 
-  color: #e5e7eb;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+
+	color: var(--text-main);
 }
 
 .modal-card h5 {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #cbd5e1;
+	font-size: 1rem;
+	font-weight: 600;
+	margin-bottom: 16px;
+	color: var(--text-secondary);
 }
 
+/* Inputs */
+
 .modal-card input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
-  color: #e5e7eb;
-  margin-bottom: 20px;
+	width: 100%;
+	padding: 10px 12px;
+
+	border-radius: 12px;
+
+	border: 1px solid var(--border-soft);
+
+	background: var(--bg-soft);
+
+	color: var(--text-main);
+
+	margin-bottom: 20px;
 }
 
 .modal-card input:focus {
-  outline: none;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
 }
-
 
 /* =========================
    DatePicker Input
 ========================= */
 
 .custom-datepicker-input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
-  color: #e5e7eb;
-  margin-bottom: 20px;
-  font-size: 0.9rem;
+	width: 100%;
+	padding: 10px 12px;
+
+	border-radius: 12px;
+
+	border: 1px solid var(--border-soft);
+
+	background: var(--bg-soft);
+
+	color: var(--text-main);
+
+	margin-bottom: 20px;
+
+	font-size: 0.9rem;
 }
 
 .custom-datepicker-input:focus {
-  outline: none;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
-
 /* =========================
-   React DatePicker - NoteVault Glass Version
+   React DatePicker Glass
 ========================= */
 
 .react-datepicker {
-  font-size: 0.85rem;
+	font-size: 0.85rem;
 
-  background: rgba(17, 25, 40, 0.75) !important;
-  backdrop-filter: blur(18px);
+	background: var(--bg-card) !important;
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+	backdrop-filter: blur(18px);
 
-  color: #e5e7eb !important;
+	border: 1px solid var(--border-soft);
 
-  box-shadow:
-    0 30px 60px rgba(0, 0, 0, 0.6),
-    0 0 40px rgba(99, 102, 241, 0.12);
+	border-radius: 16px;
+
+	color: var(--text-main) !important;
+
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
 
 /* Header */
+
 .react-datepicker__header {
-  background: transparent !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-top: 12px;
+	background: transparent !important;
+
+	border-bottom: 1px solid var(--border-soft);
+
+	padding-top: 12px;
 }
 
 /* Month title */
+
 .react-datepicker__current-month {
-  color: #e5e7eb !important;
-  font-weight: 600;
-  font-size: 0.95rem;
+	color: var(--text-main) !important;
+
+	font-weight: 600;
+
+	font-size: 0.95rem;
 }
 
 /* Day names */
+
 .react-datepicker__day-name {
-  color: #94a3b8 	!important;
-  font-size: 0.75rem;
+	color: var(--text-muted) !important;
+
+	font-size: 0.75rem;
 }
 
 /* Days */
+
 .react-datepicker__day {
-  color: #cbd5e1 !important;
-  border-radius: 10px;
-  transition: 0.15s ease;
+	color: var(--text-secondary) !important;
+
+	border-radius: 10px;
+
+	transition: 0.15s ease;
 }
 
 .react-datepicker__day:hover {
-  background: rgba(139, 92, 246, 0.18);
+	background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 /* Selected */
+
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-  color: white !important;
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.5);
+	background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
+
+	color: white !important;
+
+	box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 /* Today */
+
 .react-datepicker__day--today {
-  border: 1px solid rgba(139, 92, 246, 0.6);
+	border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
 }
 
 /* Navigation arrows */
+
 .react-datepicker__navigation-icon::before {
-  border-color: #cbd5e1;
+	border-color: var(--text-secondary);
 }
 
 /* =========================
-   Time Panel (Integrated Properly)
+   Time Panel
 ========================= */
 
 .react-datepicker__time-container {
-  background: rgba(17, 25, 40, 0.75) !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.06) !important;
+	background: var(--bg-card) !important;
+
+	border-left: 1px solid var(--border-soft) !important;
 }
 
-.react-datepicker__time {
-  background: transparent !important;
-}
-
-.react-datepicker__time-box {
-  background: transparent !important;
-}
-
+.react-datepicker__time,
+.react-datepicker__time-box,
 .react-datepicker__time-list {
-  background: transparent !important;
+	background: transparent !important;
 }
 
 .react-datepicker__time-list-item {
-  height: 34px;
-  line-height: 34px;
-  color: #cbd5e1 !important;
-  border-radius: 8px;
-  margin: 2px 6px;
-  transition: 0.15s ease;
+	height: 34px;
+
+	line-height: 34px;
+
+	color: var(--text-secondary) !important;
+
+	border-radius: 8px;
+
+	margin: 2px 6px;
+
+	transition: 0.15s ease;
 }
 
 .react-datepicker__time-list-item:hover {
-  background: rgba(139, 92, 246, 0.18);
+	background: color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .react-datepicker__time-list-item--selected {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-  color: white !important;
+	background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
+
+	color: white !important;
 }
 
-/* Remove hard edges */
+/* Remove triangle */
+
 .react-datepicker__triangle {
-  display: none;
+	display: none;
 }
 
 /* Animation */
+
 .react-datepicker {
-  animation: fadeInScale 0.18s ease;
+	animation: fadeInScale 0.18s ease;
 }
 
 @keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: translateY(6px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+	from {
+		opacity: 0;
+		transform: translateY(6px) scale(0.96);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
 }
 
+/* =========================
+   Glass Inputs
+========================= */
 
-/* Glass Select */
 .glass-select {
-  flex: 1;
-  padding: 8px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
-  color: #e5e7eb;
+	flex: 1;
+
+	padding: 8px 12px;
+
+	border-radius: 12px;
+
+	border: 1px solid var(--border-soft);
+
+	background: var(--bg-soft);
+
+	color: var(--text-main);
 }
 
 .glass-select:focus {
-  outline: none;
-  border-color: #8b5cf6;
+	outline: none;
+	border-color: var(--accent);
 }
 
-/* Glass Input */
 .glass-input {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
-  color: #e5e7eb;
+	width: 100%;
+
+	padding: 10px 12px;
+
+	border-radius: 12px;
+
+	border: 1px solid var(--border-soft);
+
+	background: var(--bg-soft);
+
+	color: var(--text-main);
 }
 
 .glass-input:focus {
-  outline: none;
-  border-color: #8b5cf6;
+	outline: none;
+	border-color: var(--accent);
 }
 
 /* Preview badge */
+
 .tag-preview {
-  padding: 6px 14px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  white-space: nowrap;
+	padding: 6px 14px;
+
+	border-radius: 999px;
+
+	display: inline-flex;
+
+	align-items: center;
+
+	gap: 6px;
+
+	font-size: 0.85rem;
+
+	font-weight: 500;
+
+	white-space: nowrap;
 }
 
 /* Help text */
+
 .modal-help {
-  font-size: 0.8rem;
-  color: #94a3b8;
-  margin-top: 8px;
+	font-size: 0.8rem;
+
+	color: var(--text-muted);
+
+	margin-top: 8px;
 }
 
+/* Dropdown */
+
 .glass-dropdown {
-  position: relative;
-  width: 220px;
+	position: relative;
+	width: 220px;
 }
 
 .glass-dropdown-trigger {
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.05);
-  color: #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
+	padding: 10px 12px;
+
+	border-radius: 12px;
+
+	border: 1px solid var(--border-soft);
+
+	background: var(--bg-soft);
+
+	color: var(--text-main);
+
+	display: flex;
+
+	justify-content: space-between;
+
+	align-items: center;
+
+	cursor: pointer;
 }
 
 .glass-dropdown-menu {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  width: 100%;
-  background: rgba(17, 25, 40, 0.9);
-  backdrop-filter: blur(18px);
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-  overflow: hidden;
-  z-index: 10;
+	position: absolute;
+
+	top: 110%;
+
+	left: 0;
+
+	width: 100%;
+
+	background: var(--bg-card);
+
+	backdrop-filter: blur(18px);
+
+	border-radius: 14px;
+
+	border: 1px solid var(--border-soft);
+
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+
+	overflow: hidden;
+
+	z-index: 10;
 }
 
 .glass-dropdown-item {
-  padding: 10px 12px;
-  color: #cbd5e1;
-  cursor: pointer;
-  transition: 0.15s ease;
+	padding: 10px 12px;
+
+	color: var(--text-secondary);
+
+	cursor: pointer;
+
+	transition: 0.15s ease;
 }
 
 .glass-dropdown-item:hover {
-  background: rgba(139,92,246,0.2);
+	background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
-

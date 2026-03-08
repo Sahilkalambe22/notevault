@@ -1,66 +1,101 @@
 /* ================= FOOTER ================= */
 
 .nv-footer {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  color: #cbd5e1;
-  border-top: 1px solid rgba(255,255,255,0.05);
+	background: var(--bg-card);
+
+	color: var(--text-secondary);
+
+	border-top: 1px solid var(--border-soft);
+
+	backdrop-filter: blur(12px);
 }
+
+/* Logo */
 
 .nv-footer-logo {
-  font-weight: 700;
-  font-size: 1.6rem;
-  color: #ffffff;
+	font-weight: 700;
+
+	font-size: 1.6rem;
+
+	color: var(--text-main);
 }
+
+/* Description */
 
 .nv-footer-text {
-  font-size: 0.95rem;
-  margin-top: 10px;
-  line-height: 1.6;
+	font-size: 0.95rem;
+
+	margin-top: 10px;
+
+	line-height: 1.6;
+
+	color: var(--text-secondary);
 }
+
+/* Section heading */
 
 .nv-footer-heading {
-  font-weight: 600;
-  margin-bottom: 15px;
-  color: #f1f5f9;
+	font-weight: 600;
+
+	margin-bottom: 15px;
+
+	color: var(--text-main);
 }
 
+/* Links */
+
 .nv-footer-links {
-  list-style: none;
-  padding: 0;
+	list-style: none;
+
+	padding: 0;
 }
 
 .nv-footer-links li {
-  margin-bottom: 10px;
+	margin-bottom: 10px;
 }
 
 .nv-footer-links a {
-  text-decoration: none;
-  color: #cbd5e1;
-  transition: 0.3s ease;
+	text-decoration: none;
+
+	color: var(--text-secondary);
+
+	transition: 0.25s ease;
 }
 
 .nv-footer-links a:hover {
-  color: #38bdf8;
+	color: var(--accent);
 }
 
+/* Social icons */
+
 .nv-footer-socials a {
-  font-size: 1.4rem;
-  margin-right: 15px;
-  color: #cbd5e1;
-  transition: 0.3s ease;
+	font-size: 1.4rem;
+
+	margin-right: 15px;
+
+	color: var(--text-secondary);
+
+	transition: all 0.25s ease;
 }
 
 .nv-footer-socials a:hover {
-  color: #38bdf8;
-  transform: translateY(-3px);
+	color: var(--accent);
+
+	transform: translateY(-3px);
 }
+
+/* Divider */
 
 .nv-footer-divider {
-  margin: 30px 0 15px 0;
-  border-color: rgba(255,255,255,0.08);
+	margin: 30px 0 15px 0;
+
+	border-color: var(--border-soft);
 }
 
+/* Bottom copyright */
+
 .nv-footer-bottom {
-  font-size: 0.85rem;
-  color: #94a3b8;
+	font-size: 0.85rem;
+
+	color: var(--text-muted);
 }

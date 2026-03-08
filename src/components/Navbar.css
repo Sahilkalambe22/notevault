@@ -6,8 +6,8 @@
 	z-index: 1000;
 
 	backdrop-filter: blur(16px);
-	background: rgba(15, 23, 42, 0.75);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+	background: color-mix(in srgb, var(--bg-card) 85%, transparent);
+border-bottom: 1px solid var(--border-soft);
 
 	padding: 14px 0;
 }
@@ -27,13 +27,13 @@
 .nv-name {
 	font-size: 1.3rem;
 	font-weight: 700;
-	color: #f8fafc;
+	color: var(--text-main);
 	text-decoration: none;
 	letter-spacing: -0.5px;
 }
 
 .nv-name:hover {
-	color: #ffffff;
+	color: var(--text-main);
 }
 
 .nv-right {
@@ -45,24 +45,24 @@
 .nv-link {
 	text-decoration: none;
 	font-weight: 500;
-	color: #cbd5e1;
+	color: var(--text-secondary);
 	transition: color 0.2s ease;
 }
 
 .nv-link:hover {
-	color: #ffffff;
+	color: var(--text-main);
 }
 
 .nv-link.active {
-	color: #6366f1 !important;
+	color: var(--accent) !important;
 }
 
 /* CTA Button */
 .nv-cta {
 	padding: 8px 18px;
 	border-radius: 8px;
-	background: linear-gradient(135deg, #6366f1, #8b5cf6);
-	color: white;
+	background: linear-gradient(135deg, var(--accent), var(--accent-2));
+	color: var(--text-main);
 	font-weight: 600;
 	text-decoration: none;
 	box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
@@ -80,7 +80,7 @@
 .nv-profile-icon {
 	font-size: 20px;
 	cursor: pointer;
-	color: #e5e7eb;
+	color: var(--text-main);
 	transition: transform 0.2s ease;
 }
 
@@ -90,17 +90,21 @@
 
 /* Dropdown */
 .nv-dropdown {
-	background: #1e293b;
-	border: 1px solid rgba(255, 255, 255, 0.08);
+	background: var(--bg-card);
+border: 1px solid var(--border-soft);
 	border-radius: 12px;
 	padding: 8px;
 }
 
 .nv-dropdown .dropdown-item {
-	color: #e5e7eb;
+	color: var(--text-main);
 }
 
 .nv-dropdown .dropdown-item:hover {
 	background: rgba(99, 102, 241, 0.15);
-	color: white;
+	color: var(--text-main);
+}
+
+.form-check-input {
+  cursor: pointer;
 }

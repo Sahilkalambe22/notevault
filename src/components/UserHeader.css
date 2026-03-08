@@ -1,70 +1,102 @@
+/* ================= PROFILE HEADER ================= */
+
 .profile-header {
 	padding: 120px 24px 40px; /* top padding accounts for navbar */
+
 	max-width: 1200px;
+
 	margin: 0 auto;
 }
 
 .profile-header-content {
 	display: flex;
+
 	align-items: center;
+
 	justify-content: space-between;
 }
 
+/* ================= TITLE ================= */
+
 .profile-title {
 	font-size: 2.2rem;
+
 	font-weight: 700;
+
 	margin: 0;
-	color: #f8fafc;
+
+	color: var(--text-main);
 }
 
 .profile-subtitle {
 	margin-top: 8px;
+
 	font-size: 1rem;
-	color: #94a3b8;
+
+	color: var(--text-muted);
 }
+
+/* ================= LEFT SIDE ================= */
 
 .profile-left {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 24px;
+	display: flex;
+
+	flex-wrap: wrap;
+
+	align-items: center;
+
+	gap: 24px;
 }
 
-/* Avatar Circle */
+/* ================= AVATAR ================= */
+
 .profile-avatar {
-  width: 90px;   /* was 70px */
-  height: 90px;
-  border-radius: 50%;
-  overflow: hidden;
+	width: 90px;
+	height: 90px;
 
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+	border-radius: 50%;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	overflow: hidden;
 
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
-  transition: 0.3s ease;
+	background: linear-gradient(135deg, var(--accent), var(--accent-2));
+
+	display: flex;
+
+	align-items: center;
+	justify-content: center;
+
+	box-shadow: 0 0 30px color-mix(in srgb, var(--accent-2) 60%, transparent);
+
+	transition: 0.3s ease;
 }
 
 .profile-avatar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+	transform: scale(1.05);
+
+	box-shadow: 0 0 40px color-mix(in srgb, var(--accent-2) 80%, transparent);
 }
 
-/* Avatar Image */
+/* ================= AVATAR IMAGE ================= */
+
 .profile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+	width: 100%;
+
+	height: 100%;
+
+	object-fit: cover;
 }
 
-/* Default Letter */
+/* ================= DEFAULT LETTER ================= */
+
 .profile-avatar-letter {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: white;
+	font-size: 1.8rem;
+
+	font-weight: 700;
+
+	color: white;
 }
+
+/* ================= MOBILE ================= */
 
 @media (max-width: 768px) {
 	.profile-header {

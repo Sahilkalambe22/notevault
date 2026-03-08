@@ -12,7 +12,9 @@
     "bootstrap": "^5.3.8",
     "concurrently": "^9.2.1",
     "diff": "^8.0.2",
+    "express-rate-limit": "^8.2.1",
     "framer-motion": "^12.34.3",
+    "nodemailer": "^8.0.1",
     "react": "^19.2.0",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.0",
@@ -47,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "baseline-browser-mapping": "^2.10.0"
   }
 }

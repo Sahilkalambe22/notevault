@@ -37,7 +37,7 @@ const TagSelectorModal = ({ show, onClose, onDone, tags, typeValue, customValue,
 
 	const effectiveType = typeValue || "Random";
 	const previewLabel = customValue?.trim() || effectiveType;
-	const previewIcon = TAG_ICON_MAP[effectiveType];
+	const previewIcon = TAG_ICON_MAP[effectiveType]; 
 	const previewStyle = TAG_STYLE_MAP[effectiveType];
 
 	return (

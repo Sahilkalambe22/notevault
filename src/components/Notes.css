@@ -1,8 +1,8 @@
 /* ================= DASHBOARD CARDS ================= */
 
 .dashboard-card {
-	background: rgba(30, 41, 59, 0.85);
-	border: 1px solid rgba(255, 255, 255, 0.06);
+background: var(--bg-card);
+border: 1px solid var(--border-soft);
 	border-radius: 14px;
 	padding: 18px;
 	backdrop-filter: blur(10px);
@@ -16,7 +16,7 @@
 
 .dashboard-card h6 {
 	font-size: 0.85rem;
-	color: #94a3b8;
+	color: var(--text-muted);
 	margin-bottom: 6px;
 }
 
@@ -45,10 +45,9 @@
 	padding: 10px 14px;
 
 	border-radius: 12px;
-	border: 1px solid rgba(255, 255, 255, 0.08);
-
-	background: rgba(30, 41, 59, 0.9);
-	color: #e5e7eb;
+	border: 1px solid var(--border-soft);
+background: var(--bg-card);
+color: var(--text-main);
 
 	outline: none;
 	transition:
@@ -59,13 +58,13 @@
 /* Focus state */
 .notes-select:focus,
 .notes-search:focus {
-	border-color: #6366f1;
-	box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+	border-color: var(--accent);
+	box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
 /* Placeholder */
 .notes-search::placeholder {
-	color: #94a3b8;
+	color: var(--text-muted);
 }
 
 /* MOBILE */
@@ -84,8 +83,8 @@
 
 	border-radius: 18px;
 
-	background: rgba(30, 41, 59, 0.85);
-	border: 1px solid rgba(255, 255, 255, 0.06);
+	background: var(--bg-card);
+border: 1px solid var(--border-soft);
 
 	backdrop-filter: blur(12px);
 }
@@ -102,6 +101,6 @@
 }
 
 .empty-state-card p {
-	color: #94a3b8;
+	color: var(--text-muted);
 	font-size: 0.95rem;
 }

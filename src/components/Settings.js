@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "./Settings.css";
 
-const Settings = (props) => {
+const Settings = ({ showAlert }) => {
 	const navigate = useNavigate();
 
 	const [isEditing, setIsEditing] = useState(false);
@@ -48,14 +48,14 @@ const Settings = (props) => {
 				localStorage.setItem("name", data.name || "");
 				localStorage.setItem("avatar", data.avatar || "");
 			} catch {
-				props.showAlert("Failed to load user data", "danger");
+				showAlert("Failed to load user data", "danger");
 			} finally {
 				setLoading(false);
 			}
 		};
 
 		fetchUser();
-	}, []);
+	}, [showAlert]);
 
 	/* ================= PARSE AVATAR ================= */
 	const parsedAvatar = form.avatar ? form.avatar.split(":") : [];
@@ -98,9 +98,9 @@ const Settings = (props) => {
 			setForm({ ...form, avatar: avatarValue });
 			setShowAvatarPicker(false);
 			localStorage.setItem("avatar", avatarValue);
-			props.showAlert("Avatar updated", "success");
+			showAlert("Avatar updated", "success");
 		} catch {
-			props.showAlert("Failed to update avatar", "danger");
+			showAlert("Failed to update avatar", "danger");
 		}
 	};
 
@@ -123,9 +123,9 @@ const Settings = (props) => {
 
 			localStorage.setItem("name", form.name);
 			setIsEditing(false);
-			props.showAlert("Profile updated successfully", "success");
+			showAlert("Profile updated successfully", "success");
 		} catch {
-			props.showAlert("Update failed", "danger");
+			showAlert("Update failed", "danger");
 		}
 	};
 
@@ -134,12 +134,12 @@ const Settings = (props) => {
 		e.preventDefault();
 
 		if (!form.password || !form.confirmPassword) {
-			props.showAlert("Fill all fields", "warning");
+			showAlert("Fill all fields", "warning");
 			return;
 		}
 
 		if (form.password !== form.confirmPassword) {
-			props.showAlert("Passwords do not match", "warning");
+			showAlert("Passwords do not match", "warning");
 			return;
 		}
 
@@ -153,7 +153,7 @@ const Settings = (props) => {
 				body: JSON.stringify({ password: form.password }),
 			});
 
-			props.showAlert("Password updated", "success");
+			showAlert("Password updated", "success");
 
 			setForm({
 				...form,
@@ -163,7 +163,7 @@ const Settings = (props) => {
 
 			setShowPasswordForm(false);
 		} catch {
-			props.showAlert("Password update failed", "danger");
+			showAlert("Password update failed", "danger");
 		}
 	};
 
@@ -173,7 +173,7 @@ const Settings = (props) => {
 
 		localStorage.removeItem("token");
 		localStorage.removeItem("name");
-		props.showAlert("Logged out successfully", "success");
+		showAlert("Logged out successfully", "success");
 		navigate("/login");
 	};
 
@@ -190,10 +190,10 @@ const Settings = (props) => {
 			});
 
 			localStorage.clear();
-			props.showAlert("Account deleted successfully", "success");
+			showAlert("Account deleted successfully", "success");
 			navigate("/");
 		} catch {
-			props.showAlert("Delete failed", "danger");
+			showAlert("Delete failed", "danger");
 		}
 	};
 

@@ -19,6 +19,9 @@ const UserSchema = new Schema({
 		type: String,
 		default: "",
 	},
+	resetOTP: String,
+	resetOTPExpiry: Date,
+
 	date: {
 		type: Date,
 		default: Date.now,

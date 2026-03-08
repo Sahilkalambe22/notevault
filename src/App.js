@@ -2,8 +2,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./App.css";
 
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+
 
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
@@ -19,6 +20,10 @@ import NotesState from "./context/notes/NotesSt";
 import noteContext from "./context/notes/notesContext";
 import ReminderManager from "./components/ReminderManager";
 import ProtectedRoute from "./components/ProtectedRoute";
+import VerifyOTP from "./components/VerifyOTP";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
+
 
 /* ---------- Reminder Bridge ---------- */
 /* Connects ReminderManager to NotesState */
@@ -31,6 +36,16 @@ function ReminderBridge({ showAlert }) {
 function AppContent({ showAlert }) {
 	const location = useLocation();
 	const isEditorPage = location.pathname.startsWith("/note/");
+
+useEffect(() => {
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+    document.documentElement.classList.add("light-mode");
+  } else {
+    document.documentElement.classList.remove("light-mode");
+  }
+}, []);
 
 	return (
 		<>
@@ -71,6 +86,10 @@ function AppContent({ showAlert }) {
 							/>
 							<Route path="/login" element={<Login showAlert={showAlert.fn} />} />
 							<Route path="/signup" element={<Signup showAlert={showAlert.fn} />} />
+							<Route path="/verify-otp" element={<VerifyOTP showAlert={showAlert.fn} />} />
+							<Route path="/forgot-password" element={<ForgotPassword showAlert={showAlert.fn} />} />
+
+							<Route path="/reset-password" element={<ResetPassword showAlert={showAlert.fn} />} />
 						</Routes>
 						<Footer />
 					</div>

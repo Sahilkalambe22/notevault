@@ -86,6 +86,9 @@ const Login = (props) => {
 					<div className="nv-auth-footer">
 						Don’t have an account? <Link to="/signup">Register</Link>
 					</div>
+					<p className="nv-auth-footer">
+						<Link to="/forgot-password">Forgot Password?</Link>
+					</p>
 				</div>
 			</motion.div>
 		</div>
