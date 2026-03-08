@@ -9,30 +9,39 @@ import NotesHeader from "./NotesHeader";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Notes.css";
+import CardSkeleton from "./loaders/CardSkeleton";
 
 const Notes = (props) => {
 	const context = useContext(noteContext);
 	const { notes, getNotes } = context;
 	const navigate = useNavigate();
 
-	// 🔁 Fetch notes on mount (if logged in) 
-	useEffect(
-		() => {
-			let mounted = true;
+	const [loading, setLoading] = useState(true);
 
+	// 🔁 Fetch notes on mount (if logged in)
+	useEffect(() => {
+		let mounted = true;
+
+		const fetchNotes = async () => {
 			if (localStorage.getItem("token")) {
-				mounted && getNotes();
+				try {
+					await getNotes();
+				} finally {
+					if (mounted) setLoading(false);
+				}
 			} else {
 				navigate("/login");
 			}
+		};
 
-			return () => {
-				mounted = false;
-			};
-		},
+		fetchNotes();
+
+		return () => {
+			mounted = false;
+		};
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[],
-	);
+	}, []);
 
 	// open note editor
 	const updateNote = (currentnote) => {
@@ -72,7 +81,7 @@ const Notes = (props) => {
 	});
 
 	// ⭐ pinned first
-const sortedNotes = filteredNotes;
+	const sortedNotes = filteredNotes;
 
 	const stats = useMemo(() => {
 		const pinned = notes.filter((n) => n.isPinned).length;
@@ -135,7 +144,9 @@ const sortedNotes = filteredNotes;
 				{/* ================= SCROLLABLE NOTES ================= */}
 				<div className="notes-scroll-area">
 					<div className="row">
-						{sortedNotes.length === 0 ? (
+						{loading ? (
+							<CardSkeleton count={6} />
+						) : sortedNotes.length === 0 ? (
 							<div className="col-12">
 								<div className="empty-state-card">
 									<div className="empty-icon">🗒️</div>

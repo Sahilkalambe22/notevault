@@ -1,0 +1,71 @@
+/* ================= ABOUT PAGE ================= */
+
+.about-story {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 60px 20px;
+}
+
+.about-text {
+	font-size: 1.45rem;
+	line-height: 1.8;
+	margin-bottom: 20px;
+}
+
+/* ================= TECH STACK ================= */
+
+.tech-section {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 80px 20px;
+}
+
+
+.tech-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 25px;
+}
+
+.tech-card {
+	padding: 30px 20px;
+	border-radius: 16px;
+
+	background: var(--bg-card);
+	border: 1px solid var(--border-soft);
+
+	backdrop-filter: blur(12px);
+
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.tech-card h5 {
+	margin-bottom: 10px;
+}
+
+/* ================= DEVELOPER ================= */
+
+.developer-section {
+	padding: 80px 20px;
+}
+
+.developer-card {
+	max-width: 500px;
+	margin: auto;
+
+	padding: 35px 30px;
+
+	border-radius: 18px;
+
+	background: var(--bg-card);
+	border: 1px solid var(--border-soft);
+
+	backdrop-filter: blur(12px);
+
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.feature-icon i {
+	font-size: 28px;
+	color: var(--accent);
+}

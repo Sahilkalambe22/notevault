@@ -1,5 +1,6 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef, useContext, useState, useEffect } from "react";
 import noteContext from "../context/notes/notesContext";
+import ListSkeleton from "./loaders/ListSkeleton";
 
 import "./NoteAttachmentsPanel.css";
 
@@ -8,6 +9,13 @@ const NoteAttachmentsPanel = ({ note, showAlert }) => {
 	const host = "http://localhost:5000";
 
 	const { replaceNote } = useContext(noteContext);
+	const [loading, setLoading] = useState(!note);
+
+	useEffect(() => {
+		if (note) {
+			setLoading(false);
+		}
+	}, [note]);
 
 	const handleUpload = async (files) => {
 		if (!note?._id || !files?.length) return;
@@ -63,58 +71,47 @@ const NoteAttachmentsPanel = ({ note, showAlert }) => {
 	};
 
 	return (
-  <div className="nv-attachments">
-    <div className="nv-attachments-header">
-      <span>
-        <i className="fa-solid fa-paperclip"></i> Attachments
-      </span>
+		<div className="nv-attachments">
+			<div className="nv-attachments-header">
+				<span>
+					<i className="fa-solid fa-paperclip"></i> Attachments
+				</span>
 
-      <button
-        className="nv-add-btn"
-        onClick={() => fileRef.current.click()}
-      >
-        <i className="fa-solid fa-plus"></i>
-      </button>
-    </div>
+				<button className="nv-add-btn" onClick={() => fileRef.current.click()}>
+					<i className="fa-solid fa-plus"></i>
+				</button>
+			</div>
 
-    <input
-      ref={fileRef}
-      type="file"
-      multiple
-      hidden
-      onChange={(e) => handleUpload([...e.target.files])}
-    />
+			<input ref={fileRef} type="file" multiple hidden onChange={(e) => handleUpload([...e.target.files])} />
 
-    <div className="nv-attachments-list">
-      {!note?.attachments?.length && (
-        <div className="nv-empty">No attachments yet</div>
-      )}
+			<div className="nv-attachments-list">
+				{loading ? (
+					<ListSkeleton count={3} />
+				) : !note?.attachments?.length ? (
+					<div className="nv-empty">No attachments yet</div>
+				) : (
+					note.attachments.map((a, i) => (
+						<div className="nv-attachment-chip" key={a.path || i}>
+							<div className="nv-file-info">
+								<i className="fa-solid fa-file"></i>
+								<span>{a.originalName}</span>
+							</div>
 
-      {note?.attachments?.map((a, i) => (
-        <div className="nv-attachment-chip" key={i}>
-          <div className="nv-file-info">
-            <i className="fa-solid fa-file"></i>
-            <span>{a.originalName}</span>
-          </div>
+							<div className="nv-file-actions">
+								<a href={`${host}${a.path}`} target="_blank" rel="noopener noreferrer">
+									<i className="fa-solid fa-arrow-up-right-from-square"></i>
+								</a>
 
-          <div className="nv-file-actions">
-            <a
-              href={`${host}${a.path}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <i className="fa-solid fa-arrow-up-right-from-square"></i>
-            </a>
-
-            <button onClick={() => handleRemove(i)}>
-              <i className="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-);
+								<button onClick={() => handleRemove(i)}>
+									<i className="fa-solid fa-xmark"></i>
+								</button>
+							</div>
+						</div>
+					))
+				)}
+			</div>
+		</div>
+	);
 };
 
 export default NoteAttachmentsPanel;

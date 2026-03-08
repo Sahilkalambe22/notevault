@@ -118,6 +118,19 @@
 	font-size: 0.95rem;
 }
 
+/* demo notes section */
+
+.demo-notes-section {
+	margin: 3rem;
+}
+
+.demo-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 20px;
+	justify-content: center;
+}
+
 /* ================= FINAL CTA ================= */
 
 .cta {
@@ -136,7 +149,7 @@
 	border-radius: 20px;
 
 	background: var(--bg-card);
-border: 1px solid var(--border-soft);
+	border: 1px solid var(--border-soft);
 
 	box-shadow:
 		0 25px 60px rgba(0, 0, 0, 0.45),

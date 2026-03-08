@@ -13,7 +13,7 @@ export default function Footer() {
         <div className="col-md-4">
           <h4 className="nv-footer-logo">NoteVault</h4>
           <p className="nv-footer-text">
-            Secure. Organize. Access anywhere.
+            Secure. Organize. Access anywhere.<br></br>
             Your personal digital note vault.
           </p>
         </div>

@@ -1,12 +1,21 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { lazy, Suspense, useContext, useEffect, useRef, useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 import noteContext from "../context/notes/notesContext";
-import TagSelectorModal from "./TagSelectorModal";
-import RichTextEditor from "./RichTextEditor";
-import VersionHistoryModal from "./VersionHistoryModal";
+
 import ReminderBadge from "./ReminderBadge";
-import ReminderModal from "./ReminderModal";
+import EditorSkeleton from "./loaders/EditorSkeleton";
+
 import "./NoteEditorPage.css";
+
+/* ================= LAZY COMPONENTS ================= */
+
+const TagSelectorModal = lazy(() => import("./TagSelectorModal"));
+const RichTextEditor = lazy(() => import("./RichTextEditor"));
+const VersionHistoryModal = lazy(() => import("./VersionHistoryModal"));
+const ReminderModal = lazy(() => import("./ReminderModal"));
+
+/* ================= TAG CONFIG ================= */
 
 const TAGS = ["Work", "Random", "Important", "Todo", "Personal", "Priority"];
 
@@ -20,12 +29,12 @@ const TAG_ICON_MAP = {
 };
 
 const TAG_COLOR_MAP = {
-	Work: { bg: "#2563eb", text: "#ffffff" }, // blue
-	Important: { bg: "#ef4444", text: "#ffffff" }, // red
-	Personal: { bg: "#8b5cf6", text: "#ffffff" }, // purple
-	Todo: { bg: "#16a34a", text: "#ffffff" }, // green
-	Priority: { bg: "#facc15", text: "#000000" }, // yellow
-	Random: { bg: "#6b7280", text: "#ffffff" }, // gray
+	Work: { bg: "#2563eb", text: "#ffffff" },
+	Important: { bg: "#ef4444", text: "#ffffff" },
+	Personal: { bg: "#8b5cf6", text: "#ffffff" },
+	Todo: { bg: "#16a34a", text: "#ffffff" },
+	Priority: { bg: "#facc15", text: "#000000" },
+	Random: { bg: "#6b7280", text: "#ffffff" },
 };
 
 const NoteEditorPage = ({ note, showAlert }) => {
@@ -47,6 +56,7 @@ const NoteEditorPage = ({ note, showAlert }) => {
 	});
 
 	const [tempTag, setTempTag] = useState({ type: "", custom: "" });
+
 	const [lastSaved, setLastSaved] = useState({
 		title: "",
 		description: "",
@@ -58,9 +68,14 @@ const NoteEditorPage = ({ note, showAlert }) => {
 	const [showTagModal, setShowTagModal] = useState(false);
 	const [showReminderModal, setShowReminderModal] = useState(false);
 
+	const [loading, setLoading] = useState(!isNew);
+
 	/* ================= LOAD EXISTING NOTE ================= */
+
 	useEffect(() => {
 		if (!note) return;
+
+		setLoading(false);
 
 		const savedTag = (note.tag || "").trim();
 		originalTagRef.current = savedTag;
@@ -82,6 +97,8 @@ const NoteEditorPage = ({ note, showAlert }) => {
 		createdNoteIdRef.current = note._id;
 	}, [note]);
 
+	/* ================= REMINDER ================= */
+
 	const handleSetReminder = async (date) => {
 		if (!note?._id) return;
 
@@ -97,6 +114,7 @@ const NoteEditorPage = ({ note, showAlert }) => {
 	};
 
 	/* ================= AUTOSAVE ================= */
+
 	useEffect(() => {
 		const plainDesc = data.description.replace(/<[^>]+>/g, "").trim();
 		if (!data.title.trim() && !plainDesc) return;
@@ -106,7 +124,8 @@ const NoteEditorPage = ({ note, showAlert }) => {
 		saveTimer.current = setTimeout(async () => {
 			const resolvedTag = data.tagCustom || data.tagType || "Random";
 
-			// 🔑 CREATE NOTE ONLY ON FIRST INPUT
+			/* CREATE NOTE FIRST TIME */
+
 			if (isNew && !createdOnceRef.current && !createdNoteIdRef.current) {
 				setIsSaving(true);
 
@@ -116,7 +135,6 @@ const NoteEditorPage = ({ note, showAlert }) => {
 					createdOnceRef.current = true;
 					createdNoteIdRef.current = created._id;
 
-					// 🔑 switch from /note/new → /note/:id
 					navigate(`/note/${created._id}`, { replace: true });
 				}
 
@@ -130,6 +148,7 @@ const NoteEditorPage = ({ note, showAlert }) => {
 			if (data.title === lastSaved.title && data.description === lastSaved.description && resolvedTag === lastSaved.tag) return;
 
 			setIsSaving(true);
+
 			await editNote(noteId, data.title, data.description, resolvedTag);
 
 			setLastSaved({
@@ -139,6 +158,7 @@ const NoteEditorPage = ({ note, showAlert }) => {
 			});
 
 			originalTagRef.current = resolvedTag;
+
 			setTimeout(() => setIsSaving(false), 300);
 		}, 1000);
 
@@ -147,9 +167,11 @@ const NoteEditorPage = ({ note, showAlert }) => {
 	}, [data]);
 
 	/* ================= ACTIONS ================= */
+
 	const handleDelete = () => {
 		if (!note) return;
 		if (!window.confirm("Delete this note permanently?")) return;
+
 		deleteNote(note._id);
 		navigate("/profile");
 	};
@@ -169,43 +191,69 @@ const NoteEditorPage = ({ note, showAlert }) => {
 	const effectiveTag = data.tagType || "Random";
 	const tagIcon = TAG_ICON_MAP[effectiveTag];
 
+	/* ================= SKELETON ================= */
+
+	if (loading && !isNew) {
+		return <EditorSkeleton />;
+	}
+
 	/* ================= RENDER ================= */
+
 	return (
 		<>
-			<TagSelectorModal
-				show={showTagModal}
-				tags={TAGS}
-				tagColorMap={TAG_COLOR_MAP}
-				typeValue={tempTag.type}
-				customValue={tempTag.custom}
-				onTypeChange={(type) => setTempTag({ type, custom: "" })}
-				onCustomChange={(custom) => setTempTag((p) => ({ type: custom ? "Random" : p.type, custom }))}
-				onClose={() => setShowTagModal(false)}
-				onDone={() => {
-					setData((p) => ({
-						...p,
-						tagType: tempTag.type,
-						tagCustom: tempTag.custom,
-					}));
-					setShowTagModal(false);
-				}}
-			/>
+			{/* TAG MODAL */}
 
-			<ReminderModal
-				show={showReminderModal}
-				initialValue={note?.reminderAt}
-				onClose={() => setShowReminderModal(false)}
-				onSave={async (isoDate) => {
-					await handleSetReminder(isoDate);
-					setShowReminderModal(false);
-				}}
-				onRemove={async () => {
-					await handleRemoveReminder();
-					setShowReminderModal(false);
-				}}
-			/>
+			<Suspense fallback={null}>
+				<TagSelectorModal
+					show={showTagModal}
+					tags={TAGS}
+					tagColorMap={TAG_COLOR_MAP}
+					typeValue={tempTag.type}
+					customValue={tempTag.custom}
+					onTypeChange={(type) => setTempTag({ type, custom: "" })}
+					onCustomChange={(custom) =>
+						setTempTag((p) => ({
+							type: custom ? "Random" : p.type,
+							custom,
+						}))
+					}
+					onClose={() => setShowTagModal(false)}
+					onDone={() => {
+						setData((p) => ({
+							...p,
+							tagType: tempTag.type,
+							tagCustom: tempTag.custom,
+						}));
+						setShowTagModal(false);
+					}}
+				/>
+			</Suspense>
 
-			{showVersions && note && <VersionHistoryModal noteId={note._id} currentNote={note} onClose={() => setShowVersions(false)} showAlert={showAlert} />}
+			{/* REMINDER MODAL */}
+
+			<Suspense fallback={null}>
+				<ReminderModal
+					show={showReminderModal}
+					initialValue={note?.reminderAt}
+					onClose={() => setShowReminderModal(false)}
+					onSave={async (isoDate) => {
+						await handleSetReminder(isoDate);
+						setShowReminderModal(false);
+					}}
+					onRemove={async () => {
+						await handleRemoveReminder();
+						setShowReminderModal(false);
+					}}
+				/>
+			</Suspense>
+
+			{/* VERSION HISTORY */}
+
+			{showVersions && note && (
+				<Suspense fallback={<EditorSkeleton />}>
+					<VersionHistoryModal noteId={note._id} currentNote={note} onClose={() => setShowVersions(false)} showAlert={showAlert} />
+				</Suspense>
+			)}
 
 			<div className="ne-editor-page">
 				<div className="ne-editor-card">
@@ -217,26 +265,20 @@ const NoteEditorPage = ({ note, showAlert }) => {
 						<span className={`save-indicator ${isSaving ? "saving" : "saved"}`}>{isSaving ? "Saving..." : "Saved"}</span>
 
 						<div className="ne-topbar-right">
-							{/* 🔔 Reminder badge */}
 							<ReminderBadge reminderAt={note?.reminderAt} />
 
 							{!isNew && (
 								<>
-									{/* 🔔 Open Reminder Modal */}
-									<i className={`fa-regular fa-clock editor-action ${note?.reminderAt ? "active-reminder" : ""}`} title={note?.reminderAt ? "Update reminder" : "Set reminder"} onClick={() => setShowReminderModal(true)} />
+									<i className={`fa-regular fa-clock editor-action ${note?.reminderAt ? "active-reminder" : ""}`} onClick={() => setShowReminderModal(true)} />
 
-									{/* 📌 Pin */}
 									<i className={`fa-solid fa-thumbtack editor-action${note?.isPinned ? " pinned" : ""}`} onClick={handlePin} />
 
-									{/* 🕘 Version history */}
 									<i className="fa-solid fa-clock-rotate-left editor-action" onClick={() => setShowVersions(true)} />
 
-									{/* 🗑️ Delete */}
 									<i className="fa-solid fa-trash-can editor-action" style={{ color: "#ef4444" }} onClick={handleDelete} />
 								</>
 							)}
 
-							{/* 🏷️ Tag */}
 							<span className={`editor-tag-badge tag-${effectiveTag.toLowerCase()}`} onClick={() => setShowTagModal(true)}>
 								{tagIcon && <i className={tagIcon}></i>}
 								{displayTag}
@@ -244,10 +286,30 @@ const NoteEditorPage = ({ note, showAlert }) => {
 						</div>
 					</div>
 
-					<input className="ne-title-input" value={data.title} onChange={(e) => setData((p) => ({ ...p, title: e.target.value }))} placeholder="Untitled" />
+					<input
+						className="ne-title-input"
+						value={data.title}
+						onChange={(e) =>
+							setData((p) => ({
+								...p,
+								title: e.target.value,
+							}))
+						}
+						placeholder="Untitled"
+					/>
 
 					<div className="ne-desc-editor">
-						<RichTextEditor value={data.description} onChange={(html) => setData((p) => ({ ...p, description: html }))} />
+						<Suspense fallback={<div className="skeleton skeleton-editor"></div>}>
+							<RichTextEditor
+								value={data.description}
+								onChange={(html) =>
+									setData((p) => ({
+										...p,
+										description: html,
+									}))
+								}
+							/>
+						</Suspense>
 					</div>
 				</div>
 			</div>

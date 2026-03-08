@@ -3,6 +3,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import noteContext from "../context/notes/notesContext";
 import NotePreview from "./NotePreview";
+import VersionPreviewSkeleton from "./loaders/VersionPreviewSkeleton";
+
 import "./VersionHistoryModal.css";
 
 const VersionHistoryModal = ({ noteId, currentNote = {}, onClose, showAlert }) => {
@@ -118,7 +120,7 @@ const VersionHistoryModal = ({ noteId, currentNote = {}, onClose, showAlert }) =
 
 					<div className="vh-diff-body">
 						{loading ? (
-							<div className="vh-muted">Loading versions…</div>
+							<VersionPreviewSkeleton />
 						) : versions.length === 0 ? (
 							<div className="vh-muted">No versions found.</div>
 						) : currentVersion ? (

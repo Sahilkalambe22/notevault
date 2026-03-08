@@ -83,8 +83,8 @@
 	color: var(--text-secondary);
 	line-height: 1.4;
 	display: -webkit-box;
-	-webkit-line-clamp: 4;
+	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
-	line-clamp: 4;
+	line-clamp: 3;
 	overflow: hidden;
 }
