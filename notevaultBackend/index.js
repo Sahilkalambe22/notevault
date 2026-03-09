@@ -4,6 +4,7 @@ require("dotenv").config({
 const connectToMongo = require('./db');
 const express = require('express');
 const cors = require('cors');
+require("./utils/reminderWorker");
 
 
 
@@ -23,7 +24,7 @@ app.use("/api/notes/ai-suggest", require("./routes/aiSuggest"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.listen(port, () => {
-  console.log(`iNotebook backend listening at http://localhost:${port}`)
+  console.log(`notevault backend listening at http://localhost:${port}`)
 })
 
 

@@ -1,6 +1,6 @@
 // src/offline/NoteCache.js
 
-const DB_NAME = "inotebook_offline";
+const DB_NAME = "notevault_offline";
 const DB_VERSION = 1;
 const STORE_NAME = "notes";
 

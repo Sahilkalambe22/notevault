@@ -25,35 +25,51 @@ const transporter = nodemailer.createTransport({
 
 /* ================= RATE LIMITERS ================= */
 
-// Strict limiter for login
+// Login limiter
 const loginLimiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 5, // 5 attempts per window per IP
-	message: {
-		success: false,
-		error: "Too many login attempts. Try again after 15 minutes.",
+	windowMs: 15 * 60 * 1000,
+	max: 5,
+	handler: (req, res) => {
+		res.status(429).json({
+			success: false,
+			error: "Too many login attempts. Try again after 15 minutes.",
+		});
 	},
-	standardHeaders: true,
-	legacyHeaders: false,
 });
 
 // Signup limiter
 const signupLimiter = rateLimit({
-	windowMs: 60 * 60 * 1000, // 1 hour
+	windowMs: 60 * 60 * 1000,
 	max: 10,
-	message: {
-		success: false,
-		error: "Too many signup attempts. Try again later.",
+	handler: (req, res) => {
+		res.status(429).json({
+			success: false,
+			error: "Too many signup attempts. Try again later.",
+		});
 	},
 });
 
 // OTP limiter
 const otpLimiter = rateLimit({
-	windowMs: 10 * 60 * 1000, // 10 minutes
+	windowMs: 10 * 60 * 1000,
 	max: 10,
-	message: {
-		success: false,
-		error: "Too many OTP attempts. Please wait.",
+	handler: (req, res) => {
+		res.status(429).json({
+			success: false,
+			error: "Too many OTP attempts. Please wait.",
+		});
+	},
+});
+
+// Forgot password limiter
+const forgotLimiter = rateLimit({
+	windowMs: 10 * 60 * 1000,
+	max: 3,
+	handler: (req, res) => {
+		res.status(429).json({
+			success: false,
+			error: "Too many password reset attempts. Please wait.",
+		});
 	},
 });
 
@@ -71,6 +87,7 @@ router.post("/createuser", signupLimiter, [body("name", "Enter valid name").isLe
 
 	try {
 		const existingUser = await User.findOne({ email });
+
 		if (existingUser) {
 			return res.status(400).json({
 				success,
@@ -99,8 +116,10 @@ router.post("/createuser", signupLimiter, [body("name", "Enter valid name").isLe
 			to: email,
 			subject: "NoteVault OTP Verification",
 			html: `
-          <h2>Your OTP is: ${otp}</h2>
-          <p>Valid for 10 minutes.</p>
+          <h2>NoteVault Verification</h2>
+          <p>Your OTP code:</p>
+          <h1 style="letter-spacing:4px">${otp}</h1>
+          <p>This code expires in 10 minutes.</p>
         `,
 		});
 
@@ -144,6 +163,7 @@ router.post("/verify-otp", otpLimiter, async (req, res) => {
 		}
 
 		const isMatch = await bcrypt.compare(otp, pendingUser.otp);
+
 		if (!isMatch) {
 			return res.status(400).json({
 				success,
@@ -152,6 +172,7 @@ router.post("/verify-otp", otpLimiter, async (req, res) => {
 		}
 
 		const existingUser = await User.findOne({ email });
+
 		if (existingUser) {
 			await PendingUser.deleteOne({ email });
 			return res.status(400).json({
@@ -202,14 +223,7 @@ router.post("/login", loginLimiter, [body("email", "Enter valid email").isEmail(
 	try {
 		const user = await User.findOne({ email });
 
-		if (!user) {
-			return res.status(400).json({
-				success,
-				error: "Enter correct credentials",
-			});
-		}
-
-		const passwordCompare = await bcrypt.compare(password, user.password);
+		const passwordCompare = user ? await bcrypt.compare(password, user.password) : false;
 
 		if (!passwordCompare) {
 			return res.status(400).json({
@@ -280,9 +294,8 @@ router.put("/update", fetchuser, async (req, res) => {
 
 /* ================= ROUTE 6: FORGOT PASSWORD ================= */
 
-router.post("/forgot-password", loginLimiter, async (req, res) => {
+router.post("/forgot-password", forgotLimiter, async (req, res) => {
 	const { email } = req.body;
-	let success = false;
 
 	try {
 		const user = await User.findOne({ email });
@@ -307,14 +320,14 @@ router.post("/forgot-password", loginLimiter, async (req, res) => {
 			to: email,
 			subject: "NoteVault Password Reset OTP",
 			html: `
-        <h2>Password Reset OTP</h2>
-        <p>Your OTP is: <b>${otp}</b></p>
-        <p>Valid for 10 minutes.</p>
+        <h2>Password Reset</h2>
+        <p>Your OTP:</p>
+        <h1 style="letter-spacing:4px">${otp}</h1>
+        <p>This code expires in 10 minutes.</p>
       `,
 		});
 
-		success = true;
-		res.json({ success, message: "Reset OTP sent" });
+		res.json({ success: true, message: "Reset OTP sent" });
 	} catch (error) {
 		console.error("Forgot Password Error:", error.message);
 		res.status(500).json({ success: false, error: "Server error" });
@@ -325,21 +338,20 @@ router.post("/forgot-password", loginLimiter, async (req, res) => {
 
 router.post("/reset-password", otpLimiter, async (req, res) => {
 	const { email, otp, newPassword } = req.body;
-	let success = false;
 
 	try {
 		const user = await User.findOne({ email });
 
 		if (!user || !user.resetOTP) {
 			return res.status(400).json({
-				success,
+				success: false,
 				error: "Invalid request",
 			});
 		}
 
 		if (user.resetOTPExpiry < Date.now()) {
 			return res.status(400).json({
-				success,
+				success: false,
 				error: "OTP expired",
 			});
 		}
@@ -348,7 +360,7 @@ router.post("/reset-password", otpLimiter, async (req, res) => {
 
 		if (!isMatch) {
 			return res.status(400).json({
-				success,
+				success: false,
 				error: "Invalid OTP",
 			});
 		}
@@ -361,10 +373,115 @@ router.post("/reset-password", otpLimiter, async (req, res) => {
 
 		await user.save();
 
-		success = true;
-		res.json({ success, message: "Password reset successful" });
+		res.json({ success: true, message: "Password reset successful" });
 	} catch (error) {
 		console.error("Reset Password Error:", error.message);
+		res.status(500).json({ success: false, error: "Server error" });
+	}
+});
+
+/* ================= ROUTE 8: REQUEST EMAIL CHANGE ================= */
+
+router.post("/request-email-change", fetchuser, async (req, res) => {
+	const { newEmail } = req.body;
+
+	try {
+		const existing = await User.findOne({ email: newEmail });
+
+		if (existing) {
+			return res.status(400).json({
+				success: false,
+				error: "Email already in use",
+			});
+		}
+
+		const otp = Math.floor(100000 + Math.random() * 900000).toString();
+		const hashedOtp = await bcrypt.hash(otp, 10);
+
+		const user = await User.findById(req.user.id);
+
+		user.emailChangeOTP = hashedOtp;
+		user.emailChangeOTPExpiry = Date.now() + 10 * 60 * 1000;
+		user.pendingEmail = newEmail;
+
+		await user.save();
+
+		await transporter.sendMail({
+			from: process.env.EMAIL_USER,
+			to: newEmail,
+			subject: "Verify Email Change",
+			html: `
+        <h2>Email Change Verification</h2>
+        <p>Your OTP:</p>
+        <h1 style="letter-spacing:4px">${otp}</h1>
+        <p>This code expires in 10 minutes.</p>
+      `,
+		});
+
+		res.json({
+			success: true,
+			message: "OTP sent to new email",
+		});
+	} catch (error) {
+		console.error("Email change error:", error.message);
+		res.status(500).json({ success: false, error: "Server error" });
+	}
+});
+
+/* ================= ROUTE 9: VERIFY EMAIL CHANGE ================= */
+
+router.post("/verify-email-change", fetchuser, async (req, res) => {
+	const { otp } = req.body;
+
+	try {
+		const user = await User.findById(req.user.id);
+
+		if (!user.emailChangeOTP) {
+			return res.status(400).json({
+				success: false,
+				error: "No email change request found",
+			});
+		}
+
+		if (user.emailChangeOTPExpiry < Date.now()) {
+			return res.status(400).json({
+				success: false,
+				error: "OTP expired",
+			});
+		}
+
+		const isMatch = await bcrypt.compare(otp, user.emailChangeOTP);
+
+		if (!isMatch) {
+			return res.status(400).json({
+				success: false,
+				error: "Invalid OTP",
+			});
+		}
+
+		const existing = await User.findOne({ email: user.pendingEmail });
+
+		if (existing) {
+			return res.status(400).json({
+				success: false,
+				error: "Email already in use",
+			});
+		}
+
+		user.email = user.pendingEmail;
+
+		user.pendingEmail = undefined;
+		user.emailChangeOTP = undefined;
+		user.emailChangeOTPExpiry = undefined;
+
+		await user.save();
+
+		res.json({
+			success: true,
+			message: "Email updated successfully",
+		});
+	} catch (error) {
+		console.error("Verify email change error:", error.message);
 		res.status(500).json({ success: false, error: "Server error" });
 	}
 });

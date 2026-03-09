@@ -22,41 +22,41 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
    KEYBOARD SHORTCUTS
 ================================ */
 
-const handleKeyDown = (e) => {
-	if (!e.ctrlKey) return;
+	const handleKeyDown = (e) => {
+		if (!e.ctrlKey) return;
 
-	switch (e.key.toLowerCase()) {
-		case "b":
-			e.preventDefault();
-			exec("bold");
-			break;
-
-		case "i":
-			e.preventDefault();
-			exec("italic");
-			break;
-
-		case "u":
-			e.preventDefault();
-			exec("underline");
-			break;
-
-		case "`":
-			e.preventDefault();
-			insertInlineCode();
-			break;
-
-		case "h":
-			if (e.shiftKey) {
+		switch (e.key.toLowerCase()) {
+			case "b":
 				e.preventDefault();
-				toggleHighlight();
-			}
-			break;
+				exec("bold");
+				break;
 
-		default:
-			break;
-	}
-};
+			case "i":
+				e.preventDefault();
+				exec("italic");
+				break;
+
+			case "u":
+				e.preventDefault();
+				exec("underline");
+				break;
+
+			case "`":
+				e.preventDefault();
+				insertInlineCode();
+				break;
+
+			case "h":
+				if (e.shiftKey) {
+					e.preventDefault();
+					toggleHighlight();
+				}
+				break;
+
+			default:
+				break;
+		}
+	};
 
 	/* ===============================
      SYNC EXTERNAL VALUE
@@ -94,25 +94,25 @@ const handleKeyDown = (e) => {
      UPDATE TOOLBAR STATE
   =============================== */
 	const updateToolbar = () => {
-	try {
-		const selection = window.getSelection();
-		const node = selection?.anchorNode?.parentElement;
+		try {
+			const selection = window.getSelection();
+			const node = selection?.anchorNode?.parentElement;
 
-		// detect highlight even if cursor is inside nested tags
-		const highlightNode = node?.closest(".ne-highlight");
+			// detect highlight even if cursor is inside nested tags
+			const highlightNode = node?.closest(".ne-highlight");
 
-		setFormat({
-			bold: document.queryCommandState("bold"),
-			italic: document.queryCommandState("italic"),
-			underline: document.queryCommandState("underline"),
-			strike: document.queryCommandState("strikeThrough"),
-			ul: document.queryCommandState("insertUnorderedList"),
-			ol: document.queryCommandState("insertOrderedList"),
-			h3: document.queryCommandValue("formatBlock")?.toLowerCase() === "h3",
-			highlight: !!highlightNode,
-		});
-	} catch {}
-};
+			setFormat({
+				bold: document.queryCommandState("bold"),
+				italic: document.queryCommandState("italic"),
+				underline: document.queryCommandState("underline"),
+				strike: document.queryCommandState("strikeThrough"),
+				ul: document.queryCommandState("insertUnorderedList"),
+				ol: document.queryCommandState("insertOrderedList"),
+				h3: document.queryCommandValue("formatBlock")?.toLowerCase() === "h3",
+				highlight: !!highlightNode,
+			});
+		} catch {}
+	};
 
 	/* ===============================
      HANDLE INPUT
@@ -127,198 +127,193 @@ const handleKeyDown = (e) => {
      EXEC FORMAT COMMAND
   =============================== */
 	const exec = (cmd, val = null) => {
-	const editor = editorRef.current;
-	editor.focus();
+		const editor = editorRef.current;
+		editor.focus();
 
-	const selection = window.getSelection();
+		const selection = window.getSelection();
 
-	// Restore saved selection ONLY if none exists
-	if ((!selection || selection.rangeCount === 0) && savedRange.current) {
-		selection.removeAllRanges();
-		selection.addRange(savedRange.current);
-	}
+		// Restore saved selection ONLY if none exists
+		if ((!selection || selection.rangeCount === 0) && savedRange.current) {
+			selection.removeAllRanges();
+			selection.addRange(savedRange.current);
+		}
 
-	document.execCommand(cmd, false, val);
+		document.execCommand(cmd, false, val);
 
-	// save new selection after formatting
-	saveSelection();
+		// save new selection after formatting
+		saveSelection();
 
-	handleInput();
-};
-// h3 formatting function with toggle behavior
-const toggleHeading = () => {
-	const editor = editorRef.current;
-	editor.focus();
+		handleInput();
+	};
+	// h3 formatting function with toggle behavior
+	const toggleHeading = () => {
+		const editor = editorRef.current;
+		editor.focus();
 
-	const currentBlock = document
-		.queryCommandValue("formatBlock")
-		?.toLowerCase();
+		const currentBlock = document.queryCommandValue("formatBlock")?.toLowerCase();
 
-	if (currentBlock === "h3") {
-		document.execCommand("formatBlock", false, "p");
-	} else {
-		document.execCommand("formatBlock", false, "h3");
-	}
+		if (currentBlock === "h3") {
+			document.execCommand("formatBlock", false, "p");
+		} else {
+			document.execCommand("formatBlock", false, "h3");
+		}
 
-	saveSelection();
-	handleInput();
-};
-
+		saveSelection();
+		handleInput();
+	};
 
 	/* ===============================
      EXTRA FORMATTING
   =============================== */
 
-const toggleHighlight = () => {
-	const editor = editorRef.current;
-	editor.focus();
+	const toggleHighlight = () => {
+		const editor = editorRef.current;
+		editor.focus();
 
-	const selection = window.getSelection();
-	if (!selection.rangeCount) return;
+		const selection = window.getSelection();
+		if (!selection.rangeCount) return;
 
-	const range = selection.getRangeAt(0);
-	const node = selection.anchorNode?.parentElement;
+		const range = selection.getRangeAt(0);
+		const node = selection.anchorNode?.parentElement;
 
-	// remove highlight if already highlighted
-	if (node && node.classList?.contains("ne-highlight")) {
-		const text = node.textContent;
-		const textNode = document.createTextNode(text);
+		// remove highlight if already highlighted
+		if (node && node.classList?.contains("ne-highlight")) {
+			const text = node.textContent;
+			const textNode = document.createTextNode(text);
 
-		node.replaceWith(textNode);
+			node.replaceWith(textNode);
 
-		range.setStartAfter(textNode);
-		range.setEndAfter(textNode);
+			range.setStartAfter(textNode);
+			range.setEndAfter(textNode);
+
+			selection.removeAllRanges();
+			selection.addRange(range);
+
+			handleInput();
+			return;
+		}
+
+		const selectedText = range.toString();
+		if (!selectedText) return;
+
+		const span = document.createElement("span");
+		span.className = "ne-highlight";
+		span.textContent = selectedText;
+
+		range.deleteContents();
+		range.insertNode(span);
+
+		// create space after highlight so cursor exits span
+		const space = document.createTextNode(" ");
+		span.after(space);
+
+		range.setStartAfter(space);
+		range.setEndAfter(space);
 
 		selection.removeAllRanges();
 		selection.addRange(range);
 
 		handleInput();
-		return;
-	}
-
-	const selectedText = range.toString();
-	if (!selectedText) return;
-
-	const span = document.createElement("span");
-	span.className = "ne-highlight";
-	span.textContent = selectedText;
-
-	range.deleteContents();
-range.insertNode(span);
-
-// create space after highlight so cursor exits span
-const space = document.createTextNode(" ");
-span.after(space);
-
-range.setStartAfter(space);
-range.setEndAfter(space);
-
-	selection.removeAllRanges();
-	selection.addRange(range);
-
-	handleInput();
-};
+	};
 
 	const insertInlineCode = () => {
-  editorRef.current.focus();
+		editorRef.current.focus();
 
-  const selection = window.getSelection();
-  if (!selection.rangeCount) return;
+		const selection = window.getSelection();
+		if (!selection.rangeCount) return;
 
-  const range = selection.getRangeAt(0);
-  const node = selection.anchorNode?.parentElement;
+		const range = selection.getRangeAt(0);
+		const node = selection.anchorNode?.parentElement;
 
-  // If already inside code → remove it
-  if (node && node.tagName === "CODE") {
-    const text = node.textContent;
-    const textNode = document.createTextNode(text);
+		// If already inside code → remove it
+		if (node && node.tagName === "CODE") {
+			const text = node.textContent;
+			const textNode = document.createTextNode(text);
 
-    node.replaceWith(textNode);
+			node.replaceWith(textNode);
 
-    range.setStartAfter(textNode);
-    range.setEndAfter(textNode);
+			range.setStartAfter(textNode);
+			range.setEndAfter(textNode);
 
-    selection.removeAllRanges();
-    selection.addRange(range);
+			selection.removeAllRanges();
+			selection.addRange(range);
 
-    handleInput();
-    return;
-  }
+			handleInput();
+			return;
+		}
 
-  const selectedText = range.toString();
-  if (!selectedText) return;
+		const selectedText = range.toString();
+		if (!selectedText) return;
 
-  const code = document.createElement("code");
-  code.className = "ne-inline-code";
-  code.textContent = selectedText;
+		const code = document.createElement("code");
+		code.className = "ne-inline-code";
+		code.textContent = selectedText;
 
-  range.deleteContents();
-  range.insertNode(code);
+		range.deleteContents();
+		range.insertNode(code);
 
-  range.setStartAfter(code);
-  range.setEndAfter(code);
+		range.setStartAfter(code);
+		range.setEndAfter(code);
 
-  selection.removeAllRanges();
-  selection.addRange(range);
+		selection.removeAllRanges();
+		selection.addRange(range);
 
-  handleInput();
-};
+		handleInput();
+	};
 
 	const toggleQuote = () => {
-	const editor = editorRef.current;
-	editor.focus();
+		const editor = editorRef.current;
+		editor.focus();
 
-	const currentBlock = document
-		.queryCommandValue("formatBlock")
-		?.toLowerCase();
+		const currentBlock = document.queryCommandValue("formatBlock")?.toLowerCase();
 
-	if (currentBlock === "blockquote") {
-		document.execCommand("formatBlock", false, "p");
-	} else {
-		document.execCommand("formatBlock", false, "blockquote");
-	}
+		if (currentBlock === "blockquote") {
+			document.execCommand("formatBlock", false, "p");
+		} else {
+			document.execCommand("formatBlock", false, "blockquote");
+		}
 
-	saveSelection();
-	handleInput();
-};
+		saveSelection();
+		handleInput();
+	};
 
-const insertDivider = () => {
-	const editor = editorRef.current;
-	editor.focus();
+	const insertDivider = () => {
+		const editor = editorRef.current;
+		editor.focus();
 
-	const selection = window.getSelection();
-	if (!selection.rangeCount) return;
+		const selection = window.getSelection();
+		if (!selection.rangeCount) return;
 
-	const range = selection.getRangeAt(0);
+		const range = selection.getRangeAt(0);
 
-	const hr = document.createElement("hr");
-hr.className = "ne-divider";
+		const hr = document.createElement("hr");
+		hr.className = "ne-divider";
 
-hr.contentEditable = "false";
+		hr.contentEditable = "false";
 
-hr.onclick = () => {
-	hr.remove();
-	handleInput();
-};
+		hr.onclick = () => {
+			hr.remove();
+			handleInput();
+		};
 
-	const br = document.createElement("br"); // next editable line
+		const br = document.createElement("br"); // next editable line
 
-	range.deleteContents();
-	range.insertNode(hr);
+		range.deleteContents();
+		range.insertNode(hr);
 
-	// insert new line after hr
-	hr.after(br);
+		// insert new line after hr
+		hr.after(br);
 
-	// move cursor to the new line
-	range.setStartAfter(br);
-	range.setEndAfter(br);
+		// move cursor to the new line
+		range.setStartAfter(br);
+		range.setEndAfter(br);
 
-	selection.removeAllRanges();
-	selection.addRange(range);
+		selection.removeAllRanges();
+		selection.addRange(range);
 
-	saveSelection();
-	handleInput();
-};
+		saveSelection();
+		handleInput();
+	};
 
 	/* ===============================
      INSERT IMAGE
@@ -461,7 +456,7 @@ hr.onclick = () => {
 
 			<div
 				ref={editorRef}
-				className="form-control"
+				className="ne-editor"
 				contentEditable
 				style={{ minHeight }}
 				onInput={handleInput}

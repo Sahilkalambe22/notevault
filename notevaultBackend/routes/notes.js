@@ -15,350 +15,305 @@ const mongoose = require("mongoose");
    ObjectId validator
 =============================== */
 const validateObjectId = (paramName = "id") => {
-  return (req, res, next) => {
-    const value = req.params[paramName];
-    if (!value || !mongoose.Types.ObjectId.isValid(value)) {
-      return res.status(400).json({ error: `Invalid ${paramName}` });
-    }
-    next();
-  };
+	return (req, res, next) => {
+		const value = req.params[paramName];
+		if (!value || !mongoose.Types.ObjectId.isValid(value)) {
+			return res.status(400).json({ error: `Invalid ${paramName}` });
+		}
+		next();
+	};
 };
 
 /* =====================================================
    ROUTE 1: FETCH ALL NOTES
 ===================================================== */
 router.get("/fetchallnotes", fetchuser, async (req, res) => {
-  try {
-    const notes = await Note.find({ user: req.user.id })
-      .sort({ isPinned: -1, date: -1 });
-    res.json(notes);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error occurred.");
-  }
+	try {
+		const notes = await Note.find({ user: req.user.id }).sort({ isPinned: -1, date: -1 });
+		res.json(notes);
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Server error occurred.");
+	}
 });
 
 /* =====================================================
    ROUTE 2: ADD NOTE
 ===================================================== */
 router.post(
-  "/addnotes",
-  fetchuser,
-  upload.fields([
-    { name: "attachments", maxCount: 5 },
-  ]),
-  [
-    body("title", "Enter a valid title").isLength({ min: 3 }),
-    body("description", "Description must be at least 10 characters").isLength({
-      min: 10,
-    }),
-  ],
-  async (req, res) => {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+	"/addnotes",
+	fetchuser,
+	upload.fields([{ name: "attachments", maxCount: 5 }]),
+	[
+		body("title", "Enter a valid title").isLength({ min: 3 }),
+		body("description", "Description must be at least 10 characters").isLength({
+			min: 10,
+		}),
+	],
+	async (req, res) => {
+		try {
+			const errors = validationResult(req);
+			if (!errors.isEmpty()) {
+				return res.status(400).json({ errors: errors.array() });
+			}
 
-      const { title, description, tag, reminderAt } = req.body;
-      const attachmentFiles = req.files?.attachments || [];
+			const { title, description, tag, reminderAt } = req.body;
+			const attachmentFiles = req.files?.attachments || [];
 
-      const note = new Note({
-        title,
-        description,
-        tag,
-        user: req.user.id,
-        attachments: attachmentFiles.map((file) => ({
-          path: `/uploads/${file.filename}`,
-          originalName: file.originalname,
-          mimeType: file.mimetype,
-          size: file.size,
-        })),
-        reminderAt: reminderAt ? new Date(reminderAt) : null,
-      });
+			const note = new Note({
+				title,
+				description,
+				tag,
+				user: req.user.id,
+				attachments: attachmentFiles.map((file) => ({
+					path: `/uploads/${file.filename}`,
+					originalName: file.originalname,
+					mimeType: file.mimetype,
+					size: file.size,
+				})),
+				reminderAt: reminderAt ? new Date(reminderAt) : null,
+        reminderSent: false,
+			});
 
-      const savedNote = await note.save();
+			const savedNote = await note.save();
 
-      // Initial version
-      try {
-        await NoteVersion.create({
-          note: savedNote._id,
-          user: req.user.id,
-          title: savedNote.title,
-          description: savedNote.description,
-          tag: savedNote.tag,
-          attachments: savedNote.attachments,
-          isPinned: savedNote.isPinned,
-          reminderAt: savedNote.reminderAt,
-          comment: "Initial version",
-        });
-        pruneNoteVersions(savedNote._id, 10);
-      } catch (err) {
-        console.error("Initial version error:", err);
-      }
+			// Initial version
+			try {
+				await NoteVersion.create({
+					note: savedNote._id,
+					user: req.user.id,
+					title: savedNote.title,
+					description: savedNote.description,
+					tag: savedNote.tag,
+					attachments: savedNote.attachments,
+					isPinned: savedNote.isPinned,
+					reminderAt: savedNote.reminderAt,
+					comment: "Initial version",
+				});
+				pruneNoteVersions(savedNote._id, 10);
+			} catch (err) {
+				console.error("Initial version error:", err);
+			}
 
-      res.json(savedNote);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server error occurred.");
-    }
-  }
+			res.json(savedNote);
+		} catch (err) {
+			console.error(err);
+			res.status(500).send("Server error occurred.");
+		}
+	},
 );
 
 /* =====================================================
    ROUTE 3: UPDATE NOTE (SAFE MULTIPART + JSON)
 ===================================================== */
-router.put(
-  "/updatenote/:id",
-  fetchuser,
-  validateObjectId("id"),
-  upload.fields([
-    { name: "attachments", maxCount: 5 },
-  ]),
-  async (req, res) => {
-    try {
-      const note = await Note.findById(req.params.id);
-      if (!note) return res.status(404).send("Note not found");
+router.put("/updatenote/:id", fetchuser, validateObjectId("id"), upload.fields([{ name: "attachments", maxCount: 5 }]), async (req, res) => {
+	try {
+		const note = await Note.findById(req.params.id);
+		if (!note) return res.status(404).send("Note not found");
 
-      if (note.user.toString() !== req.user.id) {
-        return res.status(401).send("Not allowed");
-      }
+		if (note.user.toString() !== req.user.id) {
+			return res.status(401).send("Not allowed");
+		}
 
-      /* ========= SAVE VERSION ========= */
-      try {
-        await NoteVersion.create({
-          note: note._id,
-          user: req.user.id,
-          title: note.title,
-          description: note.description,
-          tag: note.tag,
-          attachments: note.attachments,
-          isPinned: note.isPinned,
-          reminderAt: note.reminderAt,
-          comment: "Before update",
-        });
-        pruneNoteVersions(note._id, 10);
-      } catch (err) {
-        console.error("Version snapshot error:", err);
-      }
+		/* ========= SAVE VERSION ========= */
+		try {
+			await NoteVersion.create({
+				note: note._id,
+				user: req.user.id,
+				title: note.title,
+				description: note.description,
+				tag: note.tag,
+				attachments: note.attachments,
+				isPinned: note.isPinned,
+				reminderAt: note.reminderAt,
+				comment: "Before update",
+			});
+			pruneNoteVersions(note._id, 10);
+		} catch (err) {
+			console.error("Version snapshot error:", err);
+		}
 
-      
+		/* ========= ATTACHMENTS ========= */
+		const attachmentFiles = req.files?.attachments || [];
+		if (attachmentFiles.length > 0) {
+			note.attachments.push(
+				...attachmentFiles.map((file) => ({
+					path: `/uploads/${file.filename}`,
+					originalName: file.originalname,
+					mimeType: file.mimetype,
+					size: file.size,
+				})),
+			);
+		}
 
-      /* ========= ATTACHMENTS ========= */
-      const attachmentFiles = req.files?.attachments || [];
-      if (attachmentFiles.length > 0) {
-        note.attachments.push(
-          ...attachmentFiles.map((file) => ({
-            path: `/uploads/${file.filename}`,
-            originalName: file.originalname,
-            mimeType: file.mimetype,
-            size: file.size,
-          }))
-        );
-      }
+		/* ========= SAFE BODY UPDATES ========= */
+		const allowedFields = ["title", "description", "tag", "reminderAt", "isPinned"];
+		allowedFields.forEach((field) => {
+			if (req.body[field] !== undefined) {
+				if (field === "reminderAt") {
+					const val = req.body.reminderAt;
 
-      /* ========= SAFE BODY UPDATES ========= */
-      const allowedFields = ["title", "description", "tag", "reminderAt", "isPinned"];
-      allowedFields.forEach((field) => {
-        if (req.body[field] !== undefined) {
-          if (field === "reminderAt") {
-            const val = req.body.reminderAt;
-            note.reminderAt =
-              val === "" || val === null || val === "null"
-                ? null
-                : new Date(val);
-          } else {
-            note[field] = req.body[field];
-          }
-        }
-      });
+					note.reminderAt = val === "" || val === null || val === "null" ? null : new Date(val);
 
-      await note.save();
-      res.json(note);
-    } catch (err) {
-      console.error("Update note error:", err);
-      res.status(500).send("Server error occurred.");
-    }
-  }
-);
+					// Reset reminder status so email can trigger again
+					note.reminderSent = false;
+				} else {
+					note[field] = req.body[field];
+				}
+			}
+		});
+
+		await note.save();
+		res.json(note);
+	} catch (err) {
+		console.error("Update note error:", err);
+		res.status(500).send("Server error occurred.");
+	}
+});
 
 /* =====================================================
    ROUTE 4: DELETE NOTE
 ===================================================== */
-router.delete(
-  "/deletenote/:id",
-  fetchuser,
-  validateObjectId("id"),
-  async (req, res) => {
-    try {
-      const note = await Note.findById(req.params.id);
-      if (!note) return res.status(404).send("Note not found");
+router.delete("/deletenote/:id", fetchuser, validateObjectId("id"), async (req, res) => {
+	try {
+		const note = await Note.findById(req.params.id);
+		if (!note) return res.status(404).send("Note not found");
 
-      if (note.user.toString() !== req.user.id) {
-        return res.status(401).send("Not allowed");
-      }
+		if (note.user.toString() !== req.user.id) {
+			return res.status(401).send("Not allowed");
+		}
 
-      await Note.findByIdAndDelete(req.params.id);
-      await NoteVersion.deleteMany({ note: req.params.id });
+		await Note.findByIdAndDelete(req.params.id);
+		await NoteVersion.deleteMany({ note: req.params.id });
 
-      res.json({ success: true });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server error occurred.");
-    }
-  }
-);
+		res.json({ success: true });
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Server error occurred.");
+	}
+});
 
 /* =====================================================
    ROUTE 5: GET NOTE VERSIONS
 ===================================================== */
-router.get(
-  "/:id/versions",
-  fetchuser,
-  validateObjectId("id"),
-  async (req, res) => {
-    try {
-      const note = await Note.findById(req.params.id);
-      if (!note) return res.status(404).send("Note not found");
+router.get("/:id/versions", fetchuser, validateObjectId("id"), async (req, res) => {
+	try {
+		const note = await Note.findById(req.params.id);
+		if (!note) return res.status(404).send("Note not found");
 
-      if (note.user.toString() !== req.user.id) {
-        return res.status(401).send("Not allowed");
-      }
+		if (note.user.toString() !== req.user.id) {
+			return res.status(401).send("Not allowed");
+		}
 
-      const versions = await NoteVersion.find({ note: req.params.id })
-        .sort({ savedAt: -1 })
-        .lean();
+		const versions = await NoteVersion.find({ note: req.params.id }).sort({ savedAt: -1 }).lean();
 
-      res.json(versions);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server error occurred.");
-    }
-  }
-);
+		res.json(versions);
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Server error occurred.");
+	}
+});
 
 /* =====================================================
    ROUTE 6: RESTORE VERSION
 ===================================================== */
-router.post(
-  "/:noteId/restore/:versionId",
-  fetchuser,
-  validateObjectId("noteId"),
-  validateObjectId("versionId"),
-  async (req, res) => {
-    try {
-      const { noteId, versionId } = req.params;
+router.post("/:noteId/restore/:versionId", fetchuser, validateObjectId("noteId"), validateObjectId("versionId"), async (req, res) => {
+	try {
+		const { noteId, versionId } = req.params;
 
-      const note = await Note.findById(noteId);
-      const version = await NoteVersion.findById(versionId);
+		const note = await Note.findById(noteId);
+		const version = await NoteVersion.findById(versionId);
 
-      if (!note || !version)
-        return res.status(404).send("Note or version not found");
+		if (!note || !version) return res.status(404).send("Note or version not found");
 
-      if (note.user.toString() !== req.user.id)
-        return res.status(401).send("Not allowed");
+		if (note.user.toString() !== req.user.id) return res.status(401).send("Not allowed");
 
-      if (version.note.toString() !== noteId)
-        return res.status(400).send("Version mismatch");
+		if (version.note.toString() !== noteId) return res.status(400).send("Version mismatch");
 
-      await NoteVersion.create({
-        note: note._id,
-        user: req.user.id,
-        title: note.title,
-        description: note.description,
-        tag: note.tag,
-        attachments: note.attachments,
-        isPinned: note.isPinned,
-        reminderAt: note.reminderAt,
-        comment: "Backup before restore",
-      });
+		await NoteVersion.create({
+			note: note._id,
+			user: req.user.id,
+			title: note.title,
+			description: note.description,
+			tag: note.tag,
+			attachments: note.attachments,
+			isPinned: note.isPinned,
+			reminderAt: note.reminderAt,
+			comment: "Backup before restore",
+		});
 
-      pruneNoteVersions(note._id, 10);
+		pruneNoteVersions(note._id, 10);
 
-      Object.assign(note, {
-        title: version.title,
-        description: version.description,
-        tag: version.tag,
-        attachments: version.attachments,
-        isPinned: version.isPinned,
-        reminderAt: version.reminderAt,
-      });
+		Object.assign(note, {
+			title: version.title,
+			description: version.description,
+			tag: version.tag,
+			attachments: version.attachments,
+			isPinned: version.isPinned,
+			reminderAt: version.reminderAt,
+		});
 
-      await note.save();
-      res.json({ success: true, note });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server error occurred.");
-    }
-  }
-);
+		await note.save();
+		res.json({ success: true, note });
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Server error occurred.");
+	}
+});
 
 /* =====================================================
    ROUTE 7: DELETE ATTACHMENT
 ===================================================== */
-router.delete(
-  "/:id/attachments/:index",
-  fetchuser,
-  validateObjectId("id"),
-  async (req, res) => {
-    try {
-      const { id, index } = req.params;
+router.delete("/:id/attachments/:index", fetchuser, validateObjectId("id"), async (req, res) => {
+	try {
+		const { id, index } = req.params;
 
-      const note = await Note.findById(id);
-      if (!note) return res.status(404).send("Note not found");
+		const note = await Note.findById(id);
+		if (!note) return res.status(404).send("Note not found");
 
-      if (note.user.toString() !== req.user.id) {
-        return res.status(401).send("Not allowed");
-      }
+		if (note.user.toString() !== req.user.id) {
+			return res.status(401).send("Not allowed");
+		}
 
-      if (!note.attachments[index]) {
-        return res.status(404).send("Attachment not found");
-      }
+		if (!note.attachments[index]) {
+			return res.status(404).send("Attachment not found");
+		}
 
-      note.attachments.splice(index, 1);
-      await note.save();
+		note.attachments.splice(index, 1);
+		await note.save();
 
-      res.json(note);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Server error occurred.");
-    }
-  }
-);
-
+		res.json(note);
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Server error occurred.");
+	}
+});
 
 /* =====================================================
    ROUTE 8: UPLOAD INLINE IMAGE
 ===================================================== */
 
-router.post(
-  "/:id/upload-inline-image",
-  fetchuser,
-  validateObjectId("id"),
-  upload.single("image"),
-  async (req, res) => {
-    try {
-      const note = await Note.findById(req.params.id);
+router.post("/:id/upload-inline-image", fetchuser, validateObjectId("id"), upload.single("image"), async (req, res) => {
+	try {
+		const note = await Note.findById(req.params.id);
 
-      if (!note) return res.status(404).send("Note not found");
+		if (!note) return res.status(404).send("Note not found");
 
-      if (note.user.toString() !== req.user.id) {
-        return res.status(401).send("Not allowed");
-      }
+		if (note.user.toString() !== req.user.id) {
+			return res.status(401).send("Not allowed");
+		}
 
-      if (!req.file) {
-        return res.status(400).json({ error: "No image uploaded" });
-      }
+		if (!req.file) {
+			return res.status(400).json({ error: "No image uploaded" });
+		}
 
-      const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+		const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
-      res.json({ imageUrl });
-
-    } catch (err) {
-      console.error("Inline image upload error:", err);
-      res.status(500).send("Server error occurred.");
-    }
-  }
-);
+		res.json({ imageUrl });
+	} catch (err) {
+		console.error("Inline image upload error:", err);
+		res.status(500).send("Server error occurred.");
+	}
+});
 
 module.exports = router;

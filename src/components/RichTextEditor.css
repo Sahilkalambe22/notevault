@@ -125,3 +125,24 @@ blockquote {
 		font-size: 0.7rem;
 	}
 }
+
+
+.ne-editor {
+  width: 100%;
+  max-width: 100%;
+
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+
+  overflow-x: hidden;
+}
+
+.ne-editor code,
+.ne-editor pre,
+.ne-editor span,
+.ne-editor p,
+.ne-editor div {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}

@@ -22,6 +22,18 @@ const UserSchema = new Schema({
 	resetOTP: String,
 	resetOTPExpiry: Date,
 
+	pendingEmail: {
+		type: String,
+	},
+
+	emailChangeOTP: {
+		type: String,
+	},
+
+	emailChangeOTPExpiry: {
+		type: Date,
+	},
+
 	date: {
 		type: Date,
 		default: Date.now,

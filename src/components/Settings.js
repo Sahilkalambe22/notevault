@@ -11,7 +11,6 @@ const Settings = ({ showAlert }) => {
 	const [showPasswordForm, setShowPasswordForm] = useState(false);
 	const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
-	// Available DiceBear styles
 	const avatarStyles = ["adventurer", "avataaars", "bottts", "pixel-art", "lorelei"];
 
 	const [form, setForm] = useState({
@@ -20,10 +19,9 @@ const Settings = ({ showAlert }) => {
 		password: "",
 		confirmPassword: "",
 		joinedDate: "",
-		avatar: "", // stored as "style:seed"
+		avatar: "",
 	});
 
-	/* ================= FETCH USER ================= */
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
@@ -47,6 +45,7 @@ const Settings = ({ showAlert }) => {
 
 				localStorage.setItem("name", data.name || "");
 				localStorage.setItem("avatar", data.avatar || "");
+				localStorage.setItem("email", data.email || "");
 			} catch {
 				showAlert("Failed to load user data", "danger");
 			} finally {
@@ -57,12 +56,10 @@ const Settings = ({ showAlert }) => {
 		fetchUser();
 	}, [showAlert]);
 
-	/* ================= PARSE AVATAR ================= */
 	const parsedAvatar = form.avatar ? form.avatar.split(":") : [];
 	const selectedStyle = parsedAvatar[0];
 	const selectedSeed = parsedAvatar[1];
 
-	/* ================= HELPERS ================= */
 	const formatDate = (dateString) => {
 		if (!dateString) return "";
 		const date = new Date(dateString);
@@ -81,7 +78,6 @@ const Settings = ({ showAlert }) => {
 		return Math.random().toString(36).substring(2, 10);
 	};
 
-	/* ================= UPDATE AVATAR ================= */
 	const handleAvatarSelect = async (style, seed) => {
 		const avatarValue = style ? `${style}:${seed}` : "";
 
@@ -104,32 +100,51 @@ const Settings = ({ showAlert }) => {
 		}
 	};
 
-	/* ================= PROFILE UPDATE ================= */
 	const handleSave = async (e) => {
 		e.preventDefault();
 
 		try {
+			if (form.email !== localStorage.getItem("email")) {
+				const res = await fetch("http://localhost:5000/api/auth/request-email-change", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"auth-token": localStorage.getItem("token"),
+					},
+					body: JSON.stringify({ newEmail: form.email }),
+				});
+
+				const data = await res.json();
+
+				if (data.success) {
+					showAlert("OTP sent to new email", "success");
+
+					navigate("/verify-otp", {
+						state: {
+							mode: "email-change",
+							newEmail: form.email,
+						},
+					});
+				}
+
+				return;
+			}
+
 			await fetch("http://localhost:5000/api/auth/update", {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
 					"auth-token": localStorage.getItem("token"),
 				},
-				body: JSON.stringify({
-					name: form.name,
-					email: form.email,
-				}),
+				body: JSON.stringify({ name: form.name }),
 			});
 
-			localStorage.setItem("name", form.name);
-			setIsEditing(false);
-			showAlert("Profile updated successfully", "success");
+			showAlert("Profile updated", "success");
 		} catch {
 			showAlert("Update failed", "danger");
 		}
 	};
 
-	/* ================= PASSWORD UPDATE ================= */
 	const handlePasswordUpdate = async (e) => {
 		e.preventDefault();
 
@@ -167,7 +182,6 @@ const Settings = ({ showAlert }) => {
 		}
 	};
 
-	/* ================= LOGOUT ================= */
 	const handleLogoutAll = () => {
 		if (!window.confirm("Are you sure you want to logout from all devices?")) return;
 
@@ -177,7 +191,6 @@ const Settings = ({ showAlert }) => {
 		navigate("/login");
 	};
 
-	/* ================= DELETE ACCOUNT ================= */
 	const handleDeleteAccount = async () => {
 		if (!window.confirm("This will permanently delete your account and all notes. Continue?")) return;
 
@@ -202,7 +215,6 @@ const Settings = ({ showAlert }) => {
 	return (
 		<div className="settings-layout">
 			<motion.div className="settings-card" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-				{/* PROFILE HEADER */}
 				<div className="settings-profile">
 					<div className="settings-avatar" onClick={() => setShowAvatarPicker(true)}>
 						{form.avatar ? <img src={`https://api.dicebear.com/7.x/${selectedStyle}/svg?seed=${selectedSeed}`} alt="avatar" className="settings-avatar-img" /> : <span className="settings-avatar-letter">{form.name ? form.name.charAt(0).toUpperCase() : "U"}</span>}

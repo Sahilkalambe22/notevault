@@ -17,7 +17,6 @@ const NotesSchema = new Schema({
 	tag: {
 		type: String,
 	},
-	
 
 	// 🔹 Multiple attachments (optional)
 	attachments: [
@@ -35,6 +34,10 @@ const NotesSchema = new Schema({
 	reminderAt: {
 		type: Date,
 		default: null,
+	},
+	reminderSent: {
+		type: Boolean,
+		default: false,
 	},
 
 	date: {

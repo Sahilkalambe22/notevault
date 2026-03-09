@@ -30,7 +30,7 @@ const Login = (props) => {
 			navigate("/profile");
 			props.showAlert("Logged in Successfully", "success");
 		} else {
-			props.showAlert("Invalid credentials", "warning");
+			props.showAlert(json.error || "Login failed", "warning");
 		}
 	};
 
