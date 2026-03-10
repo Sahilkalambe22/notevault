@@ -24,7 +24,7 @@ app.use("/api/notes/ai-suggest", require("./routes/aiSuggest"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.listen(port, () => {
-  console.log(`notevault backend listening at http://localhost:${port}`)
+  console.log(`notevault backend listening at http://localhost:${port}`) 
 })
 
 
