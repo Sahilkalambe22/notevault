@@ -8,6 +8,8 @@ const NotesState = (props) => {
 	const host = "http://localhost:5000";
 	const [notes, setnotes] = useState([]);
 
+	const [usage, setUsage] = useState({ used: 0, limit: 50 });
+
 	// canonical predefined types (case-insensitive matching)
 	const PREDEFINED_TYPES = ["Work", "Random", "Important", "Todo", "Personal", "Priority"];
 
@@ -83,6 +85,50 @@ const NotesState = (props) => {
 			console.error("getNotes error:", err);
 		}
 	};
+
+// =========================
+// SEARCH NOTES (BACKEND)
+// =========================
+const searchNotes = async (query) => {
+	try {
+
+		// If search is empty → load normal notes
+		if (!query || !query.trim()) {
+			await getNotes();
+			return;
+		}
+
+		const response = await fetch(
+			`${host}/api/notes/search?q=${encodeURIComponent(query)}`,
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					"auth-token": localStorage.getItem("token"),
+				},
+			}
+		);
+
+		const json = await response.json();
+		const arr = Array.isArray(json) ? json : json.notes || [];
+
+		const annotated = arr.map((n) => ({
+			...n,
+			tagType: deriveTagTypeFromTag(n.tag),
+		}));
+
+		const sorted = annotated
+			.slice()
+			.sort((a, b) => (b.isPinned === true) - (a.isPinned === true));
+
+		setnotes(sorted);
+
+	} catch (err) {
+		console.error("searchNotes error:", err);
+	}
+};
+
+
 
 	// =========================
 	// ADD NOTE
@@ -270,6 +316,27 @@ const NotesState = (props) => {
 	};
 
 	// =========================
+// GET NOTES USAGE
+// =========================
+const getUsage = async () => {
+  try {
+    const res = await fetch(`${host}/api/notes/usage`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.getItem("token"),
+      },
+    });
+
+    const data = await res.json();
+
+    setUsage(data);
+  } catch (err) {
+    console.error("getUsage error:", err);
+  }
+};
+
+	// =========================
 	// Helpers
 	// =========================
 	const replaceNote = (updatedNote) => {
@@ -289,6 +356,9 @@ const NotesState = (props) => {
 				pinNote,
 				getVersions,
 				restoreVersion,
+				searchNotes,
+				usage,
+				getUsage,
 			}}
 		>
 			{props.children}

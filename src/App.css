@@ -10,6 +10,7 @@
 	--bg-page: radial-gradient(circle at 20% 20%, #1e293b 0%, #0f172a 40%, #0b1120 100%);
 	--bg-card: rgba(30, 41, 59, 0.75);
 	--bg-soft: rgba(30, 41, 59, 0.7);
+	--bg-card2: rgba(255,255,255,0.05);
 
 	/* TEXT */
 
@@ -37,6 +38,7 @@
 	--bg-page: linear-gradient(180deg, #f5f7ff 0%, #eef2ff 40%, #e5e7eb 100%);
 	--bg-card: rgba(255, 255, 255, 0.85);
 	--bg-soft: #f8fafc;
+	--bg-card2: rgba(0,0,0,0.04);
 
 	--text-main: #0f172a;
 	--text-secondary: #334155;

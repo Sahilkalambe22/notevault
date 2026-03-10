@@ -27,6 +27,7 @@ const Settings = lazy(() => import("./components/Settings"));
 const VerifyOTP = lazy(() => import("./components/VerifyOTP"));
 const ForgotPassword = lazy(() => import("./components/ForgotPassword"));
 const ResetPassword = lazy(() => import("./components/ResetPassword"));
+const SharedNote = lazy(() => import("./components/SharedNote"));
 
 /* ---------- Reminder Bridge ---------- */
 
@@ -109,6 +110,8 @@ function AppContent({ showAlert }) {
 								<Route path="/forgot-password" element={<ForgotPassword showAlert={showAlert.fn} />} />
 
 								<Route path="/reset-password" element={<ResetPassword showAlert={showAlert.fn} />} />
+
+								<Route path="/share/:id" element={<SharedNote />} />
 							</Routes>
 
 							<Footer />

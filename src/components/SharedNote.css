@@ -1,0 +1,48 @@
+/* ================= SHARED NOTE VIEW ================= */
+
+.shared-title {
+  border: none;
+  pointer-events: none;
+}
+
+.shared-note-content {
+  margin-top: 10px;
+}
+
+/* Better image handling */
+.shared-note-content img {
+  max-width: 60%;
+  display: block;
+  margin: 24px auto;
+  border-radius: 12px;
+}
+
+/* spacing for text blocks */
+.shared-note-content p {
+  margin-bottom: 12px;
+}
+
+/* ================= SHARED NOTE BADGE ================= */
+
+.shared-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  padding: 4px 10px;
+  margin-bottom: 12px;
+
+  border-radius: 999px;
+
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--text-secondary);
+
+  width: fit-content;
+}
+
+.shared-badge i {
+  font-size: 0.7rem;
+}

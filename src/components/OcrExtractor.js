@@ -5,7 +5,7 @@ import React, { useRef, useState } from "react";
 const OcrExtractor = ({ showAlert, onApplyDescription, onUseImage }) => {
 	// switch to enable / disable OCR section
 	const [enabled, setEnabled] = useState(false);
-
+	const host = "http://localhost:5000";
 	// OCR-specific states
 	const [ocrLoading, setOcrLoading] = useState(false);
 	const [ocrText, setOcrText] = useState("");
@@ -27,7 +27,7 @@ const OcrExtractor = ({ showAlert, onApplyDescription, onUseImage }) => {
 			const formData = new FormData();
 			formData.append("image", file);
 
-			const resp = await fetch("http://localhost:5000/api/notes/ocr", {
+			const resp = await fetch(`${host}/api/notes/ocr`, {
 				method: "POST",
 				headers: {
 					"auth-token": localStorage.getItem("token") || "",

@@ -1,6 +1,8 @@
 // NotePreview.js
 import "./NoteItem.css";
 
+
+const host = "http://localhost:5000";
 const NotePreview = ({ note }) => {
   return (
     <div className="">
@@ -12,13 +14,13 @@ const NotePreview = ({ note }) => {
 
       {note.imagePath && (
         <img
-          src={`http://localhost:5000${note.imagePath}`}
+          src={`${host}${note.imagePath}`}
           alt=""
         />
       )}
 
       {note.attachments?.map((a, i) => (
-        <a key={i} href={`http://localhost:5000${a.path}`}>
+        <a key={i} href={`${host}${a.path}`}>
           {a.originalName}
         </a>
       ))}

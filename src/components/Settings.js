@@ -5,7 +5,7 @@ import "./Settings.css";
 
 const Settings = ({ showAlert }) => {
 	const navigate = useNavigate();
-
+	const host = "http://localhost:5000";
 	const [isEditing, setIsEditing] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -25,7 +25,7 @@ const Settings = ({ showAlert }) => {
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
-				const res = await fetch("http://localhost:5000/api/auth/getuser", {
+				const res = await fetch(`${host}/api/auth/getuser`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -82,7 +82,7 @@ const Settings = ({ showAlert }) => {
 		const avatarValue = style ? `${style}:${seed}` : "";
 
 		try {
-			await fetch("http://localhost:5000/api/auth/update", {
+			await fetch(`${host}/api/auth/update`, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
@@ -105,7 +105,7 @@ const Settings = ({ showAlert }) => {
 
 		try {
 			if (form.email !== localStorage.getItem("email")) {
-				const res = await fetch("http://localhost:5000/api/auth/request-email-change", {
+				const res = await fetch(`${host}/api/auth/request-email-change`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -130,7 +130,7 @@ const Settings = ({ showAlert }) => {
 				return;
 			}
 
-			await fetch("http://localhost:5000/api/auth/update", {
+			await fetch(`${host}/api/auth/update`, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
@@ -159,7 +159,7 @@ const Settings = ({ showAlert }) => {
 		}
 
 		try {
-			await fetch("http://localhost:5000/api/auth/update", {
+			await fetch(`${host}/api/auth/update`, {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
@@ -195,7 +195,7 @@ const Settings = ({ showAlert }) => {
 		if (!window.confirm("This will permanently delete your account and all notes. Continue?")) return;
 
 		try {
-			await fetch("http://localhost:5000/api/auth/delete", {
+			await fetch(`${host}/api/auth/delete`, {
 				method: "DELETE",
 				headers: {
 					"auth-token": localStorage.getItem("token"),

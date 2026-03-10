@@ -1,6 +1,6 @@
 // src/components/Notes.jsx
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import noteContext from "../context/notes/notesContext";
 import NoteItem from "./NoteItem";
 import NotesFilters from "./NotesFilters";
@@ -13,7 +13,7 @@ import CardSkeleton from "./loaders/CardSkeleton";
 
 const Notes = (props) => {
 	const context = useContext(noteContext);
-	const { notes, getNotes } = context;
+	const { notes, getNotes, usage, getUsage } = context;
 	const navigate = useNavigate();
 
 	const [loading, setLoading] = useState(true);
@@ -26,6 +26,7 @@ const Notes = (props) => {
 			if (localStorage.getItem("token")) {
 				try {
 					await getNotes();
+					await getUsage();
 				} finally {
 					if (mounted) setLoading(false);
 				}
@@ -95,6 +96,20 @@ const Notes = (props) => {
 		};
 	}, [notes, uniqueTags]);
 
+	const { searchNotes } = useContext(noteContext);
+
+	const debounceRef = useRef(null);
+
+	const handleSearchChange = (value) => {
+		setsearch(value);
+
+		clearTimeout(debounceRef.current);
+
+		debounceRef.current = setTimeout(() => {
+			searchNotes(value);
+		}, 300);
+	};
+
 	return (
 		<>
 			{/* 🔔 Background reminder handler */}
@@ -104,6 +119,24 @@ const Notes = (props) => {
 				{/* ================= STICKY HEADER ================= */}
 				<div className="notes-sticky-header">
 					{/* ================= DASHBOARD STATS ROW ================= */}
+					{/* ================= USAGE BAR ================= */}
+					<div className="usage-card mb-4">
+						<div className="usage-top">
+							<span>Notes Usage</span>
+							<span>
+								{usage.used} / {usage.limit}
+							</span>
+						</div>
+
+						<div className="usage-bar">
+							<div
+								className="usage-fill"
+								style={{
+									width: `${(usage.used / usage.limit) * 100}%`,
+								}}
+							></div>
+						</div>
+					</div>
 					<div className="row mb-4">
 						<div className="col-6 col-md-3 mb-3">
 							<div className="dashboard-card">
@@ -138,7 +171,7 @@ const Notes = (props) => {
 					<NotesHeader totalNotes={stats.total} onAddNote={handleAddNote} />
 
 					{/* Filters */}
-					<NotesFilters selectedTag={selectedTag} onTagChange={setSelectedTag} uniqueTags={uniqueTags} search={search} onSearchChange={setsearch} />
+					<NotesFilters selectedTag={selectedTag} onTagChange={setSelectedTag} uniqueTags={uniqueTags} search={search} onSearchChange={handleSearchChange} />
 				</div>
 
 				{/* ================= SCROLLABLE NOTES ================= */}

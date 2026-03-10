@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./RichTextEditor.css";
 
+const host = "http://localhost:5000";
 const defaultFormat = {
 	bold: false,
 	italic: false,
@@ -369,7 +370,7 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 				const formData = new FormData();
 				formData.append("image", file);
 
-				const res = await fetch(`http://localhost:5000/api/notes/${noteId}/upload-inline-image`, {
+				const res = await fetch(`${host}/api/notes/${noteId}/upload-inline-image`, {
 					method: "POST",
 					headers: {
 						"auth-token": localStorage.getItem("token"),
@@ -386,6 +387,12 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 			}
 		};
 	};
+
+	const handlePaste = (e) => {
+  e.preventDefault();
+  const text = e.clipboardData.getData("text/plain");
+  document.execCommand("insertText", false, text);
+};
 
 	/* ===============================
      RENDER
@@ -460,6 +467,7 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 				contentEditable
 				style={{ minHeight }}
 				onInput={handleInput}
+				onPaste={handlePaste}
 				onKeyDown={handleKeyDown}
 				onClick={() => {
 					saveSelection();

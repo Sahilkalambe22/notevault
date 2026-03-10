@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Footer.css";
 
+
+const isLoggedIn = localStorage.getItem("token");
 export default function Footer() {
   return (
     <footer className="nv-footer mt-5">
@@ -24,8 +26,17 @@ export default function Footer() {
           <ul className="nv-footer-links">
             <li><Link to="/">Home</Link></li>
             <li><Link to="/about">About</Link></li>
-            <li><Link to="/login">Login</Link></li>
-            <li><Link to="/signup">Signup</Link></li>
+            {isLoggedIn ?(
+            <>
+            <li><Link to="/profile">My Notebook</Link></li>
+            <li><Link to = "/settings">Settings</Link></li>
+            </>
+            ): (
+              <>
+                <li><Link to="/login">Login</Link></li>
+                <li><Link to="/signup">Signup</Link></li>
+              </>
+            )}
           </ul>
         </div>
 

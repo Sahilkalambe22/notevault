@@ -1,3 +1,7 @@
+/* Notes.css */
+
+
+
 /* ================= DASHBOARD CARDS ================= */
 
 .dashboard-card {
@@ -103,4 +107,45 @@ border: 1px solid var(--border-soft);
 .empty-state-card p {
 	color: var(--text-muted);
 	font-size: 0.95rem;
+}
+
+
+/* =========================
+   USAGE INDICATOR
+========================= */
+
+.usage-card {
+  background-color: var(--bg-card2);
+  max-width: 500px;
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+
+.usage-top {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.usage-bar {
+  height: 10px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.usage-fill {
+  height: 100%;
+  background: linear-gradient(90deg,#7c5cff,#5edfff);
+  transition: width 0.4s ease;
+  animation: usageGlow 3s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(124,92,255,0.6);
+}
+
+@keyframes usageGlow {
+  0% { filter: brightness(1); }
+  50% { filter: brightness(1.15); }
+  100% { filter: brightness(1); }
 }

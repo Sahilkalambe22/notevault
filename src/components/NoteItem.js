@@ -24,6 +24,7 @@ const TAG_ICON_MAP = {
 	Priority: "fa-solid fa-bolt",
 };
 
+const host = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 /* ================= COMPONENT ================= */
 
 const NoteItem = ({ note, updateNote, showAlert }) => {
@@ -56,6 +57,31 @@ const NoteItem = ({ note, updateNote, showAlert }) => {
 		pinNote(note._id, !note.isPinned);
 
 		showAlert(note.isPinned ? "Note unpinned" : "Note pinned", "success");
+	};
+
+	const handleShare = async (e) => {
+		e.stopPropagation();
+
+		try {
+			const res = await fetch(`${host}/api/notes/${note._id}/share`, {
+				method: "POST",
+				headers: {
+					"auth-token": localStorage.getItem("token"),
+				},
+			});
+
+			const data = await res.json();
+
+			if (data.shareUrl) {
+				await navigator.clipboard.writeText(data.shareUrl);
+				showAlert("Share link copied!", "success");
+			} else {
+				showAlert("Unable to create share link", "danger");
+			}
+		} catch (err) {
+			console.error(err);
+			showAlert("Share failed", "danger");
+		}
 	};
 
 	const handleOpenNote = () => {
@@ -111,6 +137,9 @@ const NoteItem = ({ note, updateNote, showAlert }) => {
 
 				{/* FOOTER */}
 				<div className="note-footer d-flex justify-content-end align-items-center px-3 py-2 gap-3">
+					<button className="note-icon text-primary" onClick={handleShare}>
+						<i className="fa-solid fa-share-nodes" />
+					</button>
 					<button className="note-icon text-danger" onClick={handleDelete}>
 						<i className="fa-solid fa-trash-can" />
 					</button>
