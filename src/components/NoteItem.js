@@ -66,7 +66,7 @@ const NoteItem = ({ note, updateNote, showAlert }) => {
 			const res = await fetch(`${host}/api/notes/${note._id}/share`, {
 				method: "POST",
 				headers: {
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 			});
 

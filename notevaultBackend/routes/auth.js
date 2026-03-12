@@ -13,6 +13,10 @@ const nodemailer = require("nodemailer");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET not defined in environment variables");
+}
+
 /* ================= EMAIL TRANSPORTER ================= */
 
 const transporter = nodemailer.createTransport({
@@ -75,7 +79,7 @@ const forgotLimiter = rateLimit({
 
 /* ================= ROUTE 1: SIGNUP → SEND OTP ================= */
 
-router.post("/createuser", signupLimiter, [body("name", "Enter valid name").isLength({ min: 3 }), body("email", "Enter valid email").isEmail(), body("password", "Password must be min 4 chars").isLength({ min: 4 })], async (req, res) => {
+router.post("/createuser", signupLimiter, [body("name", "Enter valid name").isLength({ min: 3 }), body("email", "Enter valid email").isEmail(), body("password", "Password must be min 8 chars").isLength({ min: 8 })], async (req, res) => {
 	let success = false;
 
 	const errors = validationResult(req);
@@ -221,14 +225,20 @@ router.post("/login", loginLimiter, [body("email", "Enter valid email").isEmail(
 	const { email, password } = req.body;
 
 	try {
-		const user = await User.findOne({ email });
+		const user = await User.findOne({ email }).select("+password");
+		if (!user) {
+			return res.status(400).json({
+				success,
+				error: "Invalid email or password",
+			});
+		}
 
 		const passwordCompare = user ? await bcrypt.compare(password, user.password) : false;
 
 		if (!passwordCompare) {
 			return res.status(400).json({
 				success,
-				error: "Enter correct credentials",
+				error: "Invalid email or password",
 			});
 		}
 

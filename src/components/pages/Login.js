@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LuFileLock2 } from "react-icons/lu";
 import { motion } from "framer-motion";
-import "./AuthLayout.css";
+import  "../AuthLayout.css";
 
 const Login = (props) => {
 	const [credentials, setCredentials] = useState({

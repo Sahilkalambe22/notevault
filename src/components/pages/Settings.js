@@ -29,7 +29,7 @@ const Settings = ({ showAlert }) => {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
-						"auth-token": localStorage.getItem("token"),
+						Authorization: `Bearer ${localStorage.getItem("token")}`,
 					},
 				});
 
@@ -86,7 +86,7 @@ const Settings = ({ showAlert }) => {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 				body: JSON.stringify({ avatar: avatarValue }),
 			});
@@ -109,7 +109,7 @@ const Settings = ({ showAlert }) => {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
-						"auth-token": localStorage.getItem("token"),
+						Authorization: `Bearer ${localStorage.getItem("token")}`,
 					},
 					body: JSON.stringify({ newEmail: form.email }),
 				});
@@ -134,7 +134,7 @@ const Settings = ({ showAlert }) => {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 				body: JSON.stringify({ name: form.name }),
 			});
@@ -163,7 +163,7 @@ const Settings = ({ showAlert }) => {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 				body: JSON.stringify({ password: form.password }),
 			});
@@ -198,7 +198,7 @@ const Settings = ({ showAlert }) => {
 			await fetch(`${host}/api/auth/delete`, {
 				method: "DELETE",
 				headers: {
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 			});
 
@@ -217,7 +217,18 @@ const Settings = ({ showAlert }) => {
 			<motion.div className="settings-card" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
 				<div className="settings-profile">
 					<div className="settings-avatar" onClick={() => setShowAvatarPicker(true)}>
-						{form.avatar ? <img src={`https://api.dicebear.com/7.x/${selectedStyle}/svg?seed=${selectedSeed}`} alt="avatar" className="settings-avatar-img" /> : <span className="settings-avatar-letter">{form.name ? form.name.charAt(0).toUpperCase() : "U"}</span>}
+						{form.avatar ? (
+							<img
+								src={`https://api.dicebear.com/9.x/${selectedStyle}/svg?seed=${selectedSeed}`}
+								alt="avatar"
+								className="settings-avatar-img"
+								onError={(e) => {
+									e.target.style.display = "none";
+								}}
+							/>
+						) : (
+							<span className="settings-avatar-letter">{form.name ? form.name.charAt(0).toUpperCase() : "U"}</span>
+						)}
 					</div>
 
 					<h3>{form.name}</h3>
@@ -248,7 +259,7 @@ const Settings = ({ showAlert }) => {
 
 									return (
 										<div key={index} className={`avatar-style-wrapper ${isSelected ? "selected" : ""}`} onClick={() => handleAvatarSelect(style, generateRandomSeed())}>
-											<img src={`https://api.dicebear.com/7.x/${style}/svg?seed=test`} alt={style} className="avatar-option-img" />
+											<img src={`https://api.dicebear.com/9.x/${style}/svg?seed=test`} alt={style} className="avatar-option-img" />
 
 											<span className="avatar-style-name">{style}</span>
 

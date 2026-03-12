@@ -30,7 +30,7 @@ const OcrExtractor = ({ showAlert, onApplyDescription, onUseImage }) => {
 			const resp = await fetch(`${host}/api/notes/ocr`, {
 				method: "POST",
 				headers: {
-					"auth-token": localStorage.getItem("token") || "",
+					Authorization: `Bearer ${localStorage.getItem("token")}` || "",
 				},
 				body: formData,
 			});

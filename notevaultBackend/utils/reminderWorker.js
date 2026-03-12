@@ -18,24 +18,31 @@ cron.schedule("* * * * *", async () => {
 		const notes = await Note.find({
 			reminderAt: { $lte: now },
 			reminderSent: false,
-		}).populate("user");
+		})
+			.populate("user", "email")
+			.limit(50);
 
 		for (const note of notes) {
-			if (!note.user) continue;
+			try {
+				if (!note.user?.email) continue;
+ 
+				note.reminderSent = true;
+				await note.save();
 
-			await transporter.sendMail({
-				from: process.env.EMAIL_USER,
-				to: note.user.email,
-				subject: "NoteVault Reminder",
-				html: `
-					<h2>⏰ Reminder</h2>
-					<p><strong>${note.title}</strong></p>
-					<p>This is a reminder for your note.</p>
-				`,
-			});
+				await transporter.sendMail({
+					from: process.env.EMAIL_USER,
+					to: note.user.email,
+					subject: "NoteVault Reminder",
+					html: `
+						<h2>⏰ Reminder</h2>
+						<p><strong>${note.title}</strong></p>
+						<p>This is a reminder for your note.</p>
+					`,
+				});
 
-			note.reminderSent = true;
-			await note.save();
+			} catch (err) {
+				console.error("Email failed for note:", note._id, err);
+			}
 		}
 	} catch (error) {
 		console.error("Reminder Worker Error:", error);

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "./AuthLayout";
+import AuthLayout from "../AuthLayout";
 
 const ForgotPassword = ({ showAlert }) => {
 	const [email, setEmail] = useState("");

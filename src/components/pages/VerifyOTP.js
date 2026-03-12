@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout";
+import AuthLayout from "../AuthLayout";
 
 const VerifyOTP = ({ showAlert }) => {
 	const [otp, setOtp] = useState("");
@@ -45,7 +45,7 @@ const VerifyOTP = ({ showAlert }) => {
 			headers: {
 				"Content-Type": "application/json",
 				...(mode === "email-change" && {
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				}),
 			},
 			body: JSON.stringify(body),

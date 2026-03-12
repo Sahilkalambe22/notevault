@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout";
+import AuthLayout from "../AuthLayout";
 
 const ResetPassword = ({ showAlert }) => {
 	const location = useLocation();

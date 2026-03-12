@@ -10,10 +10,13 @@ const UserSchema = new Schema({
 		type: String,
 		required: true,
 		unique: true,
+		lowercase: true,
 	},
 	password: {
 		type: String,
 		required: true,
+		minlength: 8,
+		select: false,
 	},
 	avatar: {
 		type: String,
@@ -24,6 +27,7 @@ const UserSchema = new Schema({
 
 	pendingEmail: {
 		type: String,
+		lowercase: true,
 	},
 
 	emailChangeOTP: {
@@ -37,6 +41,12 @@ const UserSchema = new Schema({
 	date: {
 		type: Date,
 		default: Date.now,
+	},
+
+	plan: {
+		type: String,
+		enum: ["free", "pro"],
+		default: "free",
 	},
 });
 

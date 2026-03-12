@@ -27,7 +27,7 @@ const NoteImagesPanel = ({ note, showAlert }) => {
         {
           method: "PUT",
           headers: {
-            "auth-token": localStorage.getItem("token"),
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: formData,
         }
@@ -57,7 +57,7 @@ const NoteImagesPanel = ({ note, showAlert }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            "auth-token": localStorage.getItem("token"),
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
             imagePath: null,

@@ -1,23 +1,31 @@
 const jwt = require("jsonwebtoken");
+
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const fetchuser = (req, res, next) =>{
-    // get user form the authtoken and add id to req obj
-    const token = req.header('auth-token');
-    if (!token) {
-  return res.status(401).send({ error: "Please use a valid user for authentication" });
+if (!JWT_SECRET) {
+	throw new Error("JWT_SECRET not defined in environment variables");
 }
 
+const fetchuser = (req, res, next) => {
+	const authHeader = req.header("Authorization");
 
-    try {
-        const data = jwt.verify(token, JWT_SECRET);
-    req.user = data.user; 
-    next();
-    } catch (error) {
-        res.status(401).send({error: "Please use a valid user for authentication"});
-    }
-    
-}
+	if (!authHeader) {
+		return res.status(401).json({ error: "Invalid or expired token" });
+	}
 
+	const token = authHeader.split(" ")[1];
+
+	if (!token) {
+		return res.status(401).json({ error: "Invalid or expired token" });
+	}
+
+	try {
+		const data = jwt.verify(token, JWT_SECRET);
+		req.user = data.user;
+		next();
+	} catch (error) {
+		return res.status(401).json({ error: "Invalid or expired token" });
+	}
+};
 
 module.exports = fetchuser;

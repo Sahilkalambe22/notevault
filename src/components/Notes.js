@@ -122,17 +122,15 @@ const Notes = (props) => {
 					{/* ================= USAGE BAR ================= */}
 					<div className="usage-card mb-4">
 						<div className="usage-top">
-							<span>Notes Usage</span>
-							<span>
-								{usage.used} / {usage.limit}
-							</span>
+							<span>{usage.plan === "pro" ? "Pro Plan – Unlimited Notes" : "Notes Usage"}</span>
+							<span>{usage.plan === "pro" ? `${usage.used} / Unlimited` : `${usage.used} / ${usage.limit}`}</span>
 						</div>
 
 						<div className="usage-bar">
 							<div
 								className="usage-fill"
 								style={{
-									width: `${(usage.used / usage.limit) * 100}%`,
+									width: `${usage.plan === "pro" ? "100%" : (usage.used / usage.limit) * 100 + "%"}`,
 								}}
 							></div>
 						</div>

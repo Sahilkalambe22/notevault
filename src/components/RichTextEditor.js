@@ -373,7 +373,7 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 				const res = await fetch(`${host}/api/notes/${noteId}/upload-inline-image`, {
 					method: "POST",
 					headers: {
-						"auth-token": localStorage.getItem("token"),
+						Authorization: `Bearer ${localStorage.getItem("token")}`,
 					},
 					body: formData,
 				});

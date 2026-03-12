@@ -26,7 +26,7 @@ const NotesState = (props) => {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 				body: JSON.stringify({
 					reminderAt: reminderAt ?? null,
@@ -57,7 +57,7 @@ const NotesState = (props) => {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 			});
 
@@ -104,7 +104,7 @@ const searchNotes = async (query) => {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 			}
 		);
@@ -152,7 +152,7 @@ const searchNotes = async (query) => {
 			const response = await fetch(`${host}/api/notes/addnotes`, {
 				method: "POST",
 				headers: {
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 				body: formData,
 			});
@@ -202,7 +202,7 @@ const searchNotes = async (query) => {
 				method: "DELETE",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 			});
 
@@ -223,7 +223,7 @@ const searchNotes = async (query) => {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 				body: JSON.stringify({ title, description, tag }),
 			});
@@ -251,7 +251,7 @@ const searchNotes = async (query) => {
 				method: "PUT",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 				body: JSON.stringify({ isPinned }),
 			});
@@ -283,7 +283,7 @@ const searchNotes = async (query) => {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 			});
 
@@ -302,7 +302,7 @@ const searchNotes = async (query) => {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 			});
 
@@ -324,7 +324,7 @@ const getUsage = async () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "auth-token": localStorage.getItem("token"),
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
 

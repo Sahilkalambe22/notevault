@@ -1,6 +1,6 @@
 import React from "react";
-import Notes from "./Notes";
-import UserHeader from "./UserHeader";
+import Notes from "../Notes";
+import UserHeader from "../UserHeader";
 
 
 const Profile = (props) => {

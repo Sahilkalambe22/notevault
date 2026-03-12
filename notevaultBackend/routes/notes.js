@@ -4,14 +4,19 @@ const crypto = require("crypto");
 
 const Note = require("../models/Note");
 const NoteVersion = require("../models/NoteVersion");
-
+const User = require("../models/User");
 const fetchuser = require("../middleware/fetchuser");
 const upload = require("../middleware/uploads");
 const pruneNoteVersions = require("../utils/pruneNoteVersions");
-
+const PLAN_LIMITS = require("../utils/planLimits");
+const cleanupUploads = require("../utils/cleanupUploads");
+const scanFile = require("../utils/scanFile");
 const { body, validationResult } = require("express-validator");
 const mongoose = require("mongoose");
-const hostf = "http://localhost:3000";
+const hostf = process.env.FRONTEND_URL || "http://localhost:3000";
+const fs = require("fs");
+const path = require("path");
+
 
 /* ===============================
    ObjectId validator
@@ -61,7 +66,7 @@ router.get("/fetchallnotes", fetchuser, async (req, res) => {
 	}
 });
 
-/* ===================================================== ROUTE 1B: SEARCH NOTES ===================================================== */ 
+/* ===================================================== ROUTE 1B: SEARCH NOTES ===================================================== */
 router.get("/search", fetchuser, async (req, res) => {
 	try {
 		const query = req.query.q;
@@ -88,6 +93,8 @@ router.post("/addnotes", fetchuser, upload.fields([{ name: "attachments", maxCou
 		const errors = validationResult(req);
 
 		if (!errors.isEmpty()) {
+			cleanupUploads(req.files?.attachments);
+
 			return res.status(400).json({ errors: errors.array() });
 		}
 
@@ -95,11 +102,30 @@ router.post("/addnotes", fetchuser, upload.fields([{ name: "attachments", maxCou
 
 		const attachmentFiles = req.files?.attachments || [];
 
+
+		for (const file of attachmentFiles) {
+			try {
+				await scanFile(file.path);
+			} catch (err) {
+				fs.unlinkSync(file.path);
+
+				return res.status(400).json({
+					error: "File failed malware scan",
+				});
+			}
+		}
+
+		const user = await User.findById(req.user.id);
+
 		const noteCount = await Note.countDocuments({ user: req.user.id });
 
-		if (noteCount >= 50) {
+		const limit = PLAN_LIMITS[user.plan].notes;
+
+		if (noteCount >= limit) {
+			cleanupUploads(req.files?.attachments);
+
 			return res.status(403).json({
-				error: "Free plan limit reached (50 notes). Upgrade to Pro for unlimited notes.",
+				error: "Note limit reached. Upgrade to Pro Plan.",
 			});
 		}
 
@@ -141,6 +167,7 @@ router.post("/addnotes", fetchuser, upload.fields([{ name: "attachments", maxCou
 
 		res.json(savedNote);
 	} catch (err) {
+		cleanupUploads(req.files?.attachments);
 		console.error(err);
 		res.status(500).json({ error: "Server error occurred." });
 	}
@@ -182,6 +209,21 @@ router.put("/updatenote/:id", fetchuser, validateObjectId("id"), upload.fields([
 		/* Attachments */
 		const attachmentFiles = req.files?.attachments || [];
 
+    for (const file of attachmentFiles) {
+  try {
+    await scanFile(file.path);
+  } catch (err) {
+
+    if (fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+
+    return res.status(400).json({
+      error: "File failed malware scan",
+    });
+  }
+}
+
 		if (attachmentFiles.length > 0) {
 			note.attachments.push(
 				...attachmentFiles.map((file) => ({
@@ -214,9 +256,14 @@ router.put("/updatenote/:id", fetchuser, validateObjectId("id"), upload.fields([
 
 		res.json(note);
 	} catch (err) {
-		console.error("Update note error:", err);
-		res.status(500).json({ error: "Server error occurred." });
-	}
+
+  cleanupUploads(req.files?.attachments);
+
+  console.error("Update note error:", err);
+
+  res.status(500).json({ error: "Server error occurred." });
+
+}
 });
 
 /* =====================================================
@@ -233,12 +280,27 @@ router.delete("/deletenote/:id", fetchuser, validateObjectId("id"), async (req, 
 			return res.status(403).json({ error: "Not allowed" });
 		}
 
+
+		// delete attachments from disk
+		for (const attachment of note.attachments) {
+			const filePath = path.join(__dirname, "..", attachment.path.replace(/^\/+/, ""));
+
+			try {
+				if (fs.existsSync(filePath)) {
+					fs.unlinkSync(filePath);
+				}
+			} catch (err) {
+				console.error("Failed to delete file:", filePath);
+			}
+		}
+
 		await Note.findByIdAndDelete(req.params.id);
 		await NoteVersion.deleteMany({ note: req.params.id });
 
 		res.json({ success: true });
 	} catch (err) {
 		console.error(err);
+
 		res.status(500).json({ error: "Server error occurred." });
 	}
 });
@@ -335,6 +397,19 @@ router.delete("/:id/attachments/:index", fetchuser, validateObjectId("id"), asyn
 			return res.status(400).json({ error: "Invalid attachment index" });
 		}
 
+
+		const attachment = note.attachments[idx];
+
+		const filePath = path.join(__dirname, "..", attachment.path.replace(/^\/+/, ""));
+
+		try {
+			if (fs.existsSync(filePath)) {
+				fs.unlinkSync(filePath);
+			}
+		} catch (err) {
+			console.error("Failed to delete attachment:", filePath);
+		}
+
 		note.attachments.splice(idx, 1);
 
 		await note.save();
@@ -362,11 +437,30 @@ router.post("/:id/upload-inline-image", fetchuser, validateObjectId("id"), uploa
 			return res.status(400).json({ error: "No image uploaded" });
 		}
 
+
+		try {
+			await scanFile(req.file.path);
+		} catch (scanErr) {
+			if (fs.existsSync(req.file.path)) {
+				fs.unlinkSync(req.file.path);
+			}
+
+			return res.status(400).json({
+				error: "File failed malware scan",
+			});
+		}
+
 		const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
 
 		res.json({ imageUrl });
 	} catch (err) {
+
+		if (req.file && fs.existsSync(req.file.path)) {
+			fs.unlinkSync(req.file.path);
+		}
+
 		console.error("Inline image upload error:", err);
+
 		res.status(500).json({ error: "Server error occurred." });
 	}
 });
@@ -375,57 +469,54 @@ router.post("/:id/upload-inline-image", fetchuser, validateObjectId("id"), uploa
 // ROUTE 9:GET NOTES USAGE
 // =========================
 router.get("/usage", fetchuser, async (req, res) => {
-  try {
-    const used = await Note.countDocuments({ user: req.user.id });
+	try {
+		const used = await Note.countDocuments({ user: req.user.id });
 
-    const LIMIT = 50; // free plan limit
+		const user = await User.findById(req.user.id);
 
-    res.json({
-      used,
-      limit: LIMIT,
-      remaining: LIMIT - used
-    });
+		const limit = PLAN_LIMITS[user.plan].notes;
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
-  }
+		res.json({
+			used,
+			limit,
+			remaining: limit === Infinity ? null : limit - used,
+			plan: user.plan,
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).send("Server Error");
+	}
 });
-
 
 /* =====================================================
    ROUTE 10: SHARE NOTE
 ===================================================== */
 
 router.post("/:id/share", fetchuser, validateObjectId("id"), async (req, res) => {
+	try {
+		const note = await Note.findById(req.params.id);
 
-  try {
+		if (!note) return res.status(404).json({ error: "Note not found" });
 
-    const note = await Note.findById(req.params.id);
+		if (note.user.toString() !== req.user.id) {
+			return res.status(403).json({ error: "Not allowed" });
+		}
 
-    if (!note) return res.status(404).json({ error: "Note not found" });
+		if (!note.shareId) {
+			note.shareId = crypto.randomBytes(12).toString("hex");
+		}
 
-    if (note.user.toString() !== req.user.id) {
-      return res.status(403).json({ error: "Not allowed" });
-    }
+		note.isPublic = true;
 
-    if (!note.shareId) {
-      note.shareId = crypto.randomBytes(12).toString("hex");
-    }
+		await note.save();
 
-    note.isPublic = true;
-
-    await note.save();
-
-    res.json({
-      shareUrl: `${hostf}/share/${note.shareId}`
-    });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-
+		res.json({
+			shareUrl: `${hostf}/share/${note.shareId}`,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: "Server error" });
+	}
 });
 
 /* =====================================================
@@ -433,27 +524,26 @@ router.post("/:id/share", fetchuser, validateObjectId("id"), async (req, res) =>
 ===================================================== */
 
 router.get("/public/:shareId", async (req, res) => {
+	try {
+		const note = await Note.findOne({
+			shareId: req.params.shareId,
+			isPublic: true,
+		}).lean();
 
-  try {
+		if (!note) {
+			return res.status(404).json({ error: "Note not found" });
+		}
 
-    const note = await Note.findOne({
-      shareId: req.params.shareId,
-      isPublic: true
-    }).lean();
-
-    if (!note) {
-      return res.status(404).json({ error: "Note not found" });
-    }
-
-    res.json(note);
-
-  } catch (err) {
-
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-
-  }
-
+		res.json({
+			title: note.title,
+			description: note.description,
+			tag: note.tag,
+			date: note.date,
+		});
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: "Server error" });
+	}
 });
 
 module.exports = router;

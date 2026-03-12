@@ -70,6 +70,11 @@ function Navbar() {
 								About
 							</Link>
 						</li>
+						<li className="nav-item">
+							<Link to="/Plans" className={`nav-link nv-link ${location.pathname === "/Plans" ? "active" : ""}`}>
+								Plan
+							</Link>
+						</li>
 
 						{isLoggedIn && (
 							<li className="nav-item">

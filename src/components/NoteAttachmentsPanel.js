@@ -27,7 +27,7 @@ const NoteAttachmentsPanel = ({ note, showAlert }) => {
 			const res = await fetch(`${host}/api/notes/updatenote/${note._id}`, {
 				method: "PUT",
 				headers: {
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 				body: formData,
 			});
@@ -53,7 +53,7 @@ const NoteAttachmentsPanel = ({ note, showAlert }) => {
 			const res = await fetch(`${host}/api/notes/${note._id}/attachments/${index}`, {
 				method: "DELETE",
 				headers: {
-					"auth-token": localStorage.getItem("token"),
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
 				},
 			});
 

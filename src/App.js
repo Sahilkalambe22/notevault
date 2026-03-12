@@ -17,17 +17,18 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 /* ---------- Lazy Loaded Pages ---------- */
 
-const Home = lazy(() => import("./components/Home"));
-const About = lazy(() => import("./components/About"));
-const Login = lazy(() => import("./components/Login"));
-const Signup = lazy(() => import("./components/Signup"));
-const Profile = lazy(() => import("./components/Profile"));
-const ShowNote = lazy(() => import("./components/ShowNote"));
-const Settings = lazy(() => import("./components/Settings"));
-const VerifyOTP = lazy(() => import("./components/VerifyOTP"));
-const ForgotPassword = lazy(() => import("./components/ForgotPassword"));
-const ResetPassword = lazy(() => import("./components/ResetPassword"));
-const SharedNote = lazy(() => import("./components/SharedNote"));
+const Home = lazy(() => import("./components/pages/Home"));
+const About = lazy(() => import("./components/pages/About"));
+const Login = lazy(() => import("./components/pages/Login"));
+const Signup = lazy(() => import("./components/pages/Signup"));
+const Profile = lazy(() => import("./components/pages/Profile"));
+const ShowNote = lazy(() => import("./components/pages/ShowNote"));
+const Settings = lazy(() => import("./components/pages/Settings"));
+const VerifyOTP = lazy(() => import("./components/pages/VerifyOTP"));
+const ForgotPassword = lazy(() => import("./components/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./components/pages/ResetPassword"));
+const SharedNote = lazy(() => import("./components/pages/SharedNote"));
+const PlanPage = lazy(() => import("./components/pages/PlanPage"));
 
 /* ---------- Reminder Bridge ---------- */
 
@@ -100,6 +101,8 @@ function AppContent({ showAlert }) {
 								/>
 
 								<Route path="/about" element={<About />} />
+
+								<Route path="/plans" element={<PlanPage />} />
 
 								<Route path="/login" element={<Login showAlert={showAlert.fn} />} />
 

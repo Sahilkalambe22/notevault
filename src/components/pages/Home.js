@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import NoteItem from "./NoteItem";
+import NoteItem from "../NoteItem";
 import "./Home.css";
 
 const Home = () => {

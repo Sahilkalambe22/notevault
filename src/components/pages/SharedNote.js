@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import "./NoteEditorPage.css";
+import "../NoteEditorPage.css";
 import "./SharedNote.css";
 
 const host = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";

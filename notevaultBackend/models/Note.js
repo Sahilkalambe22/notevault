@@ -79,14 +79,13 @@ const NotesSchema = new Schema(
    INDEXES (for performance)
 ============================== */
 
-// Faster note loading
-NotesSchema.index({ user: 1, isPinned: -1, date: -1 });
-
 // Full text search support
 NotesSchema.index({
 	title: "text",
 	description: "text",
 	tag: "text",
 });
+
+NotesSchema.index({user: 1, isPinned: -1, date: -1, reminderAt: 1, reminderSent: 1 });
 
 module.exports = mongoose.model("notes", NotesSchema);

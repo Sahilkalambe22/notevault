@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import noteContext from "../context/notes/notesContext";
+import noteContext from "../../context/notes/notesContext";
 
-import NoteEditorPage from "./NoteEditorPage";
-import NoteAttachmentsPanel from "./NoteAttachmentsPanel";
+import NoteEditorPage from "../NoteEditorPage";
+import NoteAttachmentsPanel from "../NoteAttachmentsPanel";
 import "./ShowNote.css";
 
 const ShowNote = ({ showAlert }) => {
@@ -16,7 +16,7 @@ const ShowNote = ({ showAlert }) => {
      🔥 Fetch notes on refresh / direct visit
      Ensures context is rehydrated after reload
   ========================================== */
-  useEffect(() => {
+  useEffect(() => { 
     const load = async () => {
       if (localStorage.getItem("token")) {
         await getNotes();
