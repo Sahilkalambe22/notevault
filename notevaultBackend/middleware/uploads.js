@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15 MB
 
 // ================================
 // Ensure uploads directory exists
@@ -60,7 +60,7 @@ const upload = multer({
 	fileFilter,
 	limits: {
 		fileSize: MAX_FILE_SIZE,
-		files: 5, // limit number of files per request
+		files: 4, // limit number of files per request
 	},
 });
 

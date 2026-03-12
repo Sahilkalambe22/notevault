@@ -1,14 +1,7 @@
 const cron = require("node-cron");
 const Note = require("../models/Note");
-const nodemailer = require("nodemailer");
-
-const transporter = nodemailer.createTransport({
-	service: "gmail",
-	auth: {
-		user: process.env.EMAIL_USER,
-		pass: process.env.EMAIL_PASS,
-	},
-});
+const transporter = require("../utils/mailer");
+const cleanupOrphans = require("./cleanupOrphans");
 
 // Runs every minute
 cron.schedule("* * * * *", async () => {
@@ -46,5 +39,17 @@ cron.schedule("* * * * *", async () => {
 		}
 	} catch (error) {
 		console.error("Reminder Worker Error:", error);
+	}
+
+
+});
+
+    // Cleanup orphan attachments every hour
+cron.schedule("0 3 * * *", async () => {
+	try {
+		await cleanupOrphans();
+		console.log("🧹 Orphan files cleaned");
+	} catch (err) {
+		console.error("Orphan cleanup failed:", err);
 	}
 });

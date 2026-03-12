@@ -4,28 +4,18 @@ const rateLimit = require("express-rate-limit");
 
 const User = require("../models/User");
 const PendingUser = require("../models/PendingUser");
+const transporter = require("../utils/mailer");
 
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const fetchuser = require("../middleware/fetchuser");
-const nodemailer = require("nodemailer");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET not defined in environment variables");
+	throw new Error("JWT_SECRET not defined in environment variables");
 }
-
-/* ================= EMAIL TRANSPORTER ================= */
-
-const transporter = nodemailer.createTransport({
-	service: "gmail",
-	auth: {
-		user: process.env.EMAIL_USER,
-		pass: process.env.EMAIL_PASS,
-	},
-});
 
 /* ================= RATE LIMITERS ================= */
 
@@ -79,61 +69,78 @@ const forgotLimiter = rateLimit({
 
 /* ================= ROUTE 1: SIGNUP → SEND OTP ================= */
 
-router.post("/createuser", signupLimiter, [body("name", "Enter valid name").isLength({ min: 3 }), body("email", "Enter valid email").isEmail(), body("password", "Password must be min 8 chars").isLength({ min: 8 })], async (req, res) => {
-	let success = false;
+router.post(
+	"/createuser",
+	signupLimiter,
+	[
+		body("name", "Enter valid name").isLength({ min: 3 }),
+		body("email", "Enter valid email").isEmail(),
+		body("password")
+			.isStrongPassword({
+				minLength: 8,
+				minLowercase: 1,
+				minUppercase: 1,
+				minNumbers: 1,
+				minSymbols: 1,
+			})
+			.withMessage("Password must contain uppercase, lowercase, number and symbol"),
+	],
+	async (req, res) => {
+		let success = false;
 
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
-		return res.status(400).json({ success, errors: errors.array() });
-	}
-
-	const { name, email, password } = req.body;
-
-	try {
-		const existingUser = await User.findOne({ email });
-
-		if (existingUser) {
-			return res.status(400).json({
-				success,
-				error: "Email already registered",
-			});
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ success, errors: errors.array() });
 		}
 
-		await PendingUser.deleteOne({ email });
+		const { name, email, password } = req.body;
 
-		const salt = await bcrypt.genSalt(10);
-		const secpass = await bcrypt.hash(password, salt);
+		try {
+			const existingUser = await User.findOne({ email });
 
-		const otp = Math.floor(100000 + Math.random() * 900000).toString();
-		const hashedOtp = await bcrypt.hash(otp, 10);
+			if (existingUser) {
+				return res.status(400).json({
+					success,
+					error: "Account already exists or signup pending",
+				});
+			}
 
-		await PendingUser.create({
-			name,
-			email,
-			password: secpass,
-			otp: hashedOtp,
-			otpExpiry: Date.now() + 10 * 60 * 1000,
-		});
+			await PendingUser.deleteOne({ email });
 
-		await transporter.sendMail({
-			from: process.env.EMAIL_USER,
-			to: email,
-			subject: "NoteVault OTP Verification",
-			html: `
+			const salt = await bcrypt.genSalt(10);
+			const secpass = await bcrypt.hash(password, salt);
+
+			const otp = Math.floor(100000 + Math.random() * 900000).toString();
+			const hashedOtp = await bcrypt.hash(otp, 10);
+
+			await PendingUser.create({
+				name,
+				email,
+				password: secpass,
+				otp: hashedOtp,
+				otpExpiry: Date.now() + 10 * 60 * 1000,
+			});
+
+			await transporter.sendMail({
+				from: process.env.EMAIL_USER,
+				to: email,
+				subject: "NoteVault OTP Verification",
+				html: `
           <h2>NoteVault Verification</h2>
           <p>Your OTP code:</p>
           <h1 style="letter-spacing:4px">${otp}</h1>
           <p>This code expires in 10 minutes.</p>
         `,
-		});
+			});
 
-		success = true;
-		res.json({ success, message: "OTP sent to email" });
-	} catch (error) {
-		console.error("Signup Error:", error.message);
-		res.status(500).json({ success: false, error: "Server error" });
-	}
-});
+			success = true;
+			res.json({ success, message: "OTP sent to email" });
+		} catch (error) {
+			console.error("Signup Error:", error.message);
+			res.status(500).json({ success: false, error: "Server error" });
+		}
+	},
+);
 
 /* ================= ROUTE 2: VERIFY OTP ================= */
 
