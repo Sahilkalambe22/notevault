@@ -90,3 +90,51 @@
 color:#f59e0b !important;
 font-size:0.85rem;
 }
+
+
+/* Yearly plan special style */
+
+.plan-card.yearly {
+	border: 2px solid var(--accent);
+	transform: scale(1.03);
+}
+
+.best-value {
+	background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.plan-save {
+	font-size: 0.85rem;
+	color: #10b981;
+	margin-bottom: 10px;
+	font-weight: 600;
+}
+
+.billing-toggle {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	margin-bottom: 30px;
+}
+
+.billing-toggle button {
+	padding: 8px 18px;
+	border-radius: 20px;
+	border: none;
+	cursor: pointer;
+	background: var(--bg-soft);
+	color: var(--text-secondary);
+	font-weight: 500;
+}
+
+.billing-toggle button.active {
+	background: linear-gradient(135deg, #6366f1, #8b5cf6);
+	color: white;
+}
+
+.save-tag {
+	font-size: 0.7rem;
+	margin-left: 6px;
+	color: #10b981;
+	font-weight: 600;
+}

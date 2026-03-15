@@ -66,20 +66,49 @@ const Notes = (props) => {
 	}, [notes]);
 
 	// filter notes
-	const filteredNotes = (notes || []).filter((n) => {
-		if (!n) return false;
-
+	const filteredNotes = useMemo(() => {
 		const s = search.trim().toLowerCase();
-		const title = (n.title || "").trim().toLowerCase();
-		const desc = (n.description || "").trim().toLowerCase();
-		const tag = (n.tag || "").trim().toLowerCase();
+		const selected = selectedTag.trim().toLowerCase();
 
-		const matchesSearch = !s || title.includes(s) || desc.includes(s) || tag.includes(s);
+		return (notes || []).filter((n) => {
+			if (!n) return false;
 
-		const matchesTag = selectedTag ? tag === selectedTag.trim().toLowerCase() : true;
+			const title = (n.title || "").trim().toLowerCase();
+			const desc = (n.description || "").trim().toLowerCase();
+			const tag = (n.tag || "").trim().toLowerCase();
 
-		return matchesSearch && matchesTag;
-	});
+			const matchesSearch = !s || title.includes(s) || desc.includes(s) || tag.includes(s);
+
+			const matchesTag = selected ? tag === selected : true;
+
+			return matchesSearch && matchesTag;
+		});
+	}, [notes, search, selectedTag]);
+
+	const highlightText = (text, search) => {
+		if (!search) return text;
+
+		const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const regex = new RegExp(`(${escaped})`, "gi");
+
+		return text.split(regex).map((part, i) =>
+			part.toLowerCase() === search.toLowerCase() ? (
+				<span
+					key={i}
+					style={{
+						backgroundColor: "var(--highlight-bg)",
+						color: "var(--highlight-text)",
+						borderRadius: "4px",
+						padding: "0 3px",
+					}}
+				>
+					{part}
+				</span>
+			) : (
+				part
+			),
+		);
+	};
 
 	// ⭐ pinned first
 	const sortedNotes = filteredNotes;
@@ -194,7 +223,7 @@ const Notes = (props) => {
 								</div>
 							</div>
 						) : (
-							sortedNotes.map((noteItem) => <NoteItem key={noteItem._id} updateNote={updateNote} note={{ ...noteItem }} showAlert={props.showAlert} />)
+							sortedNotes.map((noteItem) => <NoteItem key={noteItem._id} updateNote={updateNote} note={noteItem} search={search} highlightText={highlightText} showAlert={props.showAlert} />)
 						)}
 					</div>
 				</div>

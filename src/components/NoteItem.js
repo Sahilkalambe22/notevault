@@ -27,7 +27,7 @@ const TAG_ICON_MAP = {
 const host = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 /* ================= COMPONENT ================= */
 
-const NoteItem = ({ note, updateNote, showAlert }) => {
+const NoteItem = ({ note, updateNote, showAlert, search, highlightText }) => {
 	const { deleteNote, pinNote } = useContext(noteContext);
 
 	/* ================= TAG NORMALIZATION ================= */
@@ -129,10 +129,10 @@ const NoteItem = ({ note, updateNote, showAlert }) => {
 					</div>
 
 					{/* TITLE */}
-					<h6 className="fw-semibold mb-3 note-title">{note.title?.trim() || "Untitled"}</h6>
+					<h6 className="fw-semibold mb-3 note-title">{highlightText(note.title?.trim() || "Untitled", search)}</h6>
 
 					{/* DESCRIPTION PREVIEW */}
-					<div className="note-preview-text">{getPreviewText(note.description).slice(0, 200)}</div>
+					<div className="note-preview-text">{highlightText(getPreviewText(note.description).slice(0, 200), search)}</div>
 				</div>
 
 				{/* FOOTER */}

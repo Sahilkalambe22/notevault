@@ -10,13 +10,15 @@
 	--bg-page: radial-gradient(circle at 20% 20%, #1e293b 0%, #0f172a 40%, #0b1120 100%);
 	--bg-card: rgba(30, 41, 59, 0.75);
 	--bg-soft: rgba(30, 41, 59, 0.7);
-	--bg-card2: rgba(255,255,255,0.05);
+	--bg-card2: rgba(255, 255, 255, 0.05);
 
 	/* TEXT */
 
 	--text-main: #e5e7eb;
 	--text-secondary: #cbd5e1;
 	--text-muted: #94a3b8;
+	--highlight-bg: rgba(99, 102, 241, 0.45);
+	--highlight-text: #ffffff;
 
 	/* BORDERS */
 
@@ -38,11 +40,13 @@
 	--bg-page: linear-gradient(180deg, #f5f7ff 0%, #eef2ff 40%, #e5e7eb 100%);
 	--bg-card: rgba(255, 255, 255, 0.85);
 	--bg-soft: #f8fafc;
-	--bg-card2: rgba(0,0,0,0.04);
+	--bg-card2: rgba(0, 0, 0, 0.04);
 
 	--text-main: #0f172a;
 	--text-secondary: #334155;
 	--text-muted: #64748b;
+	--highlight-bg: rgba(79, 70, 229, 0.25);
+	--highlight-text: #0f172a;
 
 	--border-soft: rgba(0, 0, 0, 0.08);
 	--border-strong: rgba(0, 0, 0, 0.14);
@@ -133,8 +137,6 @@ body::before {
 	border-radius: 12px;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
-
-
 
 /* ======================================================
    APP BASICS

@@ -52,21 +52,30 @@ exports.searchNotes = async (req, res) => {
 			return res.json({ notes: [] });
 		}
 
+		const escapeRegex = (text) =>
+			text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+		const regex = new RegExp(escapeRegex(query), "i");
+
 		const notes = await Note.find({
 			user: req.user.id,
-			$text: { $search: query },
+			$or: [
+				{ title: regex },
+				{ description: regex },
+				{ tag: regex },
+			],
 		})
 			.sort({ isPinned: -1, date: -1 })
 			.limit(20)
 			.lean();
 
 		res.json({ notes });
+
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: "Search failed" });
 	}
 };
-
 /* ===============================
    ADD NOTE
 =============================== */

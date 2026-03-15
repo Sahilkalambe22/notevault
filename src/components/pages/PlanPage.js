@@ -5,6 +5,7 @@ const host = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 
 const PlanPage = () => {
 	const [plan, setPlan] = useState("free");
+	const [billing, setBilling] = useState("monthly");
 
 	useEffect(() => {
 		const fetchPlan = async () => {
@@ -16,7 +17,6 @@ const PlanPage = () => {
 				});
 
 				const data = await res.json();
-
 				setPlan(data.plan);
 			} catch (err) {
 				console.error("Failed to fetch plan", err);
@@ -26,10 +26,23 @@ const PlanPage = () => {
 		fetchPlan();
 	}, []);
 
+	const isYearly = billing === "yearly";
+
 	return (
 		<div className="plan-page">
 			<h2 className="plan-title">Choose Your Plan</h2>
 			<p className="plan-subtitle">Upgrade your NoteVault experience</p>
+
+			{/* BILLING TOGGLE */}
+			<div className="billing-toggle">
+				<button className={billing === "monthly" ? "active" : ""} onClick={() => setBilling("monthly")}>
+					Monthly
+				</button>
+
+				<button className={billing === "yearly" ? "active" : ""} onClick={() => setBilling("yearly")}>
+					Yearly <span className="save-tag">Save 17%</span>
+				</button>
+			</div>
 
 			<div className="plan-grid">
 				{/* FREE PLAN */}
@@ -51,7 +64,7 @@ const PlanPage = () => {
 					</ul>
 
 					<button className="plan-btn secondary" disabled={plan === "free"}>
-						{plan === "free" ? "Current Plan" : "Downgrade"}
+						{plan === "free" ? "Current Plan" : "Switch to Free"}
 					</button>
 				</div>
 
@@ -63,10 +76,13 @@ const PlanPage = () => {
 					<h3>Pro</h3>
 
 					<div className="plan-price">
-						$5 <span>/month</span>
+						{isYearly ? "$50" : "$5"} <span>{isYearly ? "/year" : "/month"}</span>
 					</div>
 
+					{isYearly && <div className="plan-save">Save 17%</div>}
+
 					<ul className="plan-features">
+						<li>✔ Everything in Free</li>
 						<li>✔ Unlimited Notes</li>
 						<li>✔ More Attachments</li>
 						<li>✔ Priority Features</li>
@@ -75,7 +91,7 @@ const PlanPage = () => {
 					</ul>
 
 					<button className="plan-btn primary" disabled={plan === "pro"} onClick={() => alert("Payments coming soon")}>
-						{plan === "pro" ? "Current Plan" : "Upgrade to Pro"}
+						{plan === "pro" ? "Current Plan" : isYearly ? "Upgrade Yearly" : "Upgrade to Pro"}
 					</button>
 				</div>
 			</div>
