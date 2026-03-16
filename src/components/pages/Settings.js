@@ -10,6 +10,7 @@ const Settings = ({ showAlert }) => {
 	const [loading, setLoading] = useState(true);
 	const [showPasswordForm, setShowPasswordForm] = useState(false);
 	const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+	const [savedAvatars, setSavedAvatars] = useState([]);
 
 	const avatarStyles = ["adventurer", "avataaars", "bottts", "pixel-art", "lorelei"];
 
@@ -42,6 +43,7 @@ const Settings = ({ showAlert }) => {
 					joinedDate: data.date || "",
 					avatar: data.avatar || "",
 				}));
+				setSavedAvatars(data.savedAvatars || []);
 
 				localStorage.setItem("name", data.name || "");
 				localStorage.setItem("avatar", data.avatar || "");
@@ -99,7 +101,35 @@ const Settings = ({ showAlert }) => {
 			showAlert("Failed to update avatar", "danger");
 		}
 	};
+	const handleSaveAvatar = async () => {
+		if (!form.avatar) {
+			showAlert("No avatar selected", "warning");
+			return;
+		}
 
+		try {
+			const res = await fetch(`${host}/api/auth/save-avatar`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+				body: JSON.stringify({ avatar: form.avatar }),
+			});
+
+			const data = await res.json();
+
+			if (!res.ok) {
+				showAlert(data.error || "Failed to save avatar", "danger");
+				return;
+			}
+
+			setSavedAvatars(data.savedAvatars);
+			showAlert("Avatar saved", "success");
+		} catch {
+			showAlert("Failed to save avatar", "danger");
+		}
+	};
 	const handleSave = async (e) => {
 		e.preventDefault();
 
@@ -246,29 +276,58 @@ const Settings = ({ showAlert }) => {
 						<div className="avatar-modal-content">
 							<h4>Choose Your Avatar</h4>
 
-							<div className="avatar-grid">
-								{/* NONE OPTION */}
-								<div className={`avatar-style-wrapper ${!selectedStyle ? "selected" : ""}`} onClick={() => handleAvatarSelect("", "")}>
-									<div className="avatar-none-option">{form.name ? form.name.charAt(0).toUpperCase() : "U"}</div>
-									<span className="avatar-style-name">Default</span>
-								</div>
-
-								{/* STYLES */}
-								{avatarStyles.map((style, index) => {
-									const isSelected = selectedStyle === style;
-
-									return (
-										<div key={index} className={`avatar-style-wrapper ${isSelected ? "selected" : ""}`} onClick={() => handleAvatarSelect(style, generateRandomSeed())}>
-											<img src={`https://api.dicebear.com/9.x/${style}/svg?seed=test`} alt={style} className="avatar-option-img" />
-
-											<span className="avatar-style-name">{style}</span>
-
-											{isSelected && <div className="avatar-selected-badge">✓</div>}
-										</div>
-									);
-								})}
+							{/* SAVE CURRENT AVATAR */}
+							<div className="avatar-save-section">
+								<button className="settings-primary-btn" onClick={handleSaveAvatar}>
+									⭐ Save Current Avatar
+								</button>
 							</div>
 
+							{/* SAVED AVATARS */}
+							{savedAvatars.length > 0 && (
+								<div className="saved-avatar-section">
+									<h5 className="saved-avatar-title">Saved Avatars</h5>
+
+									<div className="saved-avatar-grid">
+										{savedAvatars.map((avatar) => {
+											const [style, seed] = avatar.split(":");
+
+											return <img key={avatar} src={`https://api.dicebear.com/9.x/${style}/svg?seed=${seed}`} alt="saved avatar" className="saved-avatar-img" onClick={() => handleAvatarSelect(style, seed)} />;
+										})}
+									</div>
+								</div>
+							)}
+
+							{/* AVATAR STYLES */}
+							<div className="avatar-style-section">
+								<h5>Avatar Styles</h5>
+
+								<div className="avatar-grid">
+									{/* DEFAULT OPTION */}
+									<div className={`avatar-style-wrapper ${!selectedStyle ? "selected" : ""}`} onClick={() => handleAvatarSelect("", "")}>
+										<div className="avatar-none-option">{form.name ? form.name.charAt(0).toUpperCase() : "U"}</div>
+
+										<span className="avatar-style-name">Default</span>
+									</div>
+
+									{/* STYLES */}
+									{avatarStyles.map((style, index) => {
+										const isSelected = selectedStyle === style;
+
+										return (
+											<div key={index} className={`avatar-style-wrapper ${isSelected ? "selected" : ""}`} onClick={() => handleAvatarSelect(style, generateRandomSeed())}>
+												<img src={`https://api.dicebear.com/9.x/${style}/svg?seed=test`} alt={style} className="avatar-option-img" />
+
+												<span className="avatar-style-name">{style}</span>
+
+												{isSelected && <div className="avatar-selected-badge">✓</div>}
+											</div>
+										);
+									})}
+								</div>
+							</div>
+
+							{/* CLOSE BUTTON */}
 							<button className="settings-secondary-btn" onClick={() => setShowAvatarPicker(false)}>
 								Cancel
 							</button>

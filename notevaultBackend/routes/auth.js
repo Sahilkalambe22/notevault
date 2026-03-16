@@ -503,4 +503,70 @@ router.post("/verify-email-change", fetchuser, async (req, res) => {
 	}
 });
 
+/* ================= ROUTE 10: SAVE AVATAR ================= */
+
+router.post("/save-avatar", fetchuser, async (req, res) => {
+	try {
+		const { avatar } = req.body;
+
+		if (!avatar) {
+			return res.status(400).json({
+				success: false,
+				error: "Avatar is required",
+			});
+		}
+
+		const user = await User.findById(req.user.id);
+
+		if (user.savedAvatars.includes(avatar)) {
+			return res.json({
+				success: true,
+				message: "Avatar already saved",
+			});
+		}
+
+		// limit avatars
+		if (user.savedAvatars.length >= 10) {
+			return res.status(400).json({
+				success: false,
+				error: "Maximum saved avatars reached",
+			});
+		}
+
+		user.savedAvatars.push(avatar);
+
+		await user.save();
+
+		res.json({
+			success: true,
+			savedAvatars: user.savedAvatars,
+		});
+	} catch (error) {
+		console.error("Save Avatar Error:", error.message);
+		res.status(500).json({ success: false, error: "Server error" });
+	}
+});
+
+/* ================= ROUTE 11: REMOVE SAVED AVATAR ================= */
+
+router.delete("/remove-avatar", fetchuser, async (req, res) => {
+	try {
+		const { avatar } = req.body;
+
+		const user = await User.findById(req.user.id);
+
+		user.savedAvatars = user.savedAvatars.filter((a) => a !== avatar);
+
+		await user.save();
+
+		res.json({
+			success: true,
+			savedAvatars: user.savedAvatars,
+		});
+	} catch (error) {
+		console.error("Remove Avatar Error:", error.message);
+		res.status(500).json({ success: false, error: "Server error" });
+	}
+});
+
 module.exports = router;

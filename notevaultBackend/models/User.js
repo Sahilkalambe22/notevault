@@ -22,6 +22,11 @@ const UserSchema = new Schema({
 		type: String,
 		default: "",
 	},
+
+	savedAvatars: {
+		type: [String],
+		default: [],
+	},
 	resetOTP: String,
 	resetOTPExpiry: Date,
 

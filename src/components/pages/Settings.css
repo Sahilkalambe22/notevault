@@ -353,3 +353,37 @@
   padding: 2px 6px;
   border-radius: 8px;
 }
+
+.avatar-save-section {
+	margin-bottom: 15px;
+	text-align: center;
+}
+
+.saved-avatar-section {
+	margin-bottom: 18px;
+}
+
+.saved-avatar-grid {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin-top: 8px;
+}
+
+.saved-avatar-img {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	cursor: pointer;
+	border: 2px solid transparent;
+	transition: transform 0.2s ease;
+}
+
+.saved-avatar-img:hover {
+	transform: scale(1.1);
+	border-color: #7c6cff;
+}
+
+.avatar-style-section {
+	margin-top: 15px;
+}

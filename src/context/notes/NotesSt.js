@@ -315,7 +315,7 @@ const searchNotes = async (query) => {
 		}
 	};
 
-	// =========================
+// =========================
 // GET NOTES USAGE
 // =========================
 const getUsage = async () => {
@@ -334,6 +334,49 @@ const getUsage = async () => {
   } catch (err) {
     console.error("getUsage error:", err);
   }
+};
+// =========================saveAvatar==========================//
+const saveAvatar = async (avatar) => {
+	try {
+		const res = await fetch(`${host}/api/auth/save-avatar`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${localStorage.getItem("token")}`,
+			},
+			body: JSON.stringify({ avatar }),
+		});
+
+		const data = await res.json();
+
+		if (!res.ok) throw new Error(data.error);
+
+		return data.savedAvatars;
+	} catch (err) {
+		console.error("saveAvatar error:", err);
+		return null;
+	}
+};
+
+// =========================removeSavedAvatar==========================//
+const removeSavedAvatar = async (avatar) => {
+	try {
+		const res = await fetch(`${host}/api/auth/remove-avatar`, {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${localStorage.getItem("token")}`,
+			},
+			body: JSON.stringify({ avatar }),
+		});
+
+		const data = await res.json();
+
+		return data.savedAvatars;
+	} catch (err) {
+		console.error("removeSavedAvatar error:", err);
+		return null;
+	}
 };
 
 	// =========================
@@ -359,6 +402,9 @@ const getUsage = async () => {
 				searchNotes,
 				usage,
 				getUsage,
+				saveAvatar,
+				removeSavedAvatar,
+				PREDEFINED_TYPES,
 			}}
 		>
 			{props.children}
