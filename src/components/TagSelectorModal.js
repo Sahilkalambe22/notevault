@@ -96,11 +96,11 @@ const TagSelectorModal = ({ show, onClose, onDone, tags, typeValue, customValue,
 				<p className="modal-help">If custom name is set, it overrides the tag type.</p>
 
 				<div className="modal-actions">
-					<button className="settings-secondary-btn" onClick={onClose}>
+					<button className="btn-cancel" onClick={onClose}>
 						Cancel
 					</button>
 
-					<button className="settings-primary-btn" onClick={onDone}>
+					<button className="btn-primary" onClick={onDone}>
 						Done
 					</button>
 				</div>

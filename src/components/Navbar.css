@@ -51,6 +51,7 @@ border-bottom: 1px solid var(--border-soft);
 
 .nv-link:hover {
 	color: var(--text-main);
+	background-color: var(--bg-nav);
 }
 
 .nv-link.active {

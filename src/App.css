@@ -11,6 +11,7 @@
 	--bg-card: rgba(30, 41, 59, 0.75);
 	--bg-soft: rgba(30, 41, 59, 0.7);
 	--bg-card2: rgba(255, 255, 255, 0.05);
+	--bg-nav: rgb(37, 37, 129);
 
 	/* TEXT */
 
@@ -41,6 +42,7 @@
 	--bg-card: rgba(255, 255, 255, 0.85);
 	--bg-soft: #f8fafc;
 	--bg-card2: rgba(0, 0, 0, 0.04);
+	--bg-nav: rgb(163, 163, 238);
 
 	--text-main: #0f172a;
 	--text-secondary: #334155;

@@ -27,7 +27,7 @@ const TAG_ICON_MAP = {
 const host = process.env.REACT_APP_BACKEND_URL || "http://localhost:5000";
 /* ================= COMPONENT ================= */
 
-const NoteItem = ({ note, updateNote, showAlert, search, highlightText }) => {
+const NoteItem = ({ note, updateNote, showAlert, search, highlightText = (t) => t }) => {
 	const { deleteNote, pinNote } = useContext(noteContext);
 
 	/* ================= TAG NORMALIZATION ================= */

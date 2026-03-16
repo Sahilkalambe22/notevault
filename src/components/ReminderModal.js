@@ -28,16 +28,16 @@ const ReminderModal = ({ show, initialValue, onSave, onRemove, onClose }) => {
 
 				<div className="modal-actions">
 					{initialValue && (
-						<button className="settings-danger-btn" onClick={onRemove}>
+						<button className="btn-danger" onClick={onRemove}>
 							Remove
 						</button>
 					)}
 
-					<button className="settings-secondary-btn" onClick={onClose}>
+					<button className="btn-cancel" onClick={onClose}>
 						Cancel
 					</button>
 
-					<button className="settings-primary-btn" disabled={!value} onClick={() => onSave(value.toISOString())}>
+					<button className="btn-primary" disabled={!value} onClick={() => onSave(value.toISOString())}>
 						Save
 					</button>
 				</div>

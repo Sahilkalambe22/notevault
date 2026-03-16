@@ -19,6 +19,8 @@
 	width: 380px;
 	max-width: 92%;
 	padding: 28px;
+	position: relative;
+	overflow: hidden;
 
 	border-radius: 18px;
 
@@ -38,6 +40,33 @@
 	color: var(--text-secondary);
 }
 
+.modal-card::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	padding: 1px;
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--accent) 40%, transparent),
+		transparent,
+		color-mix(in srgb, var(--accent-2) 40%, transparent)
+	);
+
+	-webkit-mask:
+		linear-gradient(#000 0 0) content-box,
+		linear-gradient(#000 0 0);
+
+	mask:
+		linear-gradient(#000 0 0) content-box,
+		linear-gradient(#000 0 0);
+
+	-webkit-mask-composite: xor;
+	mask-composite: exclude;
+
+	opacity: 0.6;
+	pointer-events: none;
+}
 /* Inputs */
 
 .modal-card input {
@@ -65,6 +94,9 @@
 	display: flex;
 	justify-content: flex-end;
 	gap: 12px;
+}
+.modal-card:hover::before {
+	opacity: 1;
 }
 
 /* =========================
@@ -377,4 +409,96 @@
 
 .glass-dropdown-item:hover {
 	background: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+
+/* =========================
+   Modal Buttons
+========================= */
+
+.btn-primary {
+	background: linear-gradient(135deg, var(--accent), var(--accent-2));
+	color: white;
+	border: none;
+	padding: 8px 18px;
+	border-radius: 10px;
+	font-weight: 500;
+	transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.btn-primary:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+/* cancel */
+
+.btn-cancel {
+	background: transparent;
+	border: 1px solid var(--border-soft);
+	color: var(--text-secondary);
+	padding: 8px 16px;
+	border-radius: 10px;
+	transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+	background: color-mix(in srgb, var(--accent) 20%, transparent);
+	color: var(--text-main);
+	transform: translateY(-2px);
+}
+
+/* danger */
+
+.btn-danger {
+	background: #ef4444;
+	color: white;
+	border: none;
+	padding: 8px 16px;
+	border-radius: 10px;
+	transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+/* =========================
+   Modal Animation
+========================= */
+
+.modal-backdrop-custom {
+	animation: backdropFade 0.18s ease;
+}
+
+.modal-card {
+	animation: modalPop 0.22s ease;
+}
+
+@keyframes backdropFade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes modalPop {
+	from {
+		opacity: 0;
+		transform: translateY(12px) scale(0.96);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
 }
