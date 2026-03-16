@@ -10,19 +10,17 @@ const cleanupOrphans = async () => {
 	try {
 		const usedFiles = new Set();
 
-		/* ===============================
-		   ACTIVE NOTES
-		=============================== */
+		/* ==============================
+		   NOTES
+		============================== */
 
 		const notes = await Note.find({}, "attachments description").lean();
 
 		for (const note of notes) {
-			/* attachments */
 			note.attachments?.forEach((a) => {
 				if (a.path) usedFiles.add(path.basename(a.path));
 			});
 
-			/* inline images */
 			if (note.description) {
 				const matches = note.description.match(/\/uploads\/([a-zA-Z0-9._-]+)/g);
 
@@ -32,13 +30,13 @@ const cleanupOrphans = async () => {
 			}
 		}
 
-		/* ===============================
-		   NOTE VERSIONS
-		=============================== */
+		/* ==============================
+		   NOTE VERSIONS (STREAMED)
+		============================== */
 
-		const versions = await NoteVersion.find({}, "attachments description").lean();
+		const cursor = NoteVersion.find({}, "attachments description").cursor();
 
-		for (const v of versions) {
+		for await (const v of cursor) {
 			v.attachments?.forEach((a) => {
 				if (a.path) usedFiles.add(path.basename(a.path));
 			});
@@ -52,11 +50,13 @@ const cleanupOrphans = async () => {
 			}
 		}
 
-		/* ===============================
-		   FILE SYSTEM
-		=============================== */
+		/* ==============================
+		   SCAN UPLOAD DIRECTORY
+		============================== */
 
 		const files = fs.readdirSync(uploadsDir);
+
+		let deleted = 0;
 
 		for (const file of files) {
 			if (file.startsWith(".")) continue;
@@ -67,20 +67,18 @@ const cleanupOrphans = async () => {
 				const stats = fs.statSync(filePath);
 				const age = Date.now() - stats.mtimeMs;
 
-				/* only delete files older than 10 minutes */
+				/* don't delete very recent uploads */
 				if (age > 1000 * 60 * 10) {
 					fs.unlinkSync(filePath);
-
-					console.log("Deleted orphan file:", file);
+					deleted++;
 				}
 			}
 		}
 
-		console.log("Orphan cleanup finished");
+		console.log(`Orphan cleanup finished. Deleted ${deleted} files.`);
 	} catch (err) {
 		console.error("Orphan cleanup error:", err);
 	}
 };
 
 module.exports = cleanupOrphans;
- 
