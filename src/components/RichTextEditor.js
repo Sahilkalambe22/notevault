@@ -20,10 +20,13 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 	const isInternalChange = useRef(false);
 
 	/* ===============================
-   KEYBOARD SHORTCUTS
-================================ */
+	KEYBOARD SHORTCUTS
+	================================ */
 
 	const handleKeyDown = (e) => {
+		if (e.key === "Enter") {
+			saveSelection();
+		}
 		if (!e.ctrlKey) return;
 
 		switch (e.key.toLowerCase()) {
@@ -60,8 +63,28 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 	};
 
 	/* ===============================
-     SYNC EXTERNAL VALUE
-  =============================== */
+		HANDLE INPUT
+	=============================== */
+	const handleInput = () => {
+		saveSelection(); // preserve caret position
+
+		isInternalChange.current = true;
+		onChange(editorRef.current.innerHTML);
+
+		setTimeout(() => {
+			if (savedRange.current) {
+				const selection = window.getSelection();
+				selection.removeAllRanges();
+				selection.addRange(savedRange.current);
+			}
+		}, 0);
+
+		updateToolbar();
+	};
+
+	/* ===============================
+		SYNC EXTERNAL VALUE
+	=============================== */
 	useEffect(() => {
 		const el = editorRef.current;
 		if (!el) return;
@@ -75,15 +98,39 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 			el.innerHTML = value || "";
 
 			const images = el.querySelectorAll("img");
+
 			images.forEach((img) => {
-				img.removeAttribute("style");
+				if (img.closest(".ne-image-wrapper")) return;
+
+				const wrapper = document.createElement("div");
+				wrapper.className = "ne-image-wrapper";
+
+				const controls = document.createElement("div");
+				controls.className = "ne-image-controls";
+
+				const removeBtn = document.createElement("button");
+				removeBtn.className = "ne-image-remove";
+				removeBtn.innerHTML = "✕";
+
+				removeBtn.onclick = (e) => {
+					e.stopPropagation();
+					wrapper.remove();
+					handleInput();
+				};
+
+				controls.appendChild(removeBtn);
+
+				img.parentNode.insertBefore(wrapper, img);
+				wrapper.appendChild(img);
+				wrapper.appendChild(controls);
 			});
 		}
+		// eslint-disable-next-line
 	}, [value]);
 
 	/* ===============================
-     SAVE CURSOR POSITION
-  =============================== */
+		SAVE CURSOR POSITION
+	=============================== */
 	const saveSelection = () => {
 		const selection = window.getSelection();
 		if (selection.rangeCount > 0) {
@@ -92,8 +139,8 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 	};
 
 	/* ===============================
-     UPDATE TOOLBAR STATE
-  =============================== */
+		UPDATE TOOLBAR STATE
+	=============================== */
 	const updateToolbar = () => {
 		try {
 			const selection = window.getSelection();
@@ -116,17 +163,8 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 	};
 
 	/* ===============================
-     HANDLE INPUT
-  =============================== */
-	const handleInput = () => {
-		isInternalChange.current = true;
-		onChange(editorRef.current.innerHTML);
-		updateToolbar();
-	};
-
-	/* ===============================
-     EXEC FORMAT COMMAND
-  =============================== */
+		EXEC FORMAT COMMAND
+	=============================== */
 	const exec = (cmd, val = null) => {
 		const editor = editorRef.current;
 		editor.focus();
@@ -164,8 +202,8 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 	};
 
 	/* ===============================
-     EXTRA FORMATTING
-  =============================== */
+		EXTRA FORMATTING
+	=============================== */
 
 	const toggleHighlight = () => {
 		const editor = editorRef.current;
@@ -317,16 +355,38 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 	};
 
 	/* ===============================
-     INSERT IMAGE
-  =============================== */
+		INSERT IMAGE
+	=============================== */
 	const insertImageAtCursor = (url) => {
+		const wrapper = document.createElement("div");
+		wrapper.className = "ne-image-wrapper";
+		wrapper.contentEditable = "false";
+
 		const img = document.createElement("img");
 		img.src = url;
-		img.style.maxWidth = "60%";
-		img.style.height = "auto";
-		img.style.display = "block";
-		img.style.margin = "24px auto";
-		img.style.borderRadius = "12px";
+		img.className = "ne-inline-image";
+
+		img.onclick = () => {
+			window.open(img.src, "_blank");
+		};
+
+		const controls = document.createElement("div");
+		controls.className = "ne-image-controls";
+
+		const removeBtn = document.createElement("button");
+		removeBtn.className = "ne-image-remove";
+		removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+
+		removeBtn.onclick = (e) => {
+			e.stopPropagation();
+			wrapper.remove();
+			handleInput();
+		};
+
+		controls.appendChild(removeBtn);
+
+		wrapper.appendChild(img);
+		wrapper.appendChild(controls);
 
 		const selection = window.getSelection();
 
@@ -338,15 +398,28 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 		if (!selection.rangeCount) return;
 
 		const range = selection.getRangeAt(0);
-		range.deleteContents();
-		range.insertNode(img);
 
-		range.setStartAfter(img);
-		range.setEndAfter(img);
+		range.deleteContents();
+
+		range.insertNode(wrapper);
+
+		// insert image
+		range.insertNode(wrapper);
+
+		// create editable line after image
+		const br = document.createElement("br");
+		wrapper.after(br);
+
+		// move cursor AFTER the line break
+		range.setStartAfter(br);
+		range.setEndAfter(br);
+
 		selection.removeAllRanges();
 		selection.addRange(range);
 
 		handleInput();
+
+		return img;
 	};
 
 	const handleImageClick = () => {
@@ -367,6 +440,11 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 			if (!file) return;
 
 			try {
+				// show preview immediately
+				const previewUrl = URL.createObjectURL(file);
+				const insertedImg = insertImageAtCursor(previewUrl);
+
+				// upload in background
 				const formData = new FormData();
 				formData.append("image", file);
 
@@ -378,10 +456,18 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 					body: formData,
 				});
 
-				if (!res.ok) return;
+				if (res.ok) {
+					const data = await res.json();
 
-				const data = await res.json();
-				insertImageAtCursor(data.imageUrl);
+					// replace preview image with real URL
+
+					if (insertedImg && insertedImg.src.startsWith("blob:")) {
+						insertedImg.src = data.imageUrl;
+						URL.revokeObjectURL(previewUrl);
+						handleInput();
+						updateToolbar();
+					}
+				}
 			} catch (err) {
 				console.error("Image upload failed:", err);
 			}
@@ -389,14 +475,14 @@ const RichTextEditor = ({ value, onChange, minHeight = 420 }) => {
 	};
 
 	const handlePaste = (e) => {
-  e.preventDefault();
-  const text = e.clipboardData.getData("text/plain");
-  document.execCommand("insertText", false, text);
-};
+		e.preventDefault();
+		const text = e.clipboardData.getData("text/plain");
+		document.execCommand("insertText", false, text);
+	};
 
 	/* ===============================
-     RENDER
-  =============================== */
+		RENDER
+	=============================== */
 	return (
 		<div>
 			<div className="ne-toolbar" onMouseDown={(e) => e.preventDefault()}>

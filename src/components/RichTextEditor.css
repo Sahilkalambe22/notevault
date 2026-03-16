@@ -130,12 +130,71 @@ blockquote {
 .ne-editor {
   width: 100%;
   max-width: 100%;
-
+  padding: 16px 18px;
   white-space: pre-wrap;
   word-break: break-word;
   overflow-wrap: anywhere;
 
-  overflow-x: hidden;
+  overflow: hidden;
+}
+
+/* ---------- INLINE IMAGE ---------- */
+
+.ne-image-wrapper {
+  position: relative;
+  display: block;
+  text-align: center;
+  margin: 24px auto;
+}
+
+.ne-inline-image {
+  max-width: 60%;
+  cursor: pointer;
+  justify-content: start;
+  display: flex;
+  height: auto;
+  border-radius: 12px;
+}
+
+/* image action buttons */
+
+.ne-image-controls {
+  position: absolute;
+  top: 8px;
+  right: calc(20% + 8px); /* aligns with 60% width image */
+
+  display: flex;
+  gap: 6px;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 0.2s ease;
+}
+
+.ne-image-wrapper:hover .ne-image-controls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ne-image-controls button {
+  background: rgba(0,0,0,0.65);
+  border: none;
+  color: white;
+
+  font-size: 0.75rem;
+
+  padding: 4px 6px;
+
+  border-radius: 6px;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.ne-image-controls button:hover {
+  background: rgba(0,0,0,0.85);
 }
 
 .ne-editor code,

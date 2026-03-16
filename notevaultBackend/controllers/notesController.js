@@ -52,25 +52,19 @@ exports.searchNotes = async (req, res) => {
 			return res.json({ notes: [] });
 		}
 
-		const escapeRegex = (text) =>
-			text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 		const regex = new RegExp(escapeRegex(query), "i");
 
 		const notes = await Note.find({
 			user: req.user.id,
-			$or: [
-				{ title: regex },
-				{ description: regex },
-				{ tag: regex },
-			],
+			$or: [{ title: regex }, { description: regex }, { tag: regex }],
 		})
 			.sort({ isPinned: -1, date: -1 })
 			.limit(20)
 			.lean();
 
 		res.json({ notes });
-
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: "Search failed" });
@@ -133,7 +127,9 @@ exports.addNote = async (req, res) => {
 		// virus scan
 		for (const file of attachmentFiles) {
 			try {
-				await scanFile(file.path);
+				scanFile(req.file.path).catch((err) => {
+					console.warn("Background scan failed:", err.message);
+				});
 			} catch (err) {
 				console.error("Virus scan failed:", err.message);
 
@@ -228,7 +224,7 @@ exports.updateNote = async (req, res) => {
 
 		const attachmentFiles = req.files?.attachments || [];
 
-	/* ===============================
+		/* ===============================
        VERSION SNAPSHOT
     =============================== */
 
@@ -250,7 +246,7 @@ exports.updateNote = async (req, res) => {
 			console.error("Version snapshot error:", err);
 		}
 
-	/* ===============================
+		/* ===============================
        STORAGE CALCULATION
     =============================== */
 
@@ -278,7 +274,7 @@ exports.updateNote = async (req, res) => {
 			});
 		}
 
-	/* ===============================
+		/* ===============================
        ATTACHMENT LIMIT
     =============================== */
 
@@ -292,13 +288,15 @@ exports.updateNote = async (req, res) => {
 			});
 		}
 
-	/* ===============================
+		/* ===============================
        VIRUS SCAN
     =============================== */
 
 		for (const file of attachmentFiles) {
-			try {
-				await scanFile(file.path);
+				try {
+    scanFile(req.file.path).catch((err) => {
+        console.warn("Background scan failed:", err.message);
+    });
 			} catch (err) {
 				console.error("Virus scan failed:", err.message);
 
@@ -314,7 +312,7 @@ exports.updateNote = async (req, res) => {
 			}
 		}
 
-	/* ===============================
+		/* ===============================
        ADD NEW ATTACHMENTS
     =============================== */
 
@@ -329,7 +327,7 @@ exports.updateNote = async (req, res) => {
 			);
 		}
 
-	/* ===============================
+		/* ===============================
        ALLOWED FIELD UPDATES
     =============================== */
 
@@ -353,7 +351,7 @@ exports.updateNote = async (req, res) => {
        SAVE NOTE
     =============================== */
 
-	const updatedNote = await note.save();
+		const updatedNote = await note.save();
 
 		res.json(updatedNote);
 	} catch (err) {
@@ -536,7 +534,9 @@ exports.uploadInlineImage = async (req, res) => {
 		if (!req.file) return res.status(400).json({ error: "No image uploaded" });
 
 		try {
-			await scanFile(req.file.path);
+			scanFile(req.file.path).catch((err) => {
+				console.warn("Background scan failed:", err.message);
+			});
 		} catch (scanErr) {
 			if (fs.existsSync(req.file.path)) {
 				fs.unlinkSync(req.file.path);
