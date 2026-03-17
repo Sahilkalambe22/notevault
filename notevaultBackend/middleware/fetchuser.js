@@ -9,21 +9,17 @@ if (!JWT_SECRET) {
 const fetchuser = (req, res, next) => {
 	const authHeader = req.header("Authorization");
 
-	if (!authHeader) {
+	if (!authHeader || !authHeader.startsWith("Bearer ")) {
 		return res.status(401).json({ error: "Invalid or expired token" });
 	}
 
 	const token = authHeader.split(" ")[1];
 
-	if (!token) {
-		return res.status(401).json({ error: "Invalid or expired token" });
-	}
-
 	try {
 		const data = jwt.verify(token, JWT_SECRET);
 		req.user = data.user;
 		next();
-	} catch (error) {
+	} catch {
 		return res.status(401).json({ error: "Invalid or expired token" });
 	}
 };

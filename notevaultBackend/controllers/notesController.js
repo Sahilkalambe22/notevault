@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const sanitizeHtml = require("sanitize-html");
 const { validationResult } = require("express-validator");
 
 const Note = require("../models/Note");
@@ -13,6 +14,19 @@ const cleanupUploads = require("../utils/cleanupUploads");
 const scanFile = require("../utils/scanFile");
 
 const hostf = process.env.FRONTEND_URL || "http://localhost:3000";
+
+const cleanHTML = (dirty) => {
+	return sanitizeHtml(dirty, {
+		allowedTags: ["b", "i", "u", "s", "strong", "em", "p", "br", "ul", "ol", "li", "h3", "blockquote", "code", "span", "hr", "img"],
+
+		allowedAttributes: {
+			span: ["class"],
+			img: ["src", "alt"],
+		},
+
+		allowedSchemes: ["http", "https", "data"],
+	});
+};
 
 /* ===============================
    FETCH ALL NOTES
@@ -84,6 +98,7 @@ exports.addNote = async (req, res) => {
 		}
 
 		const { title, description, tag, reminderAt } = req.body;
+		const safeDescription = cleanHTML(description || "");
 
 		const user = await User.findById(req.user.id);
 
@@ -127,7 +142,7 @@ exports.addNote = async (req, res) => {
 		// virus scan
 		for (const file of attachmentFiles) {
 			try {
-				scanFile(req.file.path).catch((err) => {
+				scanFile(file.path).catch((err) => {
 					console.warn("Background scan failed:", err.message);
 				});
 			} catch (err) {
@@ -159,11 +174,11 @@ exports.addNote = async (req, res) => {
 
 		const note = new Note({
 			title,
-			description,
+			description: safeDescription,
 			tag,
 			user: req.user.id,
 			attachments: attachmentFiles.map((file) => ({
-				path: `/uploads/${file.filename}`,
+				path: path.relative(uploadDir, file.path).replace(/\\/g, "/"),
 				originalName: file.originalname,
 				mimeType: file.mimetype,
 				size: file.size,
@@ -293,10 +308,10 @@ exports.updateNote = async (req, res) => {
     =============================== */
 
 		for (const file of attachmentFiles) {
-				try {
-    scanFile(req.file.path).catch((err) => {
-        console.warn("Background scan failed:", err.message);
-    });
+			try {
+				scanFile(file.path).catch((err) => {
+					console.warn("Background scan failed:", err.message);
+				});
 			} catch (err) {
 				console.error("Virus scan failed:", err.message);
 
@@ -342,7 +357,11 @@ exports.updateNote = async (req, res) => {
 
 					note.reminderSent = false;
 				} else {
-					note[field] = req.body[field];
+					if (field === "description") {
+						note.description = cleanHTML(req.body.description || "");
+					} else {
+						note[field] = req.body[field];
+					}
 				}
 			}
 		});

@@ -54,6 +54,25 @@ const validateObjectId = (paramName = "id") => {
 	};
 };
 
+// Additional validator for shareId (24-character hex string)
+const validateShareId = (req, res, next) => {
+	if (!/^[a-f0-9]{24}$/.test(req.params.shareId)) {
+		return res.status(400).json({ error: "Invalid shareId" });
+	}
+	next();
+};
+
+// Validator for attachment index
+const validateIndex = (req, res, next) => {
+	const idx = Number(req.params.index);
+
+	if (!Number.isInteger(idx) || idx < 0) {
+		return res.status(400).json({ error: "Invalid attachment index" });
+	}
+
+	next();
+};
+
 /* ===============================
    ROUTES
 =============================== */
@@ -62,9 +81,38 @@ router.get("/fetchallnotes", fetchuser, fetchAllNotes);
 
 router.get("/search", fetchuser, searchNotes);
 
-router.post("/addnotes", fetchuser, upload.fields([{ name: "attachments" }]), [body("title").trim().isLength({ min: 3, max: 200 }).withMessage("Title must be 1–200 characters"), body("description").isLength({ min: 5, max: 50000 }).withMessage("Description must be 5–50,000 characters"), body("tag").optional().trim().isLength({ max: 50 })], addNote);
+router.post(
+	"/addnotes",
+	fetchuser,
+	upload.fields([{ name: "attachments" }]),
+	[
+		body("title").trim().isLength({ min: 3, max: 200 }).withMessage("Title must be 1–200 characters"),
+		body("description").isLength({ min: 5, max: 50000 }).withMessage("Description must be 5–50,000 characters"),
+		body("tag")
+			.optional()
+			.trim()
+			.matches(/^[a-zA-Z0-9 _-]+$/)
+			.isLength({ max: 50 }),
+	],
+	addNote,
+);
 
-router.put("/updatenote/:id", fetchuser, validateObjectId("id"), upload.fields([{ name: "attachments" }]), updateNote);
+router.put(
+	"/updatenote/:id",
+	fetchuser,
+	validateObjectId("id"),
+	upload.fields([{ name: "attachments" }]),
+	[
+		body("title").optional().trim().isLength({ min: 3, max: 200 }),
+		body("description").optional().isLength({ min: 5, max: 50000 }),
+		body("tag")
+			.optional()
+			.trim()
+			.matches(/^[a-zA-Z0-9 _-]+$/)
+			.isLength({ max: 50 }),
+	],
+	updateNote,
+);
 
 router.delete("/deletenote/:id", fetchuser, validateObjectId("id"), deleteNote);
 
@@ -72,7 +120,7 @@ router.get("/:id/versions", fetchuser, validateObjectId("id"), getNoteVersions);
 
 router.post("/:noteId/restore/:versionId", fetchuser, validateObjectId("noteId"), validateObjectId("versionId"), restoreVersion);
 
-router.delete("/:id/attachments/:index", fetchuser, validateObjectId("id"), deleteAttachment);
+router.delete("/:id/attachments/:index", fetchuser, validateObjectId("id"), validateIndex, deleteAttachment);
 
 router.post("/:id/upload-inline-image", fetchuser, validateObjectId("id"), upload.single("image"), uploadInlineImage);
 
@@ -80,6 +128,6 @@ router.get("/usage", fetchuser, getUsage);
 
 router.post("/:id/share", fetchuser, validateObjectId("id"), shareNote);
 
-router.get("/public/:shareId", publicShareLimiter, getPublicNote);
+router.get("/public/:shareId", publicShareLimiter, validateShareId, getPublicNote);
 
 module.exports = router;
